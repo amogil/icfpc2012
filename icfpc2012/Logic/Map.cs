@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Logic
@@ -52,7 +53,7 @@ namespace Logic
 		    lambdaCounter = 0;
 
 		    Height = lines.Length;
-		    Width = lines[0].Length;
+		    Width = lines.Max(a => a.Length);
 
             map = new MapCell[Width + 2, Height + 2];
             swapMap = new MapCell[Width + 2, Height + 2];
@@ -63,6 +64,15 @@ namespace Logic
                 {
                     map[col, row] = MapCell.Wall;
                     swapMap[col, row] = MapCell.Wall;
+                }
+            }
+
+            for (int row = 1; row < Height + 1; row++)
+            {
+                for (int col = 1; col < Width + 1; col++)
+                {
+                    map[col, row] = MapCell.Empty;
+                    swapMap[col, row] = MapCell.Empty;
                 }
             }
 
