@@ -28,130 +28,136 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.infoPanel = new System.Windows.Forms.Panel();
-			this.zoomBar = new System.Windows.Forms.TrackBar();
-			this.picture = new System.Windows.Forms.PictureBox();
-			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.movesBox = new System.Windows.Forms.TextBox();
-			this.infoPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.picture)).BeginInit();
-			this.menuStrip1.SuspendLayout();
-			this.SuspendLayout();
-			// 
-			// infoPanel
-			// 
-			this.infoPanel.BackColor = System.Drawing.SystemColors.Info;
-			this.infoPanel.Controls.Add(this.zoomBar);
-			this.infoPanel.Dock = System.Windows.Forms.DockStyle.Left;
-			this.infoPanel.Location = new System.Drawing.Point(0, 24);
-			this.infoPanel.Name = "infoPanel";
-			this.infoPanel.Size = new System.Drawing.Size(237, 488);
-			this.infoPanel.TabIndex = 1;
-			// 
-			// zoomBar
-			// 
-			this.zoomBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.zoomBar.LargeChange = 8;
-			this.zoomBar.Location = new System.Drawing.Point(0, 443);
-			this.zoomBar.Maximum = 76;
-			this.zoomBar.Minimum = 4;
-			this.zoomBar.Name = "zoomBar";
-			this.zoomBar.Size = new System.Drawing.Size(237, 45);
-			this.zoomBar.TabIndex = 4;
-			this.zoomBar.TabStop = false;
-			this.zoomBar.TickFrequency = 4;
-			this.zoomBar.Value = 24;
-			this.zoomBar.ValueChanged += new System.EventHandler(this.zoomBar_ValueChanged);
-			// 
-			// picture
-			// 
-			this.picture.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.picture.Location = new System.Drawing.Point(237, 24);
-			this.picture.Name = "picture";
-			this.picture.Size = new System.Drawing.Size(559, 488);
-			this.picture.TabIndex = 2;
-			this.picture.TabStop = false;
-			// 
-			// menuStrip1
-			// 
-			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.infoPanel = new System.Windows.Forms.Panel();
+            this.zoomBar = new System.Windows.Forms.TrackBar();
+            this.picture = new System.Windows.Forms.PictureBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.movesBox = new System.Windows.Forms.TextBox();
+            this.infoPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picture)).BeginInit();
+            this.menuStrip1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // infoPanel
+            // 
+            this.infoPanel.BackColor = System.Drawing.SystemColors.Info;
+            this.infoPanel.Controls.Add(this.zoomBar);
+            this.infoPanel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.infoPanel.Location = new System.Drawing.Point(0, 28);
+            this.infoPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.infoPanel.Name = "infoPanel";
+            this.infoPanel.Size = new System.Drawing.Size(316, 602);
+            this.infoPanel.TabIndex = 1;
+            // 
+            // zoomBar
+            // 
+            this.zoomBar.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.zoomBar.LargeChange = 8;
+            this.zoomBar.Location = new System.Drawing.Point(0, 546);
+            this.zoomBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.zoomBar.Maximum = 76;
+            this.zoomBar.Minimum = 4;
+            this.zoomBar.Name = "zoomBar";
+            this.zoomBar.Size = new System.Drawing.Size(316, 56);
+            this.zoomBar.TabIndex = 4;
+            this.zoomBar.TabStop = false;
+            this.zoomBar.TickFrequency = 4;
+            this.zoomBar.Value = 24;
+            this.zoomBar.ValueChanged += new System.EventHandler(this.zoomBar_ValueChanged);
+            // 
+            // picture
+            // 
+            this.picture.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picture.Location = new System.Drawing.Point(316, 28);
+            this.picture.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.picture.Name = "picture";
+            this.picture.Size = new System.Drawing.Size(745, 602);
+            this.picture.TabIndex = 2;
+            this.picture.TabStop = false;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.mapToolStripMenuItem});
-			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(796, 24);
-			this.menuStrip1.TabIndex = 3;
-			this.menuStrip1.Text = "menuStrip1";
-			// 
-			// fileToolStripMenuItem
-			// 
-			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(1061, 28);
+            this.menuStrip1.TabIndex = 3;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openFileToolStripMenuItem});
-			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-			this.fileToolStripMenuItem.Text = "File";
-			// 
-			// openFileToolStripMenuItem
-			// 
-			this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-			this.openFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openFileToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.openFileToolStripMenuItem.Text = "OpenFile";
-			this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
-			// 
-			// mapToolStripMenuItem
-			// 
-			this.mapToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // openFileToolStripMenuItem
+            // 
+            this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
+            this.openFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(190, 24);
+            this.openFileToolStripMenuItem.Text = "OpenFile";
+            this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
+            // 
+            // mapToolStripMenuItem
+            // 
+            this.mapToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reloadToolStripMenuItem});
-			this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
-			this.mapToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
-			this.mapToolStripMenuItem.Text = "Map";
-			// 
-			// reloadToolStripMenuItem
-			// 
-			this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-			this.reloadToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.reloadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.reloadToolStripMenuItem.Text = "Reload";
-			this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
-			// 
-			// movesBox
-			// 
-			this.movesBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.movesBox.Location = new System.Drawing.Point(237, 492);
-			this.movesBox.Name = "movesBox";
-			this.movesBox.ReadOnly = true;
-			this.movesBox.Size = new System.Drawing.Size(559, 20);
-			this.movesBox.TabIndex = 4;
-			// 
-			// MainForm
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(796, 512);
-			this.Controls.Add(this.movesBox);
-			this.Controls.Add(this.picture);
-			this.Controls.Add(this.infoPanel);
-			this.Controls.Add(this.menuStrip1);
-			this.KeyPreview = true;
-			this.MainMenuStrip = this.menuStrip1;
-			this.Name = "MainForm";
-			this.Text = "MainForm";
-			this.Load += new System.EventHandler(this.MainForm_Load);
-			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
-			this.infoPanel.ResumeLayout(false);
-			this.infoPanel.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.picture)).EndInit();
-			this.menuStrip1.ResumeLayout(false);
-			this.menuStrip1.PerformLayout();
-			this.ResumeLayout(false);
-			this.PerformLayout();
+            this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
+            this.mapToolStripMenuItem.Size = new System.Drawing.Size(51, 24);
+            this.mapToolStripMenuItem.Text = "Map";
+            // 
+            // reloadToolStripMenuItem
+            // 
+            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            this.reloadToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(149, 24);
+            this.reloadToolStripMenuItem.Text = "Reload";
+            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+            // 
+            // movesBox
+            // 
+            this.movesBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.movesBox.Location = new System.Drawing.Point(316, 608);
+            this.movesBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.movesBox.Name = "movesBox";
+            this.movesBox.ReadOnly = true;
+            this.movesBox.Size = new System.Drawing.Size(745, 22);
+            this.movesBox.TabIndex = 4;
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(1061, 630);
+            this.Controls.Add(this.movesBox);
+            this.Controls.Add(this.picture);
+            this.Controls.Add(this.infoPanel);
+            this.Controls.Add(this.menuStrip1);
+            this.KeyPreview = true;
+            this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Name = "MainForm";
+            this.Text = "MainForm";
+            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
+            this.infoPanel.ResumeLayout(false);
+            this.infoPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picture)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
 
 		}
 

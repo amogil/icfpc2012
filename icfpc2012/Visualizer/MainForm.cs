@@ -92,6 +92,7 @@ namespace Visualizer
 		{
 			CellSize = zoomBar.Value;
 			UpdateMap(map);
+		    picture.Focus();
 		}
 
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
