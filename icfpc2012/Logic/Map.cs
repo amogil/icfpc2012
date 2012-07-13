@@ -226,7 +226,6 @@ namespace Logic
                     {
                         swapMap[x, y] = MapCell.Empty;
                         swapMap[x - 1, y] = MapCell.Empty;
-                        swapMap[x, y - 1] = MapCell.Rock;
                         swapMap[x - 1, y - 1] = MapCell.Rock;
                         CheckRobotDanger(x - 1, y - 1);
                     }
