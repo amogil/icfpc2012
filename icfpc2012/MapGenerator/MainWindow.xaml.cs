@@ -15,7 +15,13 @@ namespace MapGenerator
 
 		private void button1_Click(object sender, RoutedEventArgs e)
 		{
-			var mg = new Generator(Convert.ToInt32(tbHeights.Text), Convert.ToInt32(tbWidth.Text));
+			var mg = new Generator(height: Convert.ToInt32(tbHeights.Text),
+			                       width: Convert.ToInt32(tbWidth.Text),
+			                       hasLift: cbLift.IsChecked ?? false,
+			                       rocksCount: Convert.ToInt32(tbRocks.Text),
+			                       earthCount: Convert.ToInt32(tbEarth.Text),
+			                       wallCount: Convert.ToInt32(tbWalls.Text),
+			                       lambdaCount: Convert.ToInt32(tbLambdas.Text));
 			var map = mg.Generate();
 			tbResult.Text = map;
 		}
