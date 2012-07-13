@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Logic
 {
@@ -24,12 +25,6 @@ namespace Logic
 		OpenedLift
 	}
 
-    public enum MoveResult
-    {
-        Valid,
-        Invalid
-    }
-
     public enum CheckResult
     {
         Nothing,
@@ -39,30 +34,59 @@ namespace Logic
 
 	public class Map
     {
+        private CheckResult state = CheckResult.Nothing; 
+
         readonly public int Width;
         readonly public int Height;
-        private MapCell[,] CurrentMap;
+        private MapCell[,] map;
+	    private MapCell[,] swapMap;
 
         public int RobotX { get; private set; }
         public int RobotY { get; private set; }
 
+	    private int totalLambdaCount;
+	    private int lambdaCounter;
+
 		public Map(string[] lines)
 		{
+		    lambdaCounter = 0;
+
 		    Height = lines.Length;
 		    Width = lines[0].Length;
 
-            for (int i = 0; i < Width; i++ )
+            map = new MapCell[Width + 2, Height + 2];
+            swapMap = new MapCell[Width + 2, Height + 2];
+
+            for (int row = 0; row < Height + 2; row++)
             {
-                for (int j = 0; j < Height; j++)
+                for (int col = 0; col < Width + 2; col++)
                 {
-                    CurrentMap[i, j] = Parse(lines[i][j]);
-                    if (CurrentMap[i, j] == MapCell.Robot)
-                    {
-                        RobotX = i;
-                        RobotY = j;
-                    }
+                    map[col, row] = MapCell.Wall;
+                    swapMap[col, row] = MapCell.Wall;
                 }
             }
+
+		    for (int row = 0; row < Height; row++)
+            {
+                for (int col = 0; col < Width; col++ )
+                {
+                    var newY = Height - row - 1;
+
+                    map[col + 1, newY + 1] = Parse(lines[row][col]);
+                    if (map[col + 1, newY + 1] == MapCell.Robot)
+                    {
+                        RobotX = col + 1;
+                        RobotY = row + 1;
+                    }
+                    if (map[col + 1, newY + 1] == MapCell.Lambda)
+                        lambdaCounter++;
+                }
+            }
+
+		    Height += 2;
+		    Width += 2;
+
+		    totalLambdaCount = lambdaCounter;
 		}
 
         private static MapCell Parse(char c)
@@ -84,22 +108,134 @@ namespace Logic
 
 	    public MapCell this[int x, int y]
 		{
-			get { return CurrentMap[x, y]; }
+			get { return map[x + 1, y + 1]; }
 		}
 
-        public MoveResult Move(RobotMove move)
+        public Map Move(RobotMove move)
         {
-            throw new NotImplementedException();
+            if(move == RobotMove.Abort)
+            {
+                state = CheckResult.Win;
+                return this;
+            }
+
+            if(state != CheckResult.Nothing)
+                throw new Exception("We are done!");
+
+            if(move != RobotMove.Wait)
+            {
+                int newRobotX = RobotX;
+                int newRobotY = RobotY;
+
+                if (move == RobotMove.Up) newRobotY++;
+                if (move == RobotMove.Down) newRobotY--;
+                if (move == RobotMove.Left) newRobotX--;
+                if (move == RobotMove.Right) newRobotX++;
+
+                if(!CheckValid(newRobotX, newRobotY))
+                    throw new Exception("Move is Invalid");
+
+                DoMove(newRobotX, newRobotY);
+            }
+            Update();
+
+            return this;
         }
 
-        public CheckResult Check()
+        private bool CheckValid(int newRobotX, int newRobotY)
         {
-            throw new NotImplementedException();
+            if (map[newRobotX, newRobotY] == MapCell.Wall || map[newRobotX, newRobotY] == MapCell.ClosedLift)
+                return false;
+
+            if (map[newRobotX, newRobotY] != MapCell.Rock)
+                return true;
+
+            if (newRobotX - RobotX == 0)
+                return false;
+
+            int checkX = newRobotX * 2 - RobotX;
+
+            if (map[checkX, RobotY] == MapCell.Empty)
+                return true;
+
+            return false;
         }
 
-        public Map Update()
+        private void DoMove(int newRobotX, int newRobotY)
         {
-            throw new NotImplementedException();
+            if (map[newRobotX, newRobotY] == MapCell.Lambda)
+                lambdaCounter--;
+            else if(map[newRobotX, newRobotY] == MapCell.Earth)
+            {}
+            else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
+            {
+                state = CheckResult.Win;
+            }
+            else if(map[newRobotX, newRobotY] == MapCell.Rock)
+            {
+                int rockX = newRobotX * 2 - RobotX;
+                map[rockX, newRobotY] = MapCell.Rock;
+            }
+            map[RobotX, RobotY] = MapCell.Empty;
+            map[newRobotX, newRobotY] = MapCell.Robot;
+
+            RobotX = newRobotX;
+            RobotY = newRobotY;
         }
-	}
+
+	    private void Update()
+        {
+            for (int y = 1; y < Height - 1; y++ )
+            {
+                for (int x = 1; x < Width - 1; y++ )
+                {
+                    swapMap[x, y] = map[x, y];
+
+                    if(map[x, y] == MapCell.Rock && map[x,y-1] == MapCell.Empty)
+                    {
+                        swapMap[x, y] = MapCell.Empty;
+                        swapMap[x,y-1] = MapCell.Rock;
+                        if(map[x,y-2] == MapCell.Robot)
+                            throw new Exception("We are killed by rock");
+                    }
+                    if(map[x, y] == MapCell.Rock && map[x,y-1] == MapCell.Rock 
+                        && map[x + 1, y] == MapCell.Empty && map[x+1,y-1] == MapCell.Empty)
+                    {
+                        swapMap[x, y] = MapCell.Empty;
+                        swapMap[x + 1, y] = MapCell.Empty;
+                        swapMap[x + 1, y - 1] = MapCell.Rock;
+                    }
+                    if(map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock 
+                        && (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
+                        && map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
+                    {
+                        swapMap[x, y] = MapCell.Empty;
+                        swapMap[x - 1, y] = MapCell.Empty;
+                        swapMap[x, y - 1] = MapCell.Rock;
+                        swapMap[x - 1, y - 1] = MapCell.Rock;
+                    }
+                    if(map[x,y] == MapCell.Rock && map[x,y-1] == MapCell.Lambda
+                        && map[x + 1, y] == MapCell.Empty && map[x+1,y-1] == MapCell.Empty)
+                    {
+                        swapMap[x, y] = MapCell.Empty;
+                        swapMap[x + 1, y] = MapCell.Empty;
+                        swapMap[x + 1, y - 1] = MapCell.Rock;
+                    }
+                    if(map[x,y] == MapCell.ClosedLift && lambdaCounter == 0)
+                    {
+                        swapMap[x,y] = MapCell.OpenedLift;
+                    }
+                }
+            }
+
+	        var swap = swapMap;
+	        swapMap = map;
+	        map = swap;
+        }
+        /*
+        public string Serialize()
+        {
+            
+        }*/
+    }
 }
