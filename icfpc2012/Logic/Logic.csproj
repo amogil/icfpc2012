@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MapSerializer_Test.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

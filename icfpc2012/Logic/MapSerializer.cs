@@ -5,15 +5,17 @@ namespace Logic
 {
 	public class MapSerializer
 	{
-		public string Serialize(MapCell[,] map)
+		public string Serialize(MapCell[,] map, bool skipBorder = false)
 		{
 			var builder = new StringBuilder();
-			for(int i = 0; i < map.GetLength(0); i++)
+			int yUpperBound = map.GetLength(1);
+			for (int y = 0; y < yUpperBound; y++)
 			{
-				for(int j = 0; j < map.GetLength(1); j++)
-					builder.Append(GetCellChar(map[i, j]));
-				if(i < map.GetLength(0) - 1)
-					builder.Append("\n");
+				int xUpperBound = map.GetLength(0);
+				for (int x = 0; x < xUpperBound; x++)
+					builder.Append(GetCellChar(map[x, yUpperBound-y-1]));
+				if(y < map.GetLength(1) - 1)
+					builder.AppendLine();
 			}
 			return builder.ToString();
 		}

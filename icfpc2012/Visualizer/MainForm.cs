@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Logic;
+using System.Linq;
 
 namespace Visualizer
 {
@@ -22,7 +25,7 @@ namespace Visualizer
 			var openDialog = new OpenFileDialog();
 			if (openDialog.ShowDialog(this) == DialogResult.OK)
 			{
-				UpdateMap(new Map(File.ReadAllLines(openDialog.FileName)));
+				LoadMap(openDialog.FileName);
 				LastOpenedMapFile = openDialog.FileName;
 			}
 		}
@@ -35,6 +38,17 @@ namespace Visualizer
 				for (int y = 1; y < map.Height-1; y++)
 					UpdateCell(x, y);
 			picture.Image = bitmap;
+			UpdateMoves();
+		}
+
+		private void UpdateMoves()
+		{
+			movesBox.Text = GetMovesString();
+		}
+
+		private string GetMovesString()
+		{
+			return new string(moves.Select(m => m.ToChar()).ToArray());
 		}
 
 		private void UpdateCell(int x, int y)
@@ -47,8 +61,14 @@ namespace Visualizer
 		{
 			var mapFile = LastOpenedMapFile;
 			if (mapFile != null)
-				UpdateMap(new Map(File.ReadAllLines(mapFile)));
+				LoadMap(mapFile);
 			zoomBar.Value = CellSize;
+		}
+
+		private void LoadMap(string mapFile)
+		{
+			moves.Clear();
+			UpdateMap(new Map(File.ReadAllLines(mapFile)));
 		}
 
 		public string LastOpenedMapFile
@@ -85,22 +105,44 @@ namespace Visualizer
 
 		private void DoMove(RobotMove robotMove)
 		{
+			if (map.State != CheckResult.Nothing) return;
 			Map newMap;
 			try
 			{
 				newMap = map.Move(robotMove);
+				if (map.State != CheckResult.Nothing) SaveMoves();
 			}
-			catch (InvalidOperationException e)
+			catch (GameFinishedException)
 			{
-				MessageBox.Show(e.Message);
-				newMap = map;
+				SaveMoves();
+				return;
 			}
+			catch (NoMoveException)
+			{
+				return;
+			}
+			moves.Add(robotMove);
 			UpdateMap(newMap);
+		}
+
+		private void SaveMoves()
+		{
+			string directoryName = Path.GetDirectoryName(Path.GetFullPath(LastOpenedMapFile));
+			Debug.Assert(directoryName != null);
+			string movesFile = 
+				Path.Combine(
+				directoryName,
+				Path.GetFileNameWithoutExtension(LastOpenedMapFile) + "_" + DateTime.Now.Ticks + ".moves");
+			File.WriteAllText(movesFile, GetMovesString() + Environment.NewLine + map);
+			MessageBox.Show("Moves saved to " + movesFile);
+
 		}
 
 		private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			UpdateMap(new Map(File.ReadAllLines(LastOpenedMapFile)));
+			LoadMap(LastOpenedMapFile);
 		}
+
+		private readonly List<RobotMove> moves = new List<RobotMove>();
 	}
 }

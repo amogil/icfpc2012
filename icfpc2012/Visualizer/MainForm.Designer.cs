@@ -36,6 +36,7 @@
 			this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.movesBox = new System.Windows.Forms.TextBox();
 			this.infoPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picture)).BeginInit();
@@ -119,11 +120,21 @@
 			this.reloadToolStripMenuItem.Text = "Reload";
 			this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
 			// 
+			// movesBox
+			// 
+			this.movesBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.movesBox.Location = new System.Drawing.Point(237, 492);
+			this.movesBox.Name = "movesBox";
+			this.movesBox.ReadOnly = true;
+			this.movesBox.Size = new System.Drawing.Size(559, 20);
+			this.movesBox.TabIndex = 4;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(796, 512);
+			this.Controls.Add(this.movesBox);
 			this.Controls.Add(this.picture);
 			this.Controls.Add(this.infoPanel);
 			this.Controls.Add(this.menuStrip1);
@@ -154,6 +165,7 @@
 		private System.Windows.Forms.TrackBar zoomBar;
 		private System.Windows.Forms.ToolStripMenuItem mapToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
+		private System.Windows.Forms.TextBox movesBox;
 	}
 }
 
