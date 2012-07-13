@@ -202,12 +202,12 @@ namespace Logic
                 {
                     swapMap[x, y] = map[x, y];
 
+                    bool rockFall = false;
                     if(map[x, y] == MapCell.Rock && map[x,y-1] == MapCell.Empty)
                     {
                         swapMap[x, y] = MapCell.Empty;
                         swapMap[x,y-1] = MapCell.Rock;
-                        if(map[x,y-2] == MapCell.Robot)
-                            throw new Exception("We are killed by rock");
+                        CheckRobotDanger(x, y - 1);
                     }
                     if(map[x, y] == MapCell.Rock && map[x,y-1] == MapCell.Rock 
                         && map[x + 1, y] == MapCell.Empty && map[x+1,y-1] == MapCell.Empty)
@@ -215,6 +215,7 @@ namespace Logic
                         swapMap[x, y] = MapCell.Empty;
                         swapMap[x + 1, y] = MapCell.Empty;
                         swapMap[x + 1, y - 1] = MapCell.Rock;
+                        CheckRobotDanger(x + 1, y - 1);
                     }
                     if(map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock 
                         && (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
@@ -224,6 +225,7 @@ namespace Logic
                         swapMap[x - 1, y] = MapCell.Empty;
                         swapMap[x, y - 1] = MapCell.Rock;
                         swapMap[x - 1, y - 1] = MapCell.Rock;
+                        CheckRobotDanger(x - 1, y - 1);
                     }
                     if(map[x,y] == MapCell.Rock && map[x,y-1] == MapCell.Lambda
                         && map[x + 1, y] == MapCell.Empty && map[x+1,y-1] == MapCell.Empty)
@@ -231,6 +233,7 @@ namespace Logic
                         swapMap[x, y] = MapCell.Empty;
                         swapMap[x + 1, y] = MapCell.Empty;
                         swapMap[x + 1, y - 1] = MapCell.Rock;
+                        CheckRobotDanger(x + 1, y - 1);
                     }
                     if(map[x,y] == MapCell.ClosedLift && lambdaCounter == 0)
                     {
@@ -243,10 +246,11 @@ namespace Logic
 	        swapMap = map;
 	        map = swap;
         }
-        /*
-        public string Serialize()
+
+        private void CheckRobotDanger(int x, int y)
         {
-            
-        }*/
+            if (map[x, y - 1] == MapCell.Robot)
+                throw new Exception("We are killed by rock");
+        }
     }
 }
