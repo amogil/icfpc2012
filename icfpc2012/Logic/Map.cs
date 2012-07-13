@@ -34,6 +34,7 @@ namespace Logic
 
 	public class Map
 	{
+	    public int Count { get; private set; }
 		public readonly int Height;
 		public readonly int Width;
 		public CheckResult State = CheckResult.Nothing;
@@ -85,7 +86,9 @@ namespace Logic
 						RobotY = newY + 1;
 					}
 					if (map[col + 1, newY + 1] == MapCell.Lambda)
+                    {
 						lambdaCounter++;
+                    }
 				}
 			}
 
@@ -137,6 +140,7 @@ namespace Logic
 		{
 			if (move == RobotMove.Abort)
 			{
+                Count += (totalLambdaCount - lambdaCounter) * 25;
 				State = CheckResult.Win;
 				return this;
 			}
@@ -145,7 +149,9 @@ namespace Logic
 				throw new GameFinishedException();
 
 			if (move != RobotMove.Wait)
-			{
+            {
+                Count = Math.Max(Count - 1, 0);
+
 				int newRobotX = RobotX;
 				int newRobotY = RobotY;
 
@@ -185,20 +191,24 @@ namespace Logic
 
 		private void DoMove(int newRobotX, int newRobotY)
 		{
-			if (map[newRobotX, newRobotY] == MapCell.Lambda)
-				lambdaCounter--;
-			else if (map[newRobotX, newRobotY] == MapCell.Earth)
-			{
-			}
-			else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
-			{
-				State = CheckResult.Win;
-			}
-			else if (map[newRobotX, newRobotY] == MapCell.Rock)
-			{
-				int rockX = newRobotX*2 - RobotX;
-				map[rockX, newRobotY] = MapCell.Rock;
-			}
+            if (map[newRobotX, newRobotY] == MapCell.Lambda)
+            {
+                Count += 25;
+                lambdaCounter--;
+            }
+            else if (map[newRobotX, newRobotY] == MapCell.Earth)
+            {
+            }
+            else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
+            {
+                Count += (totalLambdaCount - lambdaCounter) * 50;
+                State = CheckResult.Win;
+            }
+            else if (map[newRobotX, newRobotY] == MapCell.Rock)
+            {
+                int rockX = newRobotX * 2 - RobotX;
+                map[rockX, newRobotY] = MapCell.Rock;
+            }
 			map[RobotX, RobotY] = MapCell.Empty;
 			map[newRobotX, newRobotY] = MapCell.Robot;
 
@@ -214,7 +224,6 @@ namespace Logic
 				{
 					swapMap[x, y] = map[x, y];
 
-					bool rockFall = false;
 					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Empty)
 					{
 						swapMap[x, y] = MapCell.Empty;
