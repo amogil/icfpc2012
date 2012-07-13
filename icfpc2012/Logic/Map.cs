@@ -17,6 +17,7 @@ namespace Logic
 		Empty,
 		Earth,
 		Rock,
+		Wall,
 		Lambda,
         Wall,
 		Robot,
@@ -82,6 +83,9 @@ namespace Logic
             throw new Exception("InvalidMap");
         }
 
+		public int Width { get; private set; }
+		public int Height { get; private set; }
+
 	    public MapCell this[int x, int y]
 		{
 			get { return CurrentMap[x, y]; }
@@ -89,7 +93,7 @@ namespace Logic
 
         public MoveResult Move(RobotMove move)
         {
-            throw new NotImplementedException();
+			return this;
         }
 
         public CheckResult Check()
