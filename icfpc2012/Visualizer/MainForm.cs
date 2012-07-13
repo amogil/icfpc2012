@@ -23,6 +23,7 @@ namespace Visualizer
 			if (openDialog.ShowDialog(this) == DialogResult.OK)
 			{
 				UpdateMap(new Map(File.ReadAllLines(openDialog.FileName)));
+				LastOpenedMapFile = openDialog.FileName;
 			}
 		}
 
@@ -46,7 +47,33 @@ namespace Visualizer
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			UpdateMap(new Map(new string[0]));
+			var mapFile = LastOpenedMapFile;
+			if (mapFile != null)
+				UpdateMap(new Map(File.ReadAllLines(mapFile)));
+			zoomBar.Value = CellSize;
+		}
+
+		public string LastOpenedMapFile
+		{
+			get
+			{
+				if (File.Exists("lastopenedMap"))
+				{
+					var file = File.ReadAllText("lastopenedMap");
+					if (File.Exists(file)) return file;
+				}
+				return null;
+			}
+			set
+			{
+				File.WriteAllText("lastopenedMap", value);
+			}
+		}
+
+		private void zoomBar_ValueChanged(object sender, EventArgs e)
+		{
+			CellSize = zoomBar.Value;
+			UpdateMap(map);
 		}
 	}
 }

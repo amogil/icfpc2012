@@ -17,7 +17,6 @@ namespace Logic
 		Empty,
 		Earth,
 		Rock,
-		Wall,
 		Lambda,
         Wall,
 		Robot,
@@ -51,6 +50,7 @@ namespace Logic
 		{
 		    Height = lines.Length;
 		    Width = lines[0].Length;
+			CurrentMap = new MapCell[Width, Height];
 
             for (int i = 0; i < Width; i++ )
             {
@@ -72,7 +72,7 @@ namespace Logic
             {
                 case '#': return MapCell.Wall;
                 case '*': return MapCell.Rock;
-                case '/': return MapCell.Lambda;
+                case '\\': return MapCell.Lambda;
                 case '.': return MapCell.Earth;
                 case ' ': return MapCell.Empty;
                 case 'L': return MapCell.ClosedLift;
@@ -80,18 +80,15 @@ namespace Logic
                 case 'R': return MapCell.Robot;
             }
 
-            throw new Exception("InvalidMap");
+            throw new Exception("InvalidMap " + c);
         }
-
-		public int Width { get; private set; }
-		public int Height { get; private set; }
 
 	    public MapCell this[int x, int y]
 		{
 			get { return CurrentMap[x, y]; }
 		}
 
-        public MoveResult Move(RobotMove move)
+        public Map Move(RobotMove move)
         {
 			return this;
         }
