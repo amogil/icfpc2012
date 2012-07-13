@@ -34,6 +34,8 @@
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.infoPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picture)).BeginInit();
@@ -77,7 +79,8 @@
 			// menuStrip1
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.mapToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(796, 24);
@@ -99,6 +102,22 @@
 			this.openFileToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
 			this.openFileToolStripMenuItem.Text = "OpenFile";
 			this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
+			// 
+			// mapToolStripMenuItem
+			// 
+			this.mapToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reloadToolStripMenuItem});
+			this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
+			this.mapToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+			this.mapToolStripMenuItem.Text = "Map";
+			// 
+			// reloadToolStripMenuItem
+			// 
+			this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+			this.reloadToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+			this.reloadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.reloadToolStripMenuItem.Text = "Reload";
+			this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
 			// 
 			// MainForm
 			// 
@@ -133,6 +152,8 @@
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
 		private System.Windows.Forms.TrackBar zoomBar;
+		private System.Windows.Forms.ToolStripMenuItem mapToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
 	}
 }
 

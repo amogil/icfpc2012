@@ -97,5 +97,10 @@ namespace Visualizer
 			}
 			UpdateMap(newMap);
 		}
+
+		private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			UpdateMap(new Map(File.ReadAllLines(LastOpenedMapFile)));
+		}
 	}
 }
