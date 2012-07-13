@@ -105,7 +105,7 @@ namespace Logic
             {
                 case '#': return MapCell.Wall;
                 case '*': return MapCell.Rock;
-                case '/': return MapCell.Lambda;
+                case '\\': return MapCell.Lambda;
                 case '.': return MapCell.Earth;
                 case ' ': return MapCell.Empty;
                 case 'L': return MapCell.ClosedLift;
@@ -113,7 +113,7 @@ namespace Logic
                 case 'R': return MapCell.Robot;
             }
 
-            throw new Exception("InvalidMap");
+            throw new Exception("InvalidMap " + c);
         }
 
 	    public MapCell this[int x, int y]
