@@ -111,10 +111,11 @@ namespace Visualizer
 			try
 			{
 				newMap = map.Move(robotMove);
-				if (map.State != CheckResult.Nothing) SaveMoves();
 			}
 			catch (GameFinishedException)
 			{
+				moves.Add(robotMove);
+				UpdateMap(map);
 				SaveMoves();
 				return;
 			}
