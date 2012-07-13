@@ -82,7 +82,8 @@ namespace Logic
                 {
                     var newY = Height - row - 1;
 
-                    map[col + 1, newY + 1] = Parse(lines[row][col]);
+                    string line = lines[row].PadRight(Width, ' ');
+                    map[col + 1, newY + 1] = Parse(line[col]);
                     if (map[col + 1, newY + 1] == MapCell.Robot)
                     {
                         RobotX = col + 1;
@@ -118,7 +119,7 @@ namespace Logic
 
 	    public MapCell this[int x, int y]
 		{
-			get { return map[x + 1, y + 1]; }
+			get {  return map[x, y]; }
 		}
 
         public Map Move(RobotMove move)
