@@ -73,5 +73,29 @@ namespace Visualizer
 			CellSize = zoomBar.Value;
 			UpdateMap(map);
 		}
+
+		private void MainForm_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Left) DoMove(RobotMove.Left);
+			if (e.KeyCode == Keys.Right) DoMove(RobotMove.Right);
+			if (e.KeyCode == Keys.Up) DoMove(RobotMove.Up);
+			if (e.KeyCode == Keys.Down) DoMove(RobotMove.Down);
+			if (e.KeyCode == Keys.Space) DoMove(RobotMove.Wait);
+		}
+
+		private void DoMove(RobotMove robotMove)
+		{
+			Map newMap;
+			try
+			{
+				newMap = map.Move(robotMove);
+			}
+			catch (InvalidOperationException e)
+			{
+				MessageBox.Show(e.Message);
+				newMap = map;
+			}
+			UpdateMap(newMap);
+		}
 	}
 }

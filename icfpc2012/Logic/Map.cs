@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -87,7 +89,7 @@ namespace Logic
                     if (map[col + 1, newY + 1] == MapCell.Robot)
                     {
                         RobotX = col + 1;
-                        RobotY = row + 1;
+						RobotY = newY + 1;
                     }
                     if (map[col + 1, newY + 1] == MapCell.Lambda)
                         lambdaCounter++;
@@ -131,7 +133,7 @@ namespace Logic
             }
 
             if(state != CheckResult.Nothing)
-                throw new Exception("We are done!");
+                throw new InvalidOperationException("We are done!");
 
             if(move != RobotMove.Wait)
             {
@@ -144,7 +146,7 @@ namespace Logic
                 if (move == RobotMove.Right) newRobotX++;
 
                 if(!CheckValid(newRobotX, newRobotY))
-                    throw new Exception("Move is Invalid");
+                    throw new InvalidOperationException("Move is Invalid");
 
                 DoMove(newRobotX, newRobotY);
             }
@@ -198,7 +200,7 @@ namespace Logic
         {
             for (int y = 1; y < Height - 1; y++ )
             {
-                for (int x = 1; x < Width - 1; y++ )
+                for (int x = 1; x < Width - 1; x++ )
                 {
                     swapMap[x, y] = map[x, y];
 
@@ -208,6 +210,7 @@ namespace Logic
                         swapMap[x, y] = MapCell.Empty;
                         swapMap[x,y-1] = MapCell.Rock;
                         CheckRobotDanger(x, y - 1);
+
                     }
                     if(map[x, y] == MapCell.Rock && map[x,y-1] == MapCell.Rock 
                         && map[x + 1, y] == MapCell.Empty && map[x+1,y-1] == MapCell.Empty)
@@ -250,7 +253,7 @@ namespace Logic
         private void CheckRobotDanger(int x, int y)
         {
             if (map[x, y - 1] == MapCell.Robot)
-                throw new Exception("We are killed by rock");
+                throw new InvalidOperationException("We are killed by rock");
         }
     }
 }

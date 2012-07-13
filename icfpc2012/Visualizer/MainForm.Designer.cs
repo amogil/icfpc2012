@@ -29,15 +29,15 @@
 		private void InitializeComponent()
 		{
 			this.infoPanel = new System.Windows.Forms.Panel();
+			this.zoomBar = new System.Windows.Forms.TrackBar();
 			this.picture = new System.Windows.Forms.PictureBox();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.zoomBar = new System.Windows.Forms.TrackBar();
 			this.infoPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.picture)).BeginInit();
 			this.menuStrip1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// infoPanel
@@ -49,6 +49,21 @@
 			this.infoPanel.Name = "infoPanel";
 			this.infoPanel.Size = new System.Drawing.Size(237, 488);
 			this.infoPanel.TabIndex = 1;
+			// 
+			// zoomBar
+			// 
+			this.zoomBar.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.zoomBar.LargeChange = 8;
+			this.zoomBar.Location = new System.Drawing.Point(0, 443);
+			this.zoomBar.Maximum = 76;
+			this.zoomBar.Minimum = 4;
+			this.zoomBar.Name = "zoomBar";
+			this.zoomBar.Size = new System.Drawing.Size(237, 45);
+			this.zoomBar.TabIndex = 4;
+			this.zoomBar.TabStop = false;
+			this.zoomBar.TickFrequency = 4;
+			this.zoomBar.Value = 24;
+			this.zoomBar.ValueChanged += new System.EventHandler(this.zoomBar_ValueChanged);
 			// 
 			// picture
 			// 
@@ -85,20 +100,6 @@
 			this.openFileToolStripMenuItem.Text = "OpenFile";
 			this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
 			// 
-			// zoomBar
-			// 
-			this.zoomBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.zoomBar.LargeChange = 8;
-			this.zoomBar.Location = new System.Drawing.Point(0, 443);
-			this.zoomBar.Maximum = 76;
-			this.zoomBar.Minimum = 4;
-			this.zoomBar.Name = "zoomBar";
-			this.zoomBar.Size = new System.Drawing.Size(237, 45);
-			this.zoomBar.TabIndex = 4;
-			this.zoomBar.TickFrequency = 4;
-			this.zoomBar.Value = 24;
-			this.zoomBar.ValueChanged += new System.EventHandler(this.zoomBar_ValueChanged);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -107,16 +108,18 @@
 			this.Controls.Add(this.picture);
 			this.Controls.Add(this.infoPanel);
 			this.Controls.Add(this.menuStrip1);
+			this.KeyPreview = true;
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
 			this.Text = "MainForm";
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
 			this.infoPanel.ResumeLayout(false);
 			this.infoPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.picture)).EndInit();
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
