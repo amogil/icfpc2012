@@ -31,18 +31,16 @@ namespace Visualizer
 		{
 			this.map = newMap;
 			bitmap = new Bitmap(map.Width*CellSize, map.Height*CellSize);
-			for (int x = 0; x < map.Width; x++)
-				for (int y = 0; y < map.Height; y++)
-				{
+			for (int x = 1; x < map.Width-1; x++)
+				for (int y = 1; y < map.Height-1; y++)
 					UpdateCell(x, y);
-				}
 			picture.Image = bitmap;
 		}
 
 		private void UpdateCell(int x, int y)
 		{
 			Graphics g = Graphics.FromImage(bitmap);
-			g.DrawImage(CellImages.Bitmaps[map[x, y]], x*CellSize, y*CellSize, CellSize, CellSize);
+			g.DrawImage(CellImages.Bitmaps[map[x, y]], (x-1)*CellSize, (map.Height - y-1-1)*CellSize, CellSize, CellSize);
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
