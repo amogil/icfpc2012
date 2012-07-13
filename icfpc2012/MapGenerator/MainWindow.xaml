@@ -1,0 +1,13 @@
+﻿<Window x:Class="MapGenerator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Map Generator" Height="350" Width="525" WindowState="Normal">
+    <Grid>
+		<Label Content="Ширина:" Height="28" HorizontalAlignment="Left" Margin="12,9,0,0" Name="label1" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,11,0,0" Name="tbWidth" VerticalAlignment="Top" Width="120" Text="10" />
+		<Label Content="Высота:" Height="28" HorizontalAlignment="Left" Margin="12,43,0,0" Name="label2" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,45,0,0" Name="tbHeights" VerticalAlignment="Top" Width="120" Text="10" />
+		<TextBox Height="183" HorizontalAlignment="Stretch" Margin="12,0,12,12" Name="tbResult" VerticalAlignment="Bottom" Width="479" FontFamily="Courier New" />
+		<Button Content="Go" Height="23" HorizontalAlignment="Left" Margin="88,87,0,0" Name="button1" VerticalAlignment="Top" Width="120" Click="button1_Click" />
+	</Grid>
+</Window>
