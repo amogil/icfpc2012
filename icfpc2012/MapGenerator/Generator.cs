@@ -17,7 +17,8 @@ namespace MapGenerator
 		{
 			var map = new MapCell[Width,Height];
 			PutWalls(map);
-			return "";
+			var mapSerializer = new MapSerializer();
+			return mapSerializer.Serialize(map);
 		}
 
 		private void PutWalls(MapCell[,] map)
