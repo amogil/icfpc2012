@@ -4,6 +4,38 @@ namespace Logic
 {
 	public static class Extensions
 	{
+		public static bool IsValidMoveWithoutMovingRocks(this Map map, Vector from, Vector to)
+		{
+			var toCell = map[to];
+			return toCell != MapCell.Rock && toCell != MapCell.Wall && toCell != MapCell.ClosedLift;
+		}
+
+		public static bool IsSafeMove(this Map map, Vector from, Vector to)
+		{
+			MapCell fromCell = map[from];
+			MapCell toCell = map[to];
+			// *
+			// r
+			// R
+
+			// *
+			// Or
+			//  R
+			
+			// *
+			// \r
+			//  R
+
+			//  *
+			// rO#
+			// R
+			
+			//  *#
+			// rO
+			// R
+			return true;
+		}
+
 		public static MapCell[,] SkipBorder(this MapCell[,] map)
 		{
 			var res = new MapCell[map.GetLength(0) - 2, map.GetLength(1) - 2];
@@ -11,17 +43,6 @@ namespace Logic
 				for (int x = 1; x < map.GetLength(0) - 1; x++)
 					res[x - 1, y - 1] = map[x, y];
 			return res;
-		}
-		
-		public static char ToChar(this RobotMove move)
-		{
-			if (move == RobotMove.Down) return 'D';
-			if (move == RobotMove.Up) return 'U';
-			if (move == RobotMove.Left) return 'L';
-			if (move == RobotMove.Right) return 'R';
-			if (move == RobotMove.Abort) return 'A';
-			if (move == RobotMove.Wait) return 'W';
-			throw new Exception(move.ToString());
 		}
 	}
 }

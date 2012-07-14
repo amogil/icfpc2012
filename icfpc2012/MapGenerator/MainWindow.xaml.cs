@@ -6,7 +6,7 @@ namespace MapGenerator
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow
 	{
 		public MainWindow()
 		{
@@ -15,18 +15,20 @@ namespace MapGenerator
 
 		private void button1_Click(object sender, RoutedEventArgs e)
 		{
-			var mg = new Generator(height: Convert.ToInt32(tbHeights.Text),
-			                       width: Convert.ToInt32(tbWidth.Text),
-			                       hasLift: cbLift.IsChecked ?? false,
-			                       rocksCount: Convert.ToInt32(tbRocks.Text),
-			                       earthCount: Convert.ToInt32(tbEarth.Text),
-			                       wallCount: Convert.ToInt32(tbWalls.Text),
-			                       lambdaCount: Convert.ToInt32(tbLambdas.Text),
-			                       waterLevel: Convert.ToInt32(tbWater.Text),
-			                       flooding: Convert.ToInt32(tbFlooding.Text),
-			                       waterproof: Convert.ToInt32(tbWaterproof.Text));
-			var map = mg.Generate();
+			var options = new MapGeneratorOptions(height: Convert.ToInt32(tbHeights.Text),
+			                                      width: Convert.ToInt32(tbWidth.Text),
+			                                      hasLift: cbLift.IsChecked ?? false,
+			                                      rockCount: Convert.ToInt32(tbRocks.Text),
+			                                      earthCount: Convert.ToInt32(tbEarth.Text),
+			                                      wallCount: Convert.ToInt32(tbWalls.Text),
+			                                      lambdaCount: Convert.ToInt32(tbLambdas.Text),
+			                                      waterLevel: Convert.ToInt32(tbWater.Text),
+			                                      flooding: Convert.ToInt32(tbFlooding.Text),
+			                                      waterproof: Convert.ToInt32(tbWaterproof.Text));
+			var generator = new RandomMapGenerator(options);
+			var map = generator.Generate();
 			tbResult.Text = map;
+			Clipboard.SetText(map);
 		}
 	}
 }

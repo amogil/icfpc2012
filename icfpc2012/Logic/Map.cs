@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Logic
@@ -52,6 +53,11 @@ namespace Logic
 		public int Waterproof { get; private set; }
 		public int StepsToIncreaseWater { get; private set; }
 		public int WaterproofLeft { get; private set; }
+
+		public Map(string filename)
+			:this(File.ReadAllLines(filename))
+		{
+		}
 
 		public Map(string[] lines)
 		{
@@ -158,12 +164,17 @@ namespace Logic
             }
         }
 
-
+		public Vector Robot {get {return new Vector(RobotX, RobotY);}}
 	    public int RobotX { get; private set; }
 		public int RobotY { get; private set; }
 
         public int LiftX { get; private set; }
         public int LiftY { get; private set; }
+    
+		public MapCell this[Vector pos]
+		{
+			get { return map[pos.X, pos.Y]; }
+		}
 
 		public MapCell this[int x, int y]
 		{

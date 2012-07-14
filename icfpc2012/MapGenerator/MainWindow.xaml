@@ -8,7 +8,7 @@
 		<Label Content="Высота:" Height="28" HorizontalAlignment="Left" Margin="12,43,0,0" Name="label2" VerticalAlignment="Top" />
 		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,45,0,0" Name="tbHeights" VerticalAlignment="Top" Width="120" Text="10" />
 		<TextBox Height="183" HorizontalAlignment="Stretch" Margin="12,0,12,12" Name="tbResult" VerticalAlignment="Bottom" FontFamily="Courier New" />
-		<Button Content="Go" Height="23" HorizontalAlignment="Left" Margin="12,244,0,0" Name="button1" VerticalAlignment="Top" Width="682" Click="button1_Click" />
+		<Button Content="Go and Copy To Clipboard" Height="23" HorizontalAlignment="Left" Margin="12,244,0,0" Name="button1" VerticalAlignment="Top" Width="682" Click="button1_Click" />
 		<CheckBox Content="Лифт" Height="16" HorizontalAlignment="Left" Margin="247,14,0,0" Name="cbLift" VerticalAlignment="Top" IsChecked="True" />
 		<Label Content="Камней:" Height="28" HorizontalAlignment="Left" Margin="12,82,0,0" Name="label3" VerticalAlignment="Top" />
 		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,84,0,0" Name="tbRocks" VerticalAlignment="Top" Width="120" Text="5" />

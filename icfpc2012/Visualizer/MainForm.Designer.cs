@@ -45,6 +45,7 @@
 			this.movesBox = new System.Windows.Forms.TextBox();
 			this.robotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.label3 = new System.Windows.Forms.Label();
+			this.overlaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.infoPanel.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
@@ -158,7 +159,8 @@
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.mapToolStripMenuItem,
-            this.robotToolStripMenuItem});
+            this.robotToolStripMenuItem,
+            this.overlaysToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(796, 24);
@@ -223,6 +225,12 @@
 			this.label3.TabIndex = 10;
 			this.label3.Text = "SPACE — wait\r\nENTER — perform one robotAI move";
 			// 
+			// overlaysToolStripMenuItem
+			// 
+			this.overlaysToolStripMenuItem.Name = "overlaysToolStripMenuItem";
+			this.overlaysToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
+			this.overlaysToolStripMenuItem.Text = "Overlays";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -270,6 +278,7 @@
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ToolStripMenuItem robotToolStripMenuItem;
 		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.ToolStripMenuItem overlaysToolStripMenuItem;
 	}
 }
 

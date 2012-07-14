@@ -16,10 +16,33 @@ namespace Visualizer
 		private int CellSize = 48;
 		private Bitmap bitmap;
 		private Map map;
+		private IOverlay[] overlays;
 
 		public MainForm()
 		{
 			InitializeComponent();
+		}
+
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+			InitOverlays();
+			var mapFile = LastOpenedMapFile;
+			if (mapFile != null)
+				LoadMap(mapFile);
+			zoomBar.Value = CellSize;
+			InitRobots();
+		}
+
+		private void InitOverlays()
+		{
+			overlays = new IOverlay[] {new ToLambdasOverlay(),};
+			foreach (var overlay in overlays)
+			{
+				var item = new ToolStripMenuItem(overlay.GetType().Name, null, (sender, args) => UpdateMap(map));
+				item.Tag = overlay;
+				item.CheckOnClick = true;
+				overlaysToolStripMenuItem.DropDownItems.Add(item);
+			}
 		}
 
 		private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -37,9 +60,11 @@ namespace Visualizer
 		{
 			this.map = newMap;
 			bitmap = new Bitmap(map.Width*CellSize, map.Height*CellSize);
-			for (int x = 1; x < map.Width-1; x++)
+			Graphics g = Graphics.FromImage(bitmap);
+			for (int x = 1; x < map.Width - 1; x++)
 				for (int y = 1; y < map.Height-1; y++)
-					UpdateCell(x, y);
+					UpdateCell(g, x, y);
+			DrawOverlays(g);
 			picture.Image = bitmap;
 			UpdateMoves();
 			UpdateInfoPanel();
@@ -61,9 +86,8 @@ namespace Visualizer
 			return new string(moves.Select(m => m.ToChar()).ToArray());
 		}
 
-		private void UpdateCell(int x, int y)
+		private void UpdateCell(Graphics g, int x, int y)
 		{
-			Graphics g = Graphics.FromImage(bitmap);
 			var rect = new Rectangle((x-1)*CellSize, (map.Height - y-1-1)*CellSize, CellSize, CellSize);
 			g.DrawImage(CellImages.Bitmaps[map[x, y]], rect);
 			if (map.Water >= y)
@@ -72,14 +96,20 @@ namespace Visualizer
 				g.FillRectangle(new SolidBrush(Color.FromArgb(50, 0, 0, 255)), rect);
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
+		private void DrawOverlays(Graphics graphics)
 		{
-			var mapFile = LastOpenedMapFile;
-			if (mapFile != null)
-				LoadMap(mapFile);
-			zoomBar.Value = CellSize;
-			InitRobots();
+			var drawer = new Drawer(graphics, CellSize, map.Width, map.Height);
+			var selectedOverlays = 
+				overlaysToolStripMenuItem.DropDownItems.Cast<ToolStripMenuItem>()
+				.Where(item => item.Checked).Select(item => item.Tag)
+				.Cast<IOverlay>();
+			foreach (var overlay in selectedOverlays)
+			{
+				overlay.Draw(map, drawer);
+			}
 		}
+
+
 
 		private void LoadMap(string mapFile)
 		{
@@ -103,6 +133,7 @@ namespace Visualizer
 		{
 			LoadMap(LastOpenedMapFile);
 			robot = RobotAI.Create(robotType, map).GetMoves().GetEnumerator();
+			robot.MoveNext();
 		}
 
 		public string LastOpenedMapFile
