@@ -51,6 +51,7 @@ namespace Logic
 		int Width { get; }
 		string GetMapStateAsAscii();
 		IMap Move(RobotMove move);
+		bool IsSafeMove(Vector from, Vector to);
 		bool LoadPreviousState();
 		MapCell this[Vector pos] { get; }
 		MapCell this[int x, int y] { get; }

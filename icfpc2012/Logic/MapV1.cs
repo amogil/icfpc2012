@@ -225,6 +225,11 @@ namespace Logic
 			}
 		}
 
+		public bool IsSafeMove(Vector from, Vector to)
+		{
+			return true;
+		}
+
 		private void Update()
 		{
 			var robotFailed = false;
