@@ -15,7 +15,7 @@ namespace Visualizer
 	{
 		private int CellSize = 48;
 		private Bitmap bitmap;
-		private Map map;
+		private IMap map;
 		private IOverlay[] overlays;
 
 		public MainForm()
@@ -56,8 +56,9 @@ namespace Visualizer
 			}
 		}
 
-		private void UpdateMap(Map newMap)
+		private void UpdateMap(IMap newMap)
 		{
+			if (newMap == null) return;
 			this.map = newMap;
 			bitmap = new Bitmap(map.Width*CellSize, map.Height*CellSize);
 			Graphics g = Graphics.FromImage(bitmap);
@@ -73,7 +74,7 @@ namespace Visualizer
 		private void UpdateInfoPanel()
 		{
 			waterproofLabel.Text = map.WaterproofLeft.ToString(CultureInfo.InvariantCulture);
-			scoreLabel.Text = map.Score.ToString(CultureInfo.InvariantCulture);
+			scoreLabel.Text = map.GetScore().ToString(CultureInfo.InvariantCulture);
 		}
 
 		private void UpdateMoves()
@@ -114,8 +115,13 @@ namespace Visualizer
 		private void LoadMap(string mapFile)
 		{
 			moves.Clear();
-			UpdateMap(new Map(File.ReadAllLines(mapFile)));
+			var newMap = new Map(File.ReadAllLines(mapFile));
+			engine = new Engine(newMap);
+			engine.OnMapUpdate += UpdateMap;
+			engine.OnMoveAdded += m => moves.Add(m);
+			UpdateMap(newMap);
 			Text = mapFile;
+			robot = null;
 		}
 
 		private void InitRobots()
@@ -127,13 +133,20 @@ namespace Visualizer
 				var robotItem = new ToolStripMenuItem(robotType.Name, null, (sender, args) => RunRobot(rt));
 				robotToolStripMenuItem.DropDownItems.Add(robotItem);
 			}
+
+			var fixedProgramItem = new ToolStripMenuItem("Program from clipboard", null, (sender, args) =>
+			{
+				LoadMap(LastOpenedMapFile);
+				robot = new RollbackableEnumerator<RobotMove>(Clipboard.GetText().Select(c => c.ToRobotMove()).GetEnumerator());
+				robot.MoveNext();
+			});
+			robotToolStripMenuItem.DropDownItems.Add(fixedProgramItem);
 		}
 
 		private void RunRobot(Type robotType)
 		{
 			LoadMap(LastOpenedMapFile);
-			robot = new RollbackableEnumerator<RobotMove>(RobotAI.Create(robotType, map).GetMoves().GetEnumerator());
-			robot.MoveNext();
+			robot = RobotAI.Create(robotType, map);
 		}
 
 		public string LastOpenedMapFile
@@ -170,20 +183,19 @@ namespace Visualizer
 			if (e.KeyCode == Keys.Enter)
 			{
 				if (robot != null)
-				{
-					DoMove(robot.Current);
-					if (!robot.MoveNext())
-						robot = null;
-				}
+					DoMove(robot.NextMove(map));
 			}
-			if (e.KeyCode == Keys.Back) RollbackMove();
+			if (e.KeyCode == Keys.Back)
+			{
+				if (robot == null) RollbackMove();
+
+			}
 		}
 
 		private void RollbackMove()
 		{
 			if (map.LoadPreviousState())
 			{
-				if (robot != null) robot.Rollback();
 				moves.RemoveAt(moves.Count - 1);
 				UpdateMap(map);
 			}
@@ -191,29 +203,14 @@ namespace Visualizer
 
 		private void DoMove(RobotMove robotMove)
 		{
-			if (map.State != CheckResult.Nothing) return;
-			Map newMap;
 			try
 			{
-				newMap = map.Move(robotMove);
-				if (newMap.State != CheckResult.Nothing)
-					throw new GameFinishedException();
+				engine.DoMove(robotMove);
 			}
 			catch (GameFinishedException)
 			{
-				moves.Add(robotMove);
-				UpdateMap(map);
 				SaveMoves();
-				return;
 			}
-			catch (NoMoveException)
-			{
-				moves.Add(robotMove);
-				UpdateMap(map);
-				return;
-			}
-			moves.Add(robotMove);
-			UpdateMap(newMap);
 		}
 
 		private void SaveMoves()
@@ -229,7 +226,7 @@ namespace Visualizer
 				+ Environment.NewLine
 				+ string.Format("LambdasGathered: {0}", map.LambdasGathered)
 				+ Environment.NewLine
-				+ string.Format("Score: {0}", map.Score)
+				+ string.Format("Score: {0}", map.GetScore())
 				+ Environment.NewLine
 				+ map);
 			MessageBox.Show("Moves saved to " + movesFile);
@@ -241,6 +238,7 @@ namespace Visualizer
 		}
 
 		private readonly List<RobotMove> moves = new List<RobotMove>();
-		private RollbackableEnumerator<RobotMove> robot;
+		private RobotAI robot;
+		private Engine engine;
 	}
 }

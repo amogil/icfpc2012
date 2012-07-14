@@ -32,17 +32,40 @@ namespace Logic
 	{
 		Nothing,
 		Win,
-		Fail
+		Fail,
+		Abort,
 	}
 
-	public class Map
+	public interface IMap
 	{
-		public int Score { get; private set; }
-		public int LambdasGathered { get; private set; }
+		int MovesCount { get; }
+		int LambdasGathered { get; }
+		CheckResult State { get; }
+		int TotalLambdaCount { get; }
+		int Water { get; }
+		int Flooding { get; }
+		int Waterproof { get; }
+		int StepsToIncreaseWater { get; }
+		int WaterproofLeft { get; }
+		int Height { get; }
+		int Width { get; }
+		string GetMapStateAsAscii();
+		IMap Move(RobotMove move);
+		bool IsSafeMove(Vector from, Vector to);
+		bool LoadPreviousState();
+		MapCell this[Vector pos] { get; }
+		MapCell this[int x, int y] { get; }
+		Vector Robot { get; }
+	}
 
-		public readonly int Height;
-		public readonly int Width;
-		public CheckResult State = CheckResult.Nothing;
+	public class Map : IMap
+	{
+		public int MovesCount { get; private set; }
+		public int LambdasGathered { get; private set; }
+		public CheckResult State { get; private set; }
+
+		public int Height { get; private set; }
+		public int Width { get; private set; }
 		private MapCell[,] map;
 
         private Stack<MoveLog> log = new Stack<MoveLog>();
@@ -62,9 +85,11 @@ namespace Logic
 
 		public Map(string[] lines)
 		{
+			State = CheckResult.Nothing;
+
 			int firstBlankLineIndex = Array.IndexOf(lines, "");
 			Height = firstBlankLineIndex == -1 ? lines.Length : firstBlankLineIndex;
-			Width = lines.Max(a => a.Length);
+			Width = lines.Take(Height).Max(a => a.Length);
 
 			map = new MapCell[Width + 2, Height + 2];
 
@@ -121,7 +146,7 @@ namespace Logic
 			Water = 0;
 			Flooding = 0;
 			Waterproof = 10;
-			foreach (var floodingSpec in floodingSpecs)
+			foreach (var floodingSpec in floodingSpecs.Where(line => !string.IsNullOrWhiteSpace(line)))
 			{
 				string[] parts = floodingSpec.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 				if (parts[0] == "Water") Water = int.Parse(parts[1]);
@@ -189,6 +214,11 @@ namespace Logic
 			return new MapSerializer().Serialize(map.SkipBorder(), Water, Flooding, Waterproof);
 		}
 
+		public string GetMapStateAsAscii()
+		{
+			return new MapSerializer().SerializeMapOnly(map.SkipBorder()).ToString();
+		}
+
 		private static MapCell Parse(char c)
 		{
 			switch (c)
@@ -214,21 +244,20 @@ namespace Logic
 			throw new Exception("InvalidMap " + c);
 		}
 
-		public Map Move(RobotMove move)
+		public IMap Move(RobotMove move)
         {
             log.Push(new MoveLog());
 
              if (move == RobotMove.Abort)
 			{
-				Score += LambdasGathered * 25;
-				State = CheckResult.Win;
+				State = CheckResult.Abort;
 				return this;
 			}
 
 			if (State != CheckResult.Nothing)
 				throw new GameFinishedException();
             
-			Score -= 1;
+			MovesCount++;
 			if (move != RobotMove.Wait)
 			{
 				int newRobotX = RobotX;
@@ -280,7 +309,6 @@ namespace Logic
 		{
 			if (map[newRobotX, newRobotY] == MapCell.Lambda)
 			{
-				Score += 25;
 				LambdasGathered++;
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.Earth)
@@ -288,7 +316,6 @@ namespace Logic
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
 			{
-				Score += LambdasGathered * 50;
 				State = CheckResult.Win;
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.Rock)
@@ -421,7 +448,6 @@ namespace Logic
             if (RobotX == LiftX && RobotY == LiftY && map[LiftX, LiftY] == MapCell.OpenedLift)
             {
                 State = CheckResult.Win;
-                Score += 50*LambdasGathered;
             }
 
 			CheckWeatherConditions();
@@ -449,14 +475,14 @@ namespace Logic
 			if (map[x, y - 1] == MapCell.Robot)
 			{
 				State = CheckResult.Fail;
-				throw new KilledByRockException();
+				throw new GameFinishedException();
 			}
 		}
 
         public bool LoadPreviousState()
         {
 			if (log.Count == 0) return false;
-			Score += 1;
+        	MovesCount--;
 
             var stateLog = log.Pop();
         	stateLog.MovingRocks.Reverse();
@@ -472,22 +498,13 @@ namespace Logic
             map[RobotX, RobotY] = MapCell.Robot;
             map[stateLog.RobotMove.NextX, stateLog.RobotMove.NextY] = stateLog.EatedObject;
 
-            switch (stateLog.EatedObject)
-            {
-                case MapCell.OpenedLift:
-                    Score -= 50 * LambdasGathered;
-                    break;
-                case MapCell.Lambda:
-                    Score -= 25;
-                    if(LambdasGathered == TotalLambdaCount) map[LiftX, LiftY] = MapCell.ClosedLift;
-                    LambdasGathered--;
-                    break;
-                default:
-                    if (State == CheckResult.Win) Score -= 25*LambdasGathered;
-                    break;
-            }
+        	if (stateLog.EatedObject == MapCell.Lambda)
+        	{
+        		if (LambdasGathered == TotalLambdaCount) map[LiftX, LiftY] = MapCell.ClosedLift;
+        		LambdasGathered--;
+        	}
 
-            State = CheckResult.Nothing;
+        	State = CheckResult.Nothing;
         	return true;
         }
 	}
@@ -512,10 +529,6 @@ namespace Logic
 	}
 
 	public class GameFinishedException : Exception
-	{
-	}
-
-	public class KilledByRockException : GameFinishedException
 	{
 	}
 

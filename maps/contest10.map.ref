@@ -1,0 +1,55 @@
+UUUUULLLLLLDRURDRDRLLDDRRRRUULURRUUUUUULRULLLDDDDULLLULLLUUULLULUDDDLULDDRRDUULDLRLDLDDRRULRRRRLLLLLLLLUUUUUUURUUULLLDRULLLURRDDLDDRLURRURRDLLLLDDDLLLDDDDRRRRRDDDDLLLLDDDRURRRRRLLLDDDRRRRULLLLURRRRRRRURRDDDRRRURRRURRRRRRRRUUUUUUUULLLDDLLLUUUUURUUUULRRRRRLLUUURRRRRLLLLLLLLLDDDDRRU
+Result: Fail
+Score: 398
+#############################
+#..........................\#
+#..\\###...#....        ###.#
+#..\*\\\.. #.... ..##\\..\#.#
+#..\ \.... #.... ..#\#....#.#
+#...*###.. #.... ....#....#.#
+#...R      ..... .####......#
+#\\. #  .            .......#
+#... #..#  .....   ##.......#
+#.#.....   ...#     ...######
+#. ...#. . ...#     ...#    #
+##...... . ...#   # ...# #  #
+#.....*. . ...    #   .. .* #
+#.***.*         *****    .# #
+#.\\\.. ...... **.......    #
+#.#####    .######    ##### #
+#....\\.................... #
+#....****...#.##.....       #
+#....\\\\...#........*      #
+#....\\\\...#.\\.    # ###  #
+#....     ..#.... ...#      #
+#........ ..#.... ...#..... #
+#........         ........#*#
+###########################L#
+
+UUUUULLLLLLDURRDLDDRRRRUUURUUUUUULRULLLDDDLLLLULDLLUULLDDULULDDRDUUUURUUUURRRUURDLLUUUURDRRDRRRRDDDRRUUUUULLLLLLLLLLLLLLLLLDLLDLLLDRULLULDDDRLDDLLDDDRDDLDDRRRRRRDR
+Result: Nothing
+Score: 1787
+#############################
+#.........                  #
+#..  ###   #....        ### #
+#..      . #.... . ##     # #
+#..  * ... #.... . # #... # #
+#..  ###.. #....     #... # #
+#..  ..... .....  ####...   #
+#    #....           .......#
+# ..*#..#. .....   ##.......#
+# #....... ...#.   ....######
+#  ...#... ...#     ...#    #
+## ....... ...#   # ...# #  #
+#  ... ... .... * #   .. .* #
+#    .  .......******    .# #
+# *** **................    #
+#.##### R  .######    ##### #
+#....\\.................... #
+#....****...#.##.....       #
+#....\\\\...#........*  ..  #
+#....\\\\...#.\\.    # ###  #
+#....     ..#.... ...#      #
+#........ ..#.... ...#..... #
+#........         ........#*#
+###########################L#

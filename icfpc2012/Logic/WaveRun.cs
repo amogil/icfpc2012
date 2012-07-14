@@ -7,18 +7,18 @@ namespace Logic
 {
 	public class WaveRun
 	{
-		private readonly Map map;
+		private readonly IMap map;
 		private readonly Vector startPosition;
 
-		public WaveRun(Map map, Vector startPosition)
+		public WaveRun(IMap map, Vector startPosition)
 		{
 			this.map = map;
 			this.startPosition = startPosition;
 		}
 
-		public Tuple<Vector, RobotMove[]> Lift { get; private set; }
+		public Tuple<Vector, Stack<RobotMove>> Lift { get; private set; }
 
-		public IEnumerable<Tuple<Vector, RobotMove[]>> EnumerateTargets()
+		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets()
 		{
 			var q = new Queue<WaveCell>();
 			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait));
@@ -26,8 +26,9 @@ namespace Logic
 			while (q.Any())
 			{
 				var cell = q.Dequeue();
-				if (map[cell.Pos] == MapCell.Lambda) yield return CreateTarget(cell);
-				if (map[cell.Pos] == MapCell.OpenedLift) Lift = CreateTarget(cell);
+				MapCell toCell = map[cell.Pos];
+				if (toCell == MapCell.Lambda) yield return CreateTarget(cell);
+				if (toCell == MapCell.OpenedLift || toCell == MapCell.ClosedLift) Lift = CreateTarget(cell);
 				foreach (var move in new[]{RobotMove.Down, RobotMove.Left, RobotMove.Right, RobotMove.Up, })
 				{
 					var newPos = cell.Pos.Add(move.ToVector());
@@ -38,16 +39,16 @@ namespace Logic
 			}
 		}
 
-		private Tuple<Vector, RobotMove[]> CreateTarget(WaveCell targetCell)
+		private Tuple<Vector, Stack<RobotMove>> CreateTarget(WaveCell targetCell)
 		{
-			IList<RobotMove> moves = new List<RobotMove>();
+			var moves = new Stack<RobotMove>(targetCell.StepNumber+1);
 			var cell = targetCell;
 			while (cell.PrevCell != null)
 			{
-				moves.Add(cell.Move);
+				moves.Push(cell.Move);
 				cell = cell.PrevCell;
 			}
-			return Tuple.Create(targetCell.Pos, moves.Reverse().ToArray());
+			return Tuple.Create(targetCell.Pos, moves);
 		}
 
 		private class WaveCell
@@ -87,14 +88,14 @@ namespace Logic
 		{
 			Console.WriteLine(map.ToString());
 			var waveRun = new WaveRun(map, from);
-			Tuple<Vector, RobotMove[]>[] targets = waveRun.EnumerateTargets().ToArray();
+			Tuple<Vector, Stack<RobotMove>>[] targets = waveRun.EnumerateTargets().ToArray();
 			string[] formattedTargets = targets.Select(FormatTarget).ToArray();
 			foreach (var target in formattedTargets)
 				Console.WriteLine(target);
 			return formattedTargets;
 		}
 
-		private static string FormatTarget(Tuple<Vector, RobotMove[]> target)
+		private static string FormatTarget(Tuple<Vector, Stack<RobotMove>> target)
 		{
 			var commands = new String(target.Item2.Select(m => m.ToChar()).ToArray());
 			string format = target.Item1 + " via " + commands;
