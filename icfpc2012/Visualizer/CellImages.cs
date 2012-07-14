@@ -22,7 +22,7 @@ namespace Visualizer
 		{
 			try
 			{
-				return new Bitmap(name + ".bmp");
+				return new Bitmap("images\\" + name + ".bmp");
 			}catch(Exception e)
 			{
 				throw new Exception(name, e);

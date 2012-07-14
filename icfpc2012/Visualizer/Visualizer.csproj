@@ -88,28 +88,28 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="earth.bmp">
+    <Content Include="images\earth.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="empty.bmp">
+    <Content Include="images\empty.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="lambda.bmp">
+    <Content Include="images\lambda.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="closedlift.bmp">
+    <Content Include="images\closedlift.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="robot.bmp">
+    <Content Include="images\robot.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="openedlift.bmp">
+    <Content Include="images\openedlift.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="rock.bmp">
+    <Content Include="images\rock.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="wall.bmp">
+    <Content Include="images\wall.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
