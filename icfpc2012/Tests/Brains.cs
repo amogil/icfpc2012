@@ -39,20 +39,13 @@ namespace Tests
 
 					var builder = new StringBuilder();
 					var timer = Stopwatch.StartNew();
-					while (robotMove != RobotMove.Abort)
+					while(robotMove != RobotMove.Abort && map.State == CheckResult.Nothing)
 					{
 						robotMove = (timer.Elapsed.TotalSeconds < 150) ? bot.NextMove(map) : RobotMove.Abort;
 						movesCount++;
 
 						builder.Append(robotMove.ToChar());
-						try
-						{
-							map = map.Move(robotMove);
-						}
-						catch (GameFinishedException)
-						{
-							break;
-						}
+						map = map.Move(robotMove);
 					}
 
 					sum += map.GetScore();
