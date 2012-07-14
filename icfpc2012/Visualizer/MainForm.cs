@@ -133,6 +133,14 @@ namespace Visualizer
 				var robotItem = new ToolStripMenuItem(robotType.Name, null, (sender, args) => RunRobot(rt));
 				robotToolStripMenuItem.DropDownItems.Add(robotItem);
 			}
+
+			var fixedProgramItem = new ToolStripMenuItem("Program from clipboard", null, (sender, args) =>
+			{
+				LoadMap(LastOpenedMapFile);
+				robot = Clipboard.GetText().Select(c => c.ToRobotMove()).GetEnumerator();
+				robot.MoveNext();
+			});
+			robotToolStripMenuItem.DropDownItems.Add(fixedProgramItem);
 		}
 
 		private void RunRobot(Type robotType)

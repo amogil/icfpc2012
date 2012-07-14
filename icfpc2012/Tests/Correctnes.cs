@@ -10,14 +10,16 @@ namespace Tests
 {
 	public class ReferenceTestItem
 	{
-		public ReferenceTestItem(RobotMove[] moves, int score, CheckResult result, string finalMapState)
+		public ReferenceTestItem(string mapName, RobotMove[] moves, int score, CheckResult result, string finalMapState)
 		{
+			MapName = mapName;
 			Moves = moves;
 			Score = score;
 			Result = result;
 			FinalMapState = finalMapState;
 		}
 
+		public string MapName { get; set; }
 		public RobotMove[] Moves { get; private set; }
 		public int Score { get; private set; }
 		public CheckResult Result { get; private set; }
@@ -25,15 +27,16 @@ namespace Tests
 
 		public override string ToString()
 		{
-			return string.Format("{0}\r\n{1}\r\n{2}\r\n{3}\r\n", Moves.Aggregate(string.Empty, (s, m) => s + m.ToChar()), Score, Result, FinalMapState);
+			return string.Format("test case: {4}\r\n{0}\r\n{1}\r\n{2}\r\n{3}\r\n", Moves.Aggregate(string.Empty, (s, m) => s + m.ToChar()), Score, Result, FinalMapState, MapName);
 		}
 
 		public void AssertEngineState(Engine e)
 		{
-			var actalMap = e.Map;
-			Assert.AreEqual(Result, actalMap.State);
-			Assert.AreEqual(Score, actalMap.Score);
-			Assert.AreEqual(FinalMapState, actalMap.GetMapStateAsAscii());
+			var actualMap = e.Map;
+			Assert.AreEqual(Result, actualMap.State, this.ToString());
+			Assert.AreEqual(Score, actualMap.Score, this.ToString());
+			var mapStateAsAscii = actualMap.GetMapStateAsAscii();
+			Assert.AreEqual(FinalMapState, mapStateAsAscii, string.Format("{0}\r\nactual map state:\r\n{1}", this.ToString(), mapStateAsAscii));
 		}
 	}
 
@@ -71,13 +74,13 @@ namespace Tests
 					}
 					var moves = line.Select(c => c.ToRobotMove()).ToArray();
 					line = r.ReadLine();
-					var score = int.Parse(line.Split(new[] {"Score: "}, StringSplitOptions.RemoveEmptyEntries)[0]);
+					var result = (CheckResult)Enum.Parse(typeof(CheckResult), line.Split(new[] { "Result: " }, StringSplitOptions.RemoveEmptyEntries)[0]);
 					line = r.ReadLine();
-					var result = (CheckResult)Enum.Parse(typeof (CheckResult), line.Split(new[] {"Result: "}, StringSplitOptions.RemoveEmptyEntries)[0]);
+					var score = int.Parse(line.Split(new[] {"Score: "}, StringSplitOptions.RemoveEmptyEntries)[0]);
 					var sb = new StringBuilder();
 					while (!string.IsNullOrEmpty(line = r.ReadLine()))
 						sb.AppendLine(line);
-					yield return new ReferenceTestItem(moves, score, result, sb.ToString());
+					yield return new ReferenceTestItem(mapName, moves, score, result, sb.ToString());
 				}
 			}
 		}
@@ -88,10 +91,10 @@ namespace Tests
 			foreach (var t in GetReferenceMaps())
 			{
 				var mapName = t.Item1;
-				Console.WriteLine(mapName);
+				//Console.WriteLine(mapName);
 				foreach (var testItem in GetReferenceTestItems(mapName))
 				{
-					Console.WriteLine(testItem);
+					//Console.WriteLine(testItem);
 					var engine = new Engine(new Map(t.Item2));
 					engine.RunProgram(testItem.Moves);
 					testItem.AssertEngineState(engine);
