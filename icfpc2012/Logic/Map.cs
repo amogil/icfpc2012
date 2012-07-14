@@ -17,32 +17,32 @@ namespace Logic
 
 	public enum MapCell
 	{
-		Empty,
-		Earth,
-		Rock,
-		Lambda,
-		Wall,
-		Robot,
-		ClosedLift,
-		OpenedLift,
-		Trampoline1,
-		Trampoline2,
-		Trampoline3,
-		Trampoline4,
-		Trampoline5,
-		Trampoline6,
-		Trampoline7,
-		Trampoline8,
-		Trampoline9,
-		Aim1,
-		Aim2,
-		Aim3,
-		Aim4,
-		Aim5,
-		Aim6,
-		Aim7,
-		Aim8,
-		Aim9
+		Empty = ' ',
+		Earth = '.',
+		Rock = '*',
+		Lambda = '\\',
+		Wall = '#',
+		Robot = 'R',
+		ClosedLift = 'L',
+		OpenedLift = 'O',
+		Trampoline1 = '1',
+		Trampoline2 = '2',
+		Trampoline3 = '3',
+		Trampoline4 = '4',
+		Trampoline5 = '5',
+		Trampoline6 = '6',
+		Trampoline7 = '7',
+		Trampoline8 = '8',
+		Trampoline9 = '9',
+		Target1 = 'A',
+		Target2 = 'B',
+		Target3 = 'C',
+		Target4 = 'D',
+		Target5 = 'E',
+		Target6 = 'F',
+		Target7 = 'G',
+		Target8 = 'H',
+		Target9 = 'I'
 	}
 
 	public enum CheckResult
@@ -77,35 +77,12 @@ namespace Logic
 
 	public class Map : IMap
 	{
-		private Vector[] Trampolines = new Vector[10];
-		private static readonly MapCell[] NumToTramp = new MapCell[9];
-		private static readonly Dictionary<MapCell, int> TrampToNum = new Dictionary<MapCell, int>();
-		private static readonly Dictionary<char, MapCell> CharToTramp = new Dictionary<char, MapCell>();
-		private static readonly Dictionary<MapCell, int> AimToNum = new Dictionary<MapCell, int>();
+		private Dictionary<MapCell, Vector> Target = new Dictionary<MapCell, Vector>();
+		private Dictionary<MapCell, Vector> Trampolines = new Dictionary<MapCell, Vector>();
+		private Dictionary<MapCell, MapCell> TrampToTarget = new Dictionary<MapCell, MapCell>();
 
-		static Map()
-		{
-			var trines = new[]
-			            {
-			            	new Tuple<int, MapCell, MapCell>(1, MapCell.Trampoline1, MapCell.Aim1),
-			            	new Tuple<int, MapCell, MapCell>(2, MapCell.Trampoline2, MapCell.Aim2),
-			            	new Tuple<int, MapCell, MapCell>(3, MapCell.Trampoline3, MapCell.Aim3),
-			            	new Tuple<int, MapCell, MapCell>(4, MapCell.Trampoline4, MapCell.Aim4),
-			            	new Tuple<int, MapCell, MapCell>(5, MapCell.Trampoline5, MapCell.Aim5),
-			            	new Tuple<int, MapCell, MapCell>(6, MapCell.Trampoline6, MapCell.Aim6),
-			            	new Tuple<int, MapCell, MapCell>(7, MapCell.Trampoline7, MapCell.Aim7),
-			            	new Tuple<int, MapCell, MapCell>(8, MapCell.Trampoline8, MapCell.Aim8),
-			            	new Tuple<int, MapCell, MapCell>(9, MapCell.Trampoline9, MapCell.Aim9)
-			            };
-
-			foreach (var tuple in trines)
-			{
-				NumToTramp[tuple.Item1 - 1] = tuple.Item2;
-				TrampToNum[tuple.Item2] = tuple.Item1;
-				CharToTramp[(char) ('A' + tuple.Item1 - 1)] = tuple.Item3;
-				AimToNum[tuple.Item3] = tuple.Item1;
-			}
-		}
+		private static HashSet<char> TrampolinesChars = new HashSet<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+		private static HashSet<char> TargetsChars = new HashSet<char> { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };  
 
 		public int MovesCount { get; private set; }
 		public int LambdasGathered { get; private set; }
@@ -174,9 +151,13 @@ namespace Logic
 						LiftX = col + 1;
 						LiftY = newY + 1;
 					}
-					if (AimToNum.ContainsKey(map[col + 1, newY + 1]))
+					if (TargetsChars.Contains((char)map[col + 1, newY + 1]))
 					{
-						Trampolines[AimToNum[map[col + 1, newY + 1]]] = new Vector(col + 1, newY + 1);
+						Target[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
+					}
+					if (TrampolinesChars.Contains((char)map[col + 1, newY + 1]))
+					{
+						Trampolines[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
 					}
 					if (map[col + 1, newY + 1] == MapCell.Lambda)
 					{
@@ -184,7 +165,7 @@ namespace Logic
 					}
 				}
 			}
-			InitializeFlooding(lines.Skip(Height + 1).ToArray());
+			InitializeFloodingAndTrampolines(lines.Skip(Height + 1).ToArray());
 
 			Height += 2;
 			Width += 2;
@@ -192,7 +173,7 @@ namespace Logic
 			InitializeActiveRocks();
 		}
 
-		private void InitializeFlooding(string[] floodingSpecs)
+		private void InitializeFloodingAndTrampolines(string[] floodingSpecs)
 		{
 			Water = 0;
 			Flooding = 0;
@@ -203,6 +184,10 @@ namespace Logic
 				if (parts[0] == "Water") Water = int.Parse(parts[1]);
 				if (parts[0] == "Flooding") Flooding = int.Parse(parts[1]);
 				if (parts[0] == "Waterproof") Waterproof = int.Parse(parts[1]);
+				if (parts[0] == "Trampoline")
+				{
+					TrampToTarget[(MapCell) parts[1][0]] = (MapCell) parts[3][0];
+				}
 			}
 			StepsToIncreaseWater = Flooding;
 			WaterproofLeft = Waterproof + 1;
@@ -253,6 +238,7 @@ namespace Logic
 		public MapCell this[Vector pos]
 		{
 			get { return map[pos.X, pos.Y]; }
+			set { map[pos.X, pos.Y] = value; }
 		}
 
 		public MapCell this[int x, int y]
@@ -291,10 +277,10 @@ namespace Logic
 				case 'R':
 					return MapCell.Robot;
 				default:
-					if (char.IsDigit(c) && c > '0')
-						return NumToTramp[c];
-					if (CharToTramp.ContainsKey(c))
-						return CharToTramp[c];
+					if (TrampolinesChars.Contains(c))
+						return (MapCell)c;
+					if (TargetsChars.Contains(c))
+						return (MapCell)c;
 					break;
 			}
 
@@ -328,13 +314,12 @@ namespace Logic
 				if (CheckValid(newRobotX, newRobotY))
 				{
 					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = newRobotX, NextY = newRobotY };
-					log.Peek().EatedObject = map[newRobotX, newRobotY];
+					log.Peek().RemovedObjects.Add(Tuple.Create(new Vector(newRobotX, newRobotY), map[newRobotX, newRobotY]));
 					DoMove(newRobotX, newRobotY);
 				}
 				else
 				{
 					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = RobotX, NextY = RobotY };
-					log.Peek().EatedObject = this[Robot];
 				}
 			}
 
@@ -346,7 +331,7 @@ namespace Logic
 
 		private bool CheckValid(int newRobotX, int newRobotY)
 		{
-			if (map[newRobotX, newRobotY] == MapCell.Wall || map[newRobotX, newRobotY] == MapCell.ClosedLift)
+			if (map[newRobotX, newRobotY] == MapCell.Wall || map[newRobotX, newRobotY].IsTarget() || map[newRobotX, newRobotY] == MapCell.ClosedLift)
 				return false;
 
 			if (map[newRobotX, newRobotY] != MapCell.Rock)
@@ -368,6 +353,20 @@ namespace Logic
 			if (map[newRobotX, newRobotY] == MapCell.Lambda)
 			{
 				LambdasGathered++;
+			}
+			else if (map[newRobotX, newRobotY].IsTrampoline())
+			{
+				var target = TrampToTarget[this[Robot]];
+				Vector targetCoords = Target[TrampToTarget[this[Robot]]];
+				newRobotX = targetCoords.X;
+				newRobotY = targetCoords.Y;
+
+				foreach (var pair in TrampToTarget.Where(a => a.Value == target))
+				{
+					Vector vector = Trampolines[pair.Key];
+					this[vector] = MapCell.Empty;
+					log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(vector, pair.Key));
+				}
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.Earth)
 			{
@@ -595,12 +594,16 @@ namespace Logic
 			RobotX = stateLog.RobotMove.PreviousX;
 			RobotY = stateLog.RobotMove.PreviousY;
 			map[RobotX, RobotY] = MapCell.Robot;
-			map[stateLog.RobotMove.NextX, stateLog.RobotMove.NextY] = stateLog.EatedObject;
 
-			if (stateLog.EatedObject == MapCell.Lambda)
+			foreach (var removedObj in stateLog.RemovedObjects)
 			{
-				if (LambdasGathered == TotalLambdaCount) map[LiftX, LiftY] = MapCell.ClosedLift;
-				LambdasGathered--;
+				this[removedObj.Item1] = removedObj.Item2;
+
+				if (removedObj.Item2 == MapCell.Lambda)
+				{
+					if (LambdasGathered == TotalLambdaCount) map[LiftX, LiftY] = MapCell.ClosedLift;
+					LambdasGathered--;
+				}
 			}
 
 			activeRocks = new HashSet<Vector>(); 
@@ -622,7 +625,7 @@ namespace Logic
 	public class MoveLog
 	{
 		public Movement RobotMove;
-		public MapCell EatedObject;
+		public List<Tuple<Vector, MapCell>> RemovedObjects;
 		public List<Movement> MovingRocks = new List<Movement>();
 	}
 

@@ -2,6 +2,19 @@ using System;
 
 namespace Logic
 {
+	public static class MapCellExtensions
+	{
+		public static bool IsTrampoline(this MapCell cell)
+		{
+			return cell >= MapCell.Trampoline1 && cell <= MapCell.Trampoline9;
+		}
+
+		public static bool IsTarget(this MapCell cell)
+		{
+			return cell >= MapCell.Target1 && cell <= MapCell.Target9;
+		}
+	}
+
 	public static class RobotMoveExtensions
 	{
 		public static char ToChar(this RobotMove move)

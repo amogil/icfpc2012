@@ -33,26 +33,13 @@ namespace Logic
 
 		private static char GetCellChar(MapCell mapCell)
 		{
-			switch(mapCell)
+			try
 			{
-				case MapCell.Empty:
-					return ' ';
-				case MapCell.Earth:
-					return '.';
-				case MapCell.Rock:
-					return '*';
-				case MapCell.Lambda:
-					return '\\';
-				case MapCell.Wall:
-					return '#';
-				case MapCell.Robot:
-					return 'R';
-				case MapCell.ClosedLift:
-					return 'L';
-				case MapCell.OpenedLift:
-					return 'O';
-				default:
-					throw new ArgumentOutOfRangeException("mapCell");
+				return (char) mapCell;
+			}
+			catch (Exception)
+			{
+				throw new ArgumentOutOfRangeException("mapCell");
 			}
 		}
 	}
