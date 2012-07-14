@@ -215,47 +215,43 @@ namespace Logic
         {
             log.Push(new MoveLog());
 
-		    try
-		    {
-                if (move == RobotMove.Abort)
-			    {
-				    Score += LambdasGathered * 25;
-				    State = CheckResult.Win;
-				    return this;
-			    }
+             if (move == RobotMove.Abort)
+			{
+				Score += LambdasGathered * 25;
+				State = CheckResult.Win;
+				return this;
+			}
 
-			    if (State != CheckResult.Nothing)
-				    throw new GameFinishedException();
+			if (State != CheckResult.Nothing)
+				throw new GameFinishedException();
             
-			    Score -= 1;
-			    if (move != RobotMove.Wait)
-			    {
-				    int newRobotX = RobotX;
-				    int newRobotY = RobotY;
+			Score -= 1;
+			if (move != RobotMove.Wait)
+			{
+				int newRobotX = RobotX;
+				int newRobotY = RobotY;
 
-				    if (move == RobotMove.Up) newRobotY++;
-				    if (move == RobotMove.Down) newRobotY--;
-				    if (move == RobotMove.Left) newRobotX--;
-				    if (move == RobotMove.Right) newRobotX++;
+				if (move == RobotMove.Up) newRobotY++;
+				if (move == RobotMove.Down) newRobotY--;
+				if (move == RobotMove.Left) newRobotX--;
+				if (move == RobotMove.Right) newRobotX++;
 
-				    if (!CheckValid(newRobotX, newRobotY))
-					    throw new NoMoveException();
+				if (CheckValid(newRobotX, newRobotY))
+				{
 
-                    log.Peek().RobotMove = new Action{PreviousX = RobotX, PreviousY = RobotY, NextX = newRobotX, NextY = newRobotY};
-			        log.Peek().EatedObject = map[newRobotX, newRobotY];
+					log.Peek().RobotMove = new Movement {PreviousX = RobotX, PreviousY = RobotY, NextX = newRobotX, NextY = newRobotY};
+					log.Peek().EatedObject = map[newRobotX, newRobotY];
+			    	DoMove(newRobotX, newRobotY);
+				}
+				else
+				{
+					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = RobotX, NextY = RobotY };
+					log.Peek().EatedObject = this[Robot];
+				}
+			}
+			Update();
 
-				    DoMove(newRobotX, newRobotY);
-			    }
-			    Update();
-
-                return this;
-            }
-            catch (Exception)
-            {
-                Score += 1;
-                log.Pop();
-                throw;
-            }
+            return this;
 		}
 
 		private bool CheckValid(int newRobotX, int newRobotY)
@@ -370,7 +366,7 @@ namespace Logic
                     newActiveRocks.Add(rockMove.Value);
                 map[rockMove.Value.Item1, rockMove.Value.Item2] = MapCell.Rock;
                 log.Peek().FallingRocks.Add(
-                    new Action
+                    new Movement
                         {
                             PreviousX = rockMove.Key.Item1, 
                             PreviousY = rockMove.Key.Item2, 
@@ -421,9 +417,10 @@ namespace Logic
 			}
 		}
 
-        public void LoadPreviousState()
+        public bool LoadPreviousState()
         {
-            Score += 1;
+			if (log.Count == 0) return false;
+			Score += 1;
 
             var stateLog = log.Pop();
 
@@ -454,10 +451,11 @@ namespace Logic
             }
 
             State = CheckResult.Nothing;
+        	return true;
         }
 	}
 
-    public class Action
+    public class Movement
     {
         public int PreviousX;
         public int PreviousY;
@@ -467,9 +465,9 @@ namespace Logic
 
     public class MoveLog
     {
-        public Action RobotMove;
+		public Movement RobotMove;
         public MapCell EatedObject;
-        public List<Action> FallingRocks = new List<Action>();
+        public List<Movement> FallingRocks = new List<Movement>();
     }
 
     public class NoMoveException : Exception

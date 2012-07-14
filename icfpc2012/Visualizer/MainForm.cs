@@ -176,6 +176,14 @@ namespace Visualizer
 						robot = null;
 				}
 			}
+			if (e.KeyCode == Keys.Back)
+			{
+				if (map.LoadPreviousState())
+				{
+					moves.RemoveAt(moves.Count - 1);
+					UpdateMap(map);
+				}
+			}
 		}
 
 		private void DoMove(RobotMove robotMove)
