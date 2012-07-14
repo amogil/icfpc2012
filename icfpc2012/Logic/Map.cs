@@ -89,7 +89,7 @@ namespace Logic
 
 			int firstBlankLineIndex = Array.IndexOf(lines, "");
 			Height = firstBlankLineIndex == -1 ? lines.Length : firstBlankLineIndex;
-			Width = lines.Max(a => a.Length);
+			Width = lines.Take(Height).Max(a => a.Length);
 
 			map = new MapCell[Width + 2, Height + 2];
 
