@@ -28,7 +28,7 @@ namespace MapGenerator
 			PutElements(mapCells, options.WallCount, MapCell.Wall);
 			PutElements(mapCells, options.LambdaCount, MapCell.Lambda);
 			PutElements(mapCells, 1, MapCell.Robot);
-			return new MapSerializer().Serialize(mapCells, 0, 0, 0);
+			return new MapSerializer().Serialize(mapCells, options.WaterLevel, options.Flooding, options.Waterproof);
 		}
 
 		private void PutWalls(MapCell[,] mapCells)
