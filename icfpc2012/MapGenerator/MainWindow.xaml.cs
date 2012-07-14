@@ -6,7 +6,7 @@ namespace MapGenerator
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow
 	{
 		public MainWindow()
 		{
@@ -27,6 +27,7 @@ namespace MapGenerator
 			                       waterproof: Convert.ToInt32(tbWaterproof.Text));
 			var map = mg.Generate();
 			tbResult.Text = map;
+			Clipboard.SetText(map);
 		}
 	}
 }
