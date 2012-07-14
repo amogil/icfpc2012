@@ -109,7 +109,7 @@ namespace Tests
 				var mapName = t.Item1;
 				foreach (var testItem in GetReferenceTestItems(mapName))
 				{
-					var engine = new Engine(new MapV1(t.Item2));
+					var engine = new Engine(new Map(t.Item2));
 					engine.RunProgram(testItem.Moves);
 					someTestsFailed |= testItem.AssertEngineState(engine);
 				}
