@@ -487,6 +487,16 @@ namespace Logic
 
 		public bool LoadPreviousState()
 		{
+			if(Flooding > 0)
+			{
+				StepsToIncreaseWater++;
+				if(StepsToIncreaseWater == Flooding + 1)
+				{
+					StepsToIncreaseWater -= Flooding;
+					Water--;
+				}
+			}
+
 			if (log.Count == 0) return false;
 			MovesCount--;
 
