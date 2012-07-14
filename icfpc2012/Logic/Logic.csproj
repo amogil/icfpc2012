@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeAnnotations.cs" />
+    <Compile Include="OldMap.cs" />
     <Compile Include="StackExtensions.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="GreedyBot.cs" />
