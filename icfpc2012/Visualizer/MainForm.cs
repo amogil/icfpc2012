@@ -58,6 +58,7 @@ namespace Visualizer
 
 		private void UpdateMap(Map newMap)
 		{
+			if (newMap == null) return;
 			this.map = newMap;
 			bitmap = new Bitmap(map.Width*CellSize, map.Height*CellSize);
 			Graphics g = Graphics.FromImage(bitmap);
