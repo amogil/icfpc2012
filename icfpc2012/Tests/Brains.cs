@@ -13,10 +13,16 @@ namespace Tests
 		[Test]
 		public void TestGreedyBot()
 		{
-			TestBrains(new GreedyBot());
+			TestBrains(new GreedyBot(), MapsDir);
 		}
 
-		private void TestBrains(RobotAI bot)
+		[Test]
+		public void TestPerformanceGreedyBot()
+		{
+			TestBrains(new GreedyBot(), PerformanceMapsDir);
+		}
+
+		private void TestBrains(RobotAI bot, string dir)
 		{
 			var now = DateTime.Now;
 			long sum = 0;
@@ -27,7 +33,7 @@ namespace Tests
 				WriteLineAndShow(writer);
 
 				WriteLineAndShow(writer, "file".PadRight(FilenamePadding) + "score".PadRight(ValuePadding) + "moves".PadRight(ValuePadding) +"state".PadRight(ValuePadding) + "ms".PadRight(ValuePadding));
-				foreach (var file in Directory.GetFiles(MapsDir, "*.map.txt"))
+				foreach (var file in Directory.GetFiles(dir, "*.map.txt"))
 				{
 					var lines = File.ReadAllLines(file);
 					WriteAndShow(writer, Path.GetFileName(file).PadRight(FilenamePadding));
@@ -69,6 +75,7 @@ namespace Tests
 
 		private const string TestsDir = "../../../../tests";
 		private const string MapsDir = "../../../../maps/tests";
+		private const string PerformanceMapsDir = "../../../../maps/tests/performance";
 		private const int FilenamePadding = 24;
 		private const int ValuePadding = 8;
 	}
