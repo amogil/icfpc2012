@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B56368B6-F6BD-4513-8D83-73EBD89E8871}</ProjectGuid>
+    <ProjectGuid>{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Logic</RootNamespace>
-    <AssemblyName>Logic</AssemblyName>
+    <RootNamespace>Tests</RootNamespace>
+    <AssemblyName>Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,8 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="nunit.framework">
       <HintPath>..\External\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -44,19 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeAnnotations.cs" />
-    <Compile Include="StackExtensions.cs" />
-    <Compile Include="GreedyBot.cs" />
-    <Compile Include="RobotAI.cs" />
-    <Compile Include="MapSerializer_Test.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Map.cs" />
-    <Compile Include="MapSerializer.cs" />
+    <Compile Include="Correctnes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RobotMoveExtensions.cs" />
-    <Compile Include="Vector.cs" />
-    <Compile Include="WaveRun.cs" />
-    <Compile Include="WellKnownMaps.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Logic\Logic.csproj">
+      <Project>{B56368B6-F6BD-4513-8D83-73EBD89E8871}</Project>
+      <Name>Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MapGenerator\MapGenerator.csproj">
+      <Project>{586A6D58-DB42-4064-BE46-A517C5B81427}</Project>
+      <Name>MapGenerator</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

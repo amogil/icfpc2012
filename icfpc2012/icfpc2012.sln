@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidatorClient", "Validato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lighting", "Lighting\Lighting.csproj", "{00D6D701-CB70-43BD-A58E-E024362084FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,16 @@ Global
 		{00D6D701-CB70-43BD-A58E-E024362084FD}.Release|Mixed Platforms.Build.0 = Release|x86
 		{00D6D701-CB70-43BD-A58E-E024362084FD}.Release|x86.ActiveCfg = Release|x86
 		{00D6D701-CB70-43BD-A58E-E024362084FD}.Release|x86.Build.0 = Release|x86
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5FD77AFD-BBBB-4EE2-A91D-970A66D197ED}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
