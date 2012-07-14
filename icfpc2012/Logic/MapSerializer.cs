@@ -8,13 +8,13 @@ namespace Logic
 		public string Serialize(MapCell[,] map)
 		{
 			var builder = new StringBuilder();
+			int xUpperBound = map.GetLength(0);
 			int yUpperBound = map.GetLength(1);
-			for(int y = 0; y < yUpperBound; y++)
+			for(int y = yUpperBound - 1; y >= 0; y--)
 			{
-				int xUpperBound = map.GetLength(0);
 				for(int x = 0; x < xUpperBound; x++)
-					builder.Append(GetCellChar(map[x, yUpperBound - y - 1]));
-				if(y < map.GetLength(1) - 1)
+					builder.Append(GetCellChar(map[x, y]));
+				if(y > 0)
 					builder.AppendLine();
 			}
 			return builder.ToString();
