@@ -25,26 +25,26 @@ namespace Logic
 		Robot = 'R',
 		ClosedLift = 'L',
 		OpenedLift = 'O',
-		Trampoline1 = '1',
-		Trampoline2 = '2',
-		Trampoline3 = '3',
-		Trampoline4 = '4',
-		Trampoline5 = '5',
-		Trampoline6 = '6',
-		Trampoline7 = '7',
-		Trampoline8 = '8',
-		Trampoline9 = '9',
-		Target1 = 'A',
-		Target2 = 'B',
-		Target3 = 'C',
-		Target4 = 'D',
-		Target5 = 'E',
-		Target6 = 'F',
-		Target7 = 'G',
-		Target8 = 'H',
-		Target9 = 'I'
+		Trampoline1 = 'A',
+		Trampoline2 = 'B',
+		Trampoline3 = 'C',
+		Trampoline4 = 'D',
+		Trampoline5 = 'E',
+		Trampoline6 = 'F',
+		Trampoline7 = 'G',
+		Trampoline8 = 'H',
+		Trampoline9 = 'I',
+		Target1 = '1',
+		Target2 = '2',
+		Target3 = '3',
+		Target4 = '4',
+		Target5 = '5',
+		Target6 = '6',
+		Target7 = '7',
+		Target8 = '8',
+		Target9 = '9'
 	}
-
+	
 	public enum CheckResult
 	{
 		Nothing,
@@ -77,12 +77,12 @@ namespace Logic
 
 	public class Map : IMap
 	{
-		private Dictionary<MapCell, Vector> Target = new Dictionary<MapCell, Vector>();
+		private Dictionary<MapCell, Vector> Targets = new Dictionary<MapCell, Vector>();
 		private Dictionary<MapCell, Vector> Trampolines = new Dictionary<MapCell, Vector>();
 		private Dictionary<MapCell, MapCell> TrampToTarget = new Dictionary<MapCell, MapCell>();
 
-		private static HashSet<char> TrampolinesChars = new HashSet<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-		private static HashSet<char> TargetsChars = new HashSet<char> { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };  
+		private static HashSet<char> TrampolinesChars = new HashSet<char> { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };
+		private static HashSet<char> TargetsChars = new HashSet<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
 		public int MovesCount { get; private set; }
 		public int LambdasGathered { get; private set; }
@@ -153,7 +153,7 @@ namespace Logic
 					}
 					if (TargetsChars.Contains((char)map[col + 1, newY + 1]))
 					{
-						Target[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
+						Targets[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
 					}
 					if (TrampolinesChars.Contains((char)map[col + 1, newY + 1]))
 					{
@@ -350,14 +350,15 @@ namespace Logic
 
 		private void DoMove(int newRobotX, int newRobotY)
 		{
-			if (map[newRobotX, newRobotY] == MapCell.Lambda)
+			MapCell newMapCell = map[newRobotX, newRobotY];
+			if (newMapCell == MapCell.Lambda)
 			{
 				LambdasGathered++;
 			}
-			else if (map[newRobotX, newRobotY].IsTrampoline())
+			else if (newMapCell.IsTrampoline())
 			{
-				var target = TrampToTarget[this[Robot]];
-				Vector targetCoords = Target[TrampToTarget[this[Robot]]];
+				var target = TrampToTarget[newMapCell];
+				Vector targetCoords = Targets[target];
 				newRobotX = targetCoords.X;
 				newRobotY = targetCoords.Y;
 
@@ -368,14 +369,14 @@ namespace Logic
 					log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(vector, pair.Key));
 				}
 			}
-			else if (map[newRobotX, newRobotY] == MapCell.Earth)
+			else if (newMapCell == MapCell.Earth)
 			{
 			}
-			else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
+			else if (newMapCell == MapCell.OpenedLift)
 			{
 				State = CheckResult.Win;
 			}
-			else if (map[newRobotX, newRobotY] == MapCell.Rock)
+			else if (newMapCell == MapCell.Rock)
 			{
 				int rockX = newRobotX * 2 - RobotX;
 				map[rockX, newRobotY] = MapCell.Rock;
@@ -390,7 +391,7 @@ namespace Logic
 				activeRocks.Add(new Vector(rockX, newRobotY));
 			}
 			map[RobotX, RobotY] = MapCell.Empty;
-			if (map[newRobotX, newRobotY] != MapCell.OpenedLift)
+			if (newMapCell != MapCell.OpenedLift)
 				map[newRobotX, newRobotY] = MapCell.Robot;
 
 			CheckNearRocks(activeRocks, RobotX, RobotY);
@@ -627,7 +628,7 @@ namespace Logic
 	public class MoveLog
 	{
 		public Movement RobotMove;
-		public List<Tuple<Vector, MapCell>> RemovedObjects;
+		public List<Tuple<Vector, MapCell>> RemovedObjects = new List<Tuple<Vector, MapCell>>();
 		public List<Movement> MovingRocks = new List<Movement>();
 	}
 
