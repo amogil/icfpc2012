@@ -21,7 +21,10 @@ namespace MapGenerator
 			                       rocksCount: Convert.ToInt32(tbRocks.Text),
 			                       earthCount: Convert.ToInt32(tbEarth.Text),
 			                       wallCount: Convert.ToInt32(tbWalls.Text),
-			                       lambdaCount: Convert.ToInt32(tbLambdas.Text));
+			                       lambdaCount: Convert.ToInt32(tbLambdas.Text),
+			                       waterLevel: Convert.ToInt32(tbWater.Text),
+			                       flooding: Convert.ToInt32(tbFlooding.Text),
+			                       waterproof: Convert.ToInt32(tbWaterproof.Text));
 			var map = mg.Generate();
 			tbResult.Text = map;
 		}

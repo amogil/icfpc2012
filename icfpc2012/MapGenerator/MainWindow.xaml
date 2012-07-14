@@ -18,5 +18,11 @@
 		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,159,0,0" Name="tbWalls" VerticalAlignment="Top" Width="120" Text="3" />
 		<Label Content="Лямбд:" Height="28" HorizontalAlignment="Left" Margin="12,194,0,0" Name="label6" VerticalAlignment="Top" />
 		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,196,0,0" Name="tbLambdas" VerticalAlignment="Top" Width="120" Text="4" />
+		<Label Content="Вода:" Height="28" HorizontalAlignment="Left" Margin="235,43,0,0" Name="label7" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="348,48,0,0" Name="tbWater" Text="0" VerticalAlignment="Top" Width="120" />
+		<Label Content="Затопление:" Height="28" HorizontalAlignment="Left" Margin="235,82,0,0" Name="label8" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="348,84,0,0" Name="tbFlooding" Text="1" VerticalAlignment="Top" Width="120" />
+		<Label Content="Влагостойкость:" Height="28" HorizontalAlignment="Left" Margin="235,116,0,0" Name="label9" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="348,121,0,0" Name="tbWaterproof" Text="5" VerticalAlignment="Top" Width="120" />
 	</Grid>
 </Window>
