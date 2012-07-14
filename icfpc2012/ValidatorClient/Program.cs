@@ -17,10 +17,17 @@ namespace ValidatorClient
 					Directory.SetCurrentDirectory(MapsDir);
 					foreach(var filename in Directory.GetFiles(".", "*.moves"))
 					{
-						if(File.Exists(Path.GetFileNameWithoutExtension(filename) + Extension))
-							continue;
-						ProcessMovesFile(filename);
-						Thread.Sleep(600000 + random.Next(60000));
+						try
+						{
+							if(File.Exists(Path.GetFileNameWithoutExtension(filename) + Extension))
+								continue;
+							ProcessMovesFile(filename);
+							Thread.Sleep(600000 + random.Next(60000));
+						}
+						catch(Exception e)
+						{
+							Console.WriteLine(e);
+						}
 					}
 					return;
 				}
@@ -38,6 +45,8 @@ namespace ValidatorClient
 
     	private static void ProcessMovesFile(string file)
     	{
+			Console.WriteLine("File: {0}", file);
+
     		var match = Regex.Match(Path.GetFileName(file), @"^(?<map>\w*)\.map_(?<id>.*?).moves$");
     		if (!match.Success)
     			throw new Exception("Invalid filename");
@@ -52,6 +61,9 @@ namespace ValidatorClient
 
     		var response = ResponseParser.Parse(HttpClient.SendRequest(map, moves));
     		SerializeResponse(response, map, id, moves);
+
+			Console.WriteLine(moves);
+			Console.WriteLine("Response: score {0}, {1}", response.Score, response.Result);
     	}
 
     	private static void SerializeResponse(ValidatorResponse response, string map, string id, string moves)
