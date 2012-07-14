@@ -19,6 +19,7 @@ namespace Tests
 		private void TestBrains(RobotAI bot)
 		{
 			var now = DateTime.Now;
+			long sum = 0;
 			using (var writer = new StreamWriter(Path.Combine(TestsDir, bot.GetType().Name + "_" + now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt")))
 			{
 
@@ -54,10 +55,12 @@ namespace Tests
 						}
 					}
 
+					sum += map.GetScore();
 					WriteAndShow(writer, map.GetScore().ToString().PadRight(ValuePadding) + map.MovesCount.ToString().PadRight(ValuePadding) + map.State.ToString().PadRight(ValuePadding) + timer.ElapsedMilliseconds.ToString().PadRight(ValuePadding));
 					WriteLineAndShow(writer, builder.ToString());
 				}
 			}
+			Console.WriteLine(sum);
 		}
 
 		private void WriteLineAndShow(StreamWriter writer, string text = null)
@@ -72,7 +75,7 @@ namespace Tests
 		}
 
 		private const string TestsDir = "../../../../tests";
-		private const string MapsDir = "../../../../maps";
+		private const string MapsDir = "../../../../maps/tests";
 		private const int FilenamePadding = 24;
 		private const int ValuePadding = 8;
 	}
