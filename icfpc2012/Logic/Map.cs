@@ -414,13 +414,16 @@ namespace Logic
 
 		public bool IsSafeMove(Vector from, Vector to, int movesDone)
 		{
+			if(WaterproofLeft == 1 && Water >= to.Y)
+				return false;
+
 			var swap = map[from.X, from.Y];
 			map[RobotX, RobotY] = MapCell.Empty;
 			map[from.X, from.Y] = MapCell.Empty;
 
 			bool isSafe = true;
 
-			if(movesDone <= 2 && to.Y == from.Y - 1)
+			if(to.Y == from.Y - 1)
 			{
 				for (int x = to.X - 1; x <= to.X + 1; x++)
 				{
@@ -567,10 +570,10 @@ namespace Logic
 			if (MovesCount == 0)
 				return false;
 
-			if(Flooding > 0)
+			if (WaterproofLeft < Waterproof + 1)
+				WaterproofLeft++;
+			if (Flooding > 0)
 			{
-				if (WaterproofLeft < Waterproof)
-					WaterproofLeft++;
 				StepsToIncreaseWater++;
 				if(StepsToIncreaseWater == Flooding + 1)
 				{
