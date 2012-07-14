@@ -35,14 +35,35 @@ namespace Logic
 		Fail
 	}
 
-	public class Map
+	public interface IMap
+	{
+		int Score { get; }
+		int LambdasGathered { get; }
+		CheckResult State { get; }
+		int TotalLambdaCount { get; }
+		int Water { get; }
+		int Flooding { get; }
+		int Waterproof { get; }
+		int StepsToIncreaseWater { get; }
+		int WaterproofLeft { get; }
+		int Height { get; }
+		int Width { get; }
+		string GetMapStateAsAscii();
+		IMap Move(RobotMove move);
+		bool LoadPreviousState();
+		MapCell this[Vector pos] { get; }
+		MapCell this[int x, int y] { get; }
+		Vector Robot { get; }
+	}
+
+	public class Map : IMap
 	{
 		public int Score { get; private set; }
 		public int LambdasGathered { get; private set; }
+		public CheckResult State { get; private set; }
 
-		public readonly int Height;
-		public readonly int Width;
-		public CheckResult State = CheckResult.Nothing;
+		public int Height { get; private set; }
+		public int Width { get; private set; }
 		private MapCell[,] map;
 
         private Stack<MoveLog> log = new Stack<MoveLog>();
@@ -62,6 +83,8 @@ namespace Logic
 
 		public Map(string[] lines)
 		{
+			State = CheckResult.Nothing;
+
 			int firstBlankLineIndex = Array.IndexOf(lines, "");
 			Height = firstBlankLineIndex == -1 ? lines.Length : firstBlankLineIndex;
 			Width = lines.Max(a => a.Length);
@@ -219,7 +242,7 @@ namespace Logic
 			throw new Exception("InvalidMap " + c);
 		}
 
-		public Map Move(RobotMove move)
+		public IMap Move(RobotMove move)
         {
             log.Push(new MoveLog());
 

@@ -4,6 +4,6 @@ namespace Visualizer
 {
 	public interface IOverlay
 	{
-		void Draw(Map map, Drawer drawer);
+		void Draw(IMap map, Drawer drawer);
 	}
 }

@@ -15,7 +15,7 @@ namespace Visualizer
 	{
 		private int CellSize = 48;
 		private Bitmap bitmap;
-		private Map map;
+		private IMap map;
 		private IOverlay[] overlays;
 
 		public MainForm()
@@ -56,7 +56,7 @@ namespace Visualizer
 			}
 		}
 
-		private void UpdateMap(Map newMap)
+		private void UpdateMap(IMap newMap)
 		{
 			if (newMap == null) return;
 			this.map = newMap;

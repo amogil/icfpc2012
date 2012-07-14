@@ -19,7 +19,7 @@ namespace Logic
 			return constructorInfo != null;
 		}
 
-		public static RobotAI Create(Type robotType, Map map)
+		public static RobotAI Create(Type robotType, IMap map)
 		{
 			ConstructorInfo constructorInfo = robotType.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, new Type[0], null);
 			return (RobotAI) constructorInfo.Invoke(new object[0]);

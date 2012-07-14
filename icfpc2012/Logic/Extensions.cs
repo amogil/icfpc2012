@@ -2,7 +2,7 @@
 {
 	public static class Extensions
 	{
-		public static bool IsValidMoveWithoutMovingRocks(this Map map, Vector from, Vector to)
+		public static bool IsValidMoveWithoutMovingRocks(this IMap map, Vector from, Vector to)
 		{
 			var toCell = map[to];
 			return toCell != MapCell.Rock && toCell != MapCell.Wall && toCell != MapCell.ClosedLift;
