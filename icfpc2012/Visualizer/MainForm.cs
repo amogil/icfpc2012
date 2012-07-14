@@ -166,7 +166,8 @@ namespace Visualizer
 			}
 			catch (NoMoveException)
 			{
-				//ход в стену
+				moves.Add(robotMove);
+				UpdateMap(map);
 				return;
 			}
 			moves.Add(robotMove);
