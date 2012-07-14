@@ -30,13 +30,22 @@ namespace Tests
 			return string.Format("test case: {4}\r\n{0}\r\n{1}\r\n{2}\r\n{3}\r\n", Moves.Aggregate(string.Empty, (s, m) => s + m.ToChar()), Result, Score, FinalMapState, MapName);
 		}
 
-		public void AssertEngineState(Engine e)
+		public bool AssertEngineState(Engine e)
 		{
-			var actualMap = e.Map;
-			Assert.AreEqual(Result, actualMap.State, this.ToString());
-			Assert.AreEqual(Score, actualMap.GetScore(), this.ToString());
-			var mapStateAsAscii = actualMap.GetMapStateAsAscii();
-			Assert.AreEqual(FinalMapState, mapStateAsAscii, string.Format("{0}\r\nactual map state:\r\n{1}", this.ToString(), mapStateAsAscii));
+			try
+			{
+				var actualMap = e.Map;
+				Assert.AreEqual(Result, actualMap.State, this.ToString());
+				Assert.AreEqual(Score, actualMap.GetScore(), this.ToString());
+				var mapStateAsAscii = actualMap.GetMapStateAsAscii();
+				Assert.AreEqual(FinalMapState, mapStateAsAscii, string.Format("{0}\r\nactual map state:\r\n{1}", this.ToString(), mapStateAsAscii));
+				return true;
+			}
+			catch (AssertionException ex)
+			{
+				Console.WriteLine(ex.Message);
+				return false;
+			}
 		}
 	}
 
@@ -94,6 +103,7 @@ namespace Tests
 		[Test]
 		public void AgainstValidator()
 		{
+			var someTestsFailed = false;
 			foreach (var t in GetReferenceMaps())
 			{
 				var mapName = t.Item1;
@@ -101,9 +111,10 @@ namespace Tests
 				{
 					var engine = new Engine(new MapV1(t.Item2));
 					engine.RunProgram(testItem.Moves);
-					testItem.AssertEngineState(engine);
+					someTestsFailed |= testItem.AssertEngineState(engine);
 				}
 			}
+			Assert.False(someTestsFailed);
 		}
 	}
 }
