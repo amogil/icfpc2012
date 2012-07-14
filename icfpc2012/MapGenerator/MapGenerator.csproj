@@ -69,7 +69,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generator.cs" />
+    <Compile Include="RandomMapGenerator.cs" />
+    <Compile Include="MapGeneratorOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
