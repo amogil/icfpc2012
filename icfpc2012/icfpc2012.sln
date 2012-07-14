@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapGenerator", "MapGenerato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidatorClient", "ValidatorClient\ValidatorClient.csproj", "{B4B43B4B-6C2C-44D6-B382-D270AE9D2DE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lighting", "Lighting\Lighting.csproj", "{00D6D701-CB70-43BD-A58E-E024362084FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,16 @@ Global
 		{B4B43B4B-6C2C-44D6-B382-D270AE9D2DE2}.Release|Mixed Platforms.Build.0 = Release|x86
 		{B4B43B4B-6C2C-44D6-B382-D270AE9D2DE2}.Release|x86.ActiveCfg = Release|x86
 		{B4B43B4B-6C2C-44D6-B382-D270AE9D2DE2}.Release|x86.Build.0 = Release|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Debug|x86.ActiveCfg = Debug|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Debug|x86.Build.0 = Debug|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Release|Any CPU.ActiveCfg = Release|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Release|Mixed Platforms.Build.0 = Release|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Release|x86.ActiveCfg = Release|x86
+		{00D6D701-CB70-43BD-A58E-E024362084FD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

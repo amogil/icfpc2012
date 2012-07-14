@@ -121,7 +121,7 @@ namespace Logic
 			Water = 0;
 			Flooding = 0;
 			Waterproof = 10;
-			foreach (var floodingSpec in floodingSpecs)
+			foreach (var floodingSpec in floodingSpecs.Where(line => !string.IsNullOrWhiteSpace(line)))
 			{
 				string[] parts = floodingSpec.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 				if (parts[0] == "Water") Water = int.Parse(parts[1]);
