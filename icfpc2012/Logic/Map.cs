@@ -109,10 +109,11 @@ namespace Logic
 				}
 			}
 			InitializeFlooding(lines.Skip(Height + 1).ToArray());
-		    InitializeActiveRocks();
 
 			Height += 2;
 			Width += 2;
+
+		    InitializeActiveRocks();
 		}
 
 		private void InitializeFlooding(string[] floodingSpecs)
