@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="CodeAnnotations.cs" />
     <Compile Include="MapV1.cs" />
+    <Compile Include="MapIsSafeMove_Test.cs" />
     <Compile Include="StackExtensions.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="GreedyBot.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="RobotMoveExtensions.cs" />
     <Compile Include="Vector.cs" />
     <Compile Include="WaveRun.cs" />
+    <Compile Include="WaveRun_Test.cs" />
     <Compile Include="WellKnownMaps.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
