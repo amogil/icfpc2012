@@ -10,9 +10,10 @@ namespace Tests
 {
 	public class ReferenceTestItem
 	{
-		public ReferenceTestItem(string mapName, RobotMove[] moves, int score, CheckResult result, string finalMapState)
+		public ReferenceTestItem(string mapName, string filename, RobotMove[] moves, int score, CheckResult result, string finalMapState)
 		{
 			MapName = mapName;
+			Filename = filename;
 			Moves = moves;
 			Score = score;
 			Result = result;
@@ -20,6 +21,7 @@ namespace Tests
 		}
 
 		public string MapName { get; set; }
+		public string Filename { get; set; }
 		public RobotMove[] Moves { get; private set; }
 		public int Score { get; private set; }
 		public CheckResult Result { get; private set; }
@@ -95,7 +97,7 @@ namespace Tests
 					var sb = new StringBuilder();
 					while (!string.IsNullOrEmpty(line = r.ReadLine()))
 						sb.AppendLine(line);
-					yield return new ReferenceTestItem(mapName, moves, score, result, sb.ToString());
+					yield return new ReferenceTestItem(mapName, refFile, moves, score, result, sb.ToString());
 				}
 			}
 		}
@@ -109,6 +111,7 @@ namespace Tests
 				var mapName = t.Item1;
 				foreach (var testItem in GetReferenceTestItems(mapName))
 				{
+					Console.WriteLine(testItem.Filename);
 					var engine = new Engine(new Map(t.Item2));
 					engine.RunProgram(testItem.Moves);
 					allTestsPassed &= testItem.AssertEngineState(engine);
