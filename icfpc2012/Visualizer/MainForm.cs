@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -46,8 +47,8 @@ namespace Visualizer
 
 		private void UpdateInfoPanel()
 		{
-			waterproofLabel.Text = map.WaterproofLeft.ToString();
-			scoreLabel.Text = "N/A";
+			waterproofLabel.Text = map.WaterproofLeft.ToString(CultureInfo.InvariantCulture);
+			scoreLabel.Text = map.Score.ToString(CultureInfo.InvariantCulture);
 		}
 
 		private void UpdateMoves()
@@ -179,8 +180,15 @@ namespace Visualizer
 			string movesFile = 
 				Path.Combine(
 				directoryName,
-				Path.GetFileNameWithoutExtension(LastOpenedMapFile) + "_" + DateTime.Now.Ticks + ".moves");
-			File.WriteAllText(movesFile, GetMovesString() + Environment.NewLine + map);
+				Path.GetFileNameWithoutExtension(LastOpenedMapFile) + "_" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-ffff") + ".moves");
+			File.WriteAllText(movesFile,
+				GetMovesString()
+				+ Environment.NewLine
+				+ string.Format("LambdasGathered: {0}", map.LambdasGathered)
+				+ Environment.NewLine
+				+ string.Format("Score: {0}", map.Score)
+				+ Environment.NewLine
+				+ map);
 			MessageBox.Show("Moves saved to " + movesFile);
 		}
 

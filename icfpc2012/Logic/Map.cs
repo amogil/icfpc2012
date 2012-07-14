@@ -34,15 +34,16 @@ namespace Logic
 
 	public class Map
 	{
-	    public int Count { get; private set; }
+		public int Score { get; private set; }
+		public int LambdasGathered { get; private set; }
+
 		public readonly int Height;
 		public readonly int Width;
 		public CheckResult State = CheckResult.Nothing;
-		private int lambdaCounter;
 		private MapCell[,] map;
 		private MapCell[,] swapMap;
 
-		private readonly int totalLambdaCount;
+		public int TotalLambdaCount { get; private set; }
 		public int Water { get; private set; }
 		public int Flooding { get; private set; }
 		public int Waterproof { get; private set; }
@@ -51,14 +52,12 @@ namespace Logic
 
 		public Map(string[] lines)
 		{
-			lambdaCounter = 0;
-
 			int firstBlankLineIndex = Array.IndexOf(lines, "");
 			Height = firstBlankLineIndex == -1 ? lines.Length : firstBlankLineIndex;
 			Width = lines.Max(a => a.Length);
 
-			map = new MapCell[Width + 2,Height + 2];
-			swapMap = new MapCell[Width + 2,Height + 2];
+			map = new MapCell[Width + 2, Height + 2];
+			swapMap = new MapCell[Width + 2, Height + 2];
 
 			for (int row = 0; row < Height + 2; row++)
 			{
@@ -92,17 +91,15 @@ namespace Logic
 						RobotY = newY + 1;
 					}
 					if (map[col + 1, newY + 1] == MapCell.Lambda)
-                    {
-						lambdaCounter++;
-                    }
+					{
+						TotalLambdaCount++;
+					}
 				}
 			}
 			InitializeFlooding(lines.Skip(Height + 1).ToArray());
 
 			Height += 2;
 			Width += 2;
-
-			totalLambdaCount = lambdaCounter;
 		}
 
 		private void InitializeFlooding(string[] floodingSpecs)
@@ -112,7 +109,7 @@ namespace Logic
 			Waterproof = 10;
 			foreach (var floodingSpec in floodingSpecs)
 			{
-				string[] parts = floodingSpec.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+				string[] parts = floodingSpec.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 				if (parts[0] == "Water") Water = int.Parse(parts[1]);
 				if (parts[0] == "Flooding") Flooding = int.Parse(parts[1]);
 				if (parts[0] == "Waterproof") Waterproof = int.Parse(parts[1]);
@@ -163,7 +160,7 @@ namespace Logic
 		{
 			if (move == RobotMove.Abort)
 			{
-                Count += (totalLambdaCount - lambdaCounter) * 25;
+				Score += LambdasGathered * 25;
 				State = CheckResult.Win;
 				return this;
 			}
@@ -172,8 +169,8 @@ namespace Logic
 				throw new GameFinishedException();
 
 			if (move != RobotMove.Wait)
-            {
-                Count = Math.Max(Count - 1, 0);
+			{
+				Score -= 1;
 
 				int newRobotX = RobotX;
 				int newRobotY = RobotY;
@@ -204,7 +201,7 @@ namespace Logic
 			if (newRobotX - RobotX == 0)
 				return false;
 
-			int checkX = newRobotX*2 - RobotX;
+			int checkX = newRobotX * 2 - RobotX;
 
 			if (map[checkX, RobotY] == MapCell.Empty)
 				return true;
@@ -214,24 +211,24 @@ namespace Logic
 
 		private void DoMove(int newRobotX, int newRobotY)
 		{
-            if (map[newRobotX, newRobotY] == MapCell.Lambda)
-            {
-                Count += 25;
-                lambdaCounter--;
-            }
-            else if (map[newRobotX, newRobotY] == MapCell.Earth)
-            {
-            }
-            else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
-            {
-                Count += (totalLambdaCount - lambdaCounter) * 50;
-                State = CheckResult.Win;
-            }
-            else if (map[newRobotX, newRobotY] == MapCell.Rock)
-            {
-                int rockX = newRobotX * 2 - RobotX;
-                map[rockX, newRobotY] = MapCell.Rock;
-            }
+			if (map[newRobotX, newRobotY] == MapCell.Lambda)
+			{
+				Score += 25;
+				LambdasGathered++;
+			}
+			else if (map[newRobotX, newRobotY] == MapCell.Earth)
+			{
+			}
+			else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
+			{
+				Score += LambdasGathered * 50;
+				State = CheckResult.Win;
+			}
+			else if (map[newRobotX, newRobotY] == MapCell.Rock)
+			{
+				int rockX = newRobotX * 2 - RobotX;
+				map[rockX, newRobotY] = MapCell.Rock;
+			}
 			map[RobotX, RobotY] = MapCell.Empty;
 			map[newRobotX, newRobotY] = MapCell.Robot;
 
@@ -254,7 +251,7 @@ namespace Logic
 						CheckRobotDanger(x, y - 1);
 					}
 					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
-					    && map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
+						&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
 					{
 						swapMap[x, y] = MapCell.Empty;
 						swapMap[x + 1, y] = MapCell.Empty;
@@ -262,8 +259,8 @@ namespace Logic
 						CheckRobotDanger(x + 1, y - 1);
 					}
 					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
-					    && (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
-					    && map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
+						&& (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
+						&& map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
 					{
 						swapMap[x, y] = MapCell.Empty;
 						swapMap[x - 1, y] = MapCell.Empty;
@@ -271,14 +268,14 @@ namespace Logic
 						CheckRobotDanger(x - 1, y - 1);
 					}
 					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Lambda
-					    && map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
+						&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
 					{
 						swapMap[x, y] = MapCell.Empty;
 						swapMap[x + 1, y] = MapCell.Empty;
 						swapMap[x + 1, y - 1] = MapCell.Rock;
 						CheckRobotDanger(x + 1, y - 1);
 					}
-					if (map[x, y] == MapCell.ClosedLift && lambdaCounter == 0)
+					if (map[x, y] == MapCell.ClosedLift && LambdasGathered == TotalLambdaCount)
 					{
 						swapMap[x, y] = MapCell.OpenedLift;
 					}
