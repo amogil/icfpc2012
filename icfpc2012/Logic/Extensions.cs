@@ -10,32 +10,6 @@ namespace Logic
 			return toCell != MapCell.Rock && toCell != MapCell.Wall && toCell != MapCell.ClosedLift;
 		}
 
-		public static bool IsSafeMove(this Map map, Vector from, Vector to)
-		{
-			MapCell fromCell = map[from];
-			MapCell toCell = map[to];
-			// *
-			// r
-			// R
-
-			// *
-			// Or
-			//  R
-			
-			// *
-			// \r
-			//  R
-
-			//  *
-			// rO#
-			// R
-			
-			//  *#
-			// rO
-			// R
-			return true;
-		}
-
 		public static MapCell[,] SkipBorder(this MapCell[,] map)
 		{
 			var res = new MapCell[map.GetLength(0) - 2, map.GetLength(1) - 2];

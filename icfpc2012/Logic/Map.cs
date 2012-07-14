@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
 
 namespace Logic
 {
@@ -45,7 +46,7 @@ namespace Logic
 		private MapCell[,] map;
 
         private Stack<MoveLog> log = new Stack<MoveLog>();
-        private HashSet<Tuple<int, int>> activeRocks = new HashSet<Tuple<int, int>>();
+		private HashSet<Vector> activeRocks = new HashSet<Vector>();
 
 		public int TotalLambdaCount { get; private set; }
 		public int Water { get; private set; }
@@ -138,23 +139,23 @@ namespace Logic
                 {
                     if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Empty)
                     {
-                        activeRocks.Add(new Tuple<int, int>(x, y));
+                        activeRocks.Add(new Vector(x, y));
                     }
                     if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
                         && map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
                     {
-                        activeRocks.Add(new Tuple<int, int>(x, y));
+						activeRocks.Add(new Vector(x, y));
                     }
                     if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
                         && (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
                         && map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
                     {
-                        activeRocks.Add(new Tuple<int, int>(x, y));
+						activeRocks.Add(new Vector(x, y));
                     }
                     if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Lambda
                         && map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
                     {
-                        activeRocks.Add(new Tuple<int, int>(x, y));
+						activeRocks.Add(new Vector(x, y));
                     }
                     if (map[x, y] == MapCell.ClosedLift && LambdasGathered == TotalLambdaCount)
                     {
@@ -168,6 +169,7 @@ namespace Logic
 	    public int RobotX { get; private set; }
 		public int RobotY { get; private set; }
 
+		public Vector Lift { get { return new Vector(LiftX, LiftY); } }
         public int LiftX { get; private set; }
         public int LiftY { get; private set; }
     
@@ -300,89 +302,114 @@ namespace Logic
 						NextX = rockX,
 						NextY = newRobotY
 						});
-			    activeRocks.Add(new Tuple<int, int>(rockX, newRobotY));
+				activeRocks.Add(new Vector(rockX, newRobotY));
 			}
 			map[RobotX, RobotY] = MapCell.Empty;
             map[newRobotX, newRobotY] = MapCell.Robot;
 
-            CheckNearRocks(RobotX, RobotY);
+            CheckNearRocks(activeRocks, RobotX, RobotY);
 
 			RobotX = newRobotX;
 			RobotY = newRobotY;
 		}
 
-        private void CheckNearRocks(int x, int y)
+        private void CheckNearRocks(HashSet<Vector> updateableRocks, int x, int y)
         {
             for(int rockX = x - 1; rockX <= x + 1; rockX ++)
             {
                 for(int rockY = y; rockY <= y + 1; rockY++)
                 {
-                    var coords = new Tuple<int, int>(rockX, rockY);
+					var coords = new Vector(rockX, rockY);
                     if (!coords.Equals(TryToMoveRock(rockX, rockY)))
-                        activeRocks.Add(coords);
+                        updateableRocks.Add(coords);
                 }
             }
         }
 
-	    private Tuple<int, int> TryToMoveRock(Tuple<int, int> coords)
+		public bool IsSafeMove(Vector from, Vector to)
+		{
+			if (from.Y + 2 > Height)
+				return true;
+
+			bool isSafe = true;
+
+			var swap = map[from.X, from.Y];
+			map[RobotX, RobotY] = MapCell.Empty;
+			map[from.X, from.Y] = MapCell.Empty;
+
+			int y = to.Y + 2;
+			for (int x = to.X - 1; x <= to.X + 1; x++)
+			{
+				var newPosition = TryToMoveRock(new Vector(x, y));
+				if (newPosition.X == to.X && newPosition.Y == to.Y + 1)
+					isSafe = false;
+			}
+
+			map[from.X, from.Y] = swap;
+			map[RobotX, RobotY] = MapCell.Robot;
+
+			return isSafe;
+		}
+
+		private Vector TryToMoveRock(Vector coords)
         {
-            return TryToMoveRock(coords.Item1, coords.Item2);
+            return TryToMoveRock(coords.X, coords.Y);
         }
 
-	    private Tuple<int, int> TryToMoveRock(int x, int y)
+		private Vector TryToMoveRock(int x, int y)
         {
             if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Empty)
             {
-                return new Tuple<int, int>(x, y - 1);
+				return new Vector(x, y - 1);
             }
             if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
                 && map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
             {
-                return new Tuple<int, int>(x + 1, y - 1);
+				return new Vector(x + 1, y - 1);
             }
             if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
                 && (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
                 && map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
             {
-                return new Tuple<int, int>(x - 1, y - 1);
+				return new Vector(x - 1, y - 1);
             }
             if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Lambda
                 && map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
             {
-                return new Tuple<int, int>(x + 1, y - 1);
+				return new Vector(x + 1, y - 1);
             }
 
-            return new Tuple<int, int>(x, y);
+			return new Vector(x, y);
         }
 
 	    private void Update()
 	    {
-	        var newActiveRocks = new HashSet<Tuple<int, int>>();
-	        var rockMoves = new Dictionary<Tuple<int, int>, Tuple<int, int>>();
+			var newActiveRocks = new HashSet<Vector>();
+			var rockMoves = new Dictionary<Vector, Vector>();
 
 	        foreach (var activeRockCoords in activeRocks)
 	        {
                 var newCoords = TryToMoveRock(activeRockCoords);
-                if (!activeRockCoords.Equals(newCoords) && map[activeRockCoords.Item1, activeRockCoords.Item2] == MapCell.Rock)
+                if (!activeRockCoords.Equals(newCoords) && map[activeRockCoords.X, activeRockCoords.Y] == MapCell.Rock)
                     rockMoves.Add(activeRockCoords, newCoords);
 	        }
 
 	        foreach (var rockMove in rockMoves)
             {
-                map[rockMove.Key.Item1, rockMove.Key.Item2] = MapCell.Empty;
-                if (map[rockMove.Value.Item1, rockMove.Value.Item2] != MapCell.Rock)
+                map[rockMove.Key.X, rockMove.Key.Y] = MapCell.Empty;
+                if (map[rockMove.Value.X, rockMove.Value.Y] != MapCell.Rock)
                     newActiveRocks.Add(rockMove.Value);
-                map[rockMove.Value.Item1, rockMove.Value.Item2] = MapCell.Rock;
+                map[rockMove.Value.X, rockMove.Value.Y] = MapCell.Rock;
                 log.Peek().MovingRocks.Add(
                     new Movement
                         {
-                            PreviousX = rockMove.Key.Item1, 
-                            PreviousY = rockMove.Key.Item2, 
-                            NextX = rockMove.Value.Item1,
-                            NextY = rockMove.Value.Item2
+                            PreviousX = rockMove.Key.X, 
+                            PreviousY = rockMove.Key.Y, 
+                            NextX = rockMove.Value.X,
+                            NextY = rockMove.Value.Y
                         });
-
-                CheckRobotDanger(rockMove.Value.Item1, rockMove.Value.Item2);
+				CheckRobotDanger(rockMove.Value.X, rockMove.Value.Y);
+				CheckNearRocks(newActiveRocks, rockMove.Key.X, rockMove.Key.Y);
 	        }
 
 	        activeRocks = newActiveRocks;
@@ -489,5 +516,17 @@ namespace Logic
 
 	public class KilledByRockException : GameFinishedException
 	{
+	}
+
+	[TestFixture]
+	public class MapIsSafeMove_Test
+	{
+		[Test]
+		public void Test()
+		{
+			Map contest1 = WellKnownMaps.Contest1();
+			Assert.IsTrue(contest1.IsSafeMove(new Vector(5, 5), new Vector(5, 4)));
+			Assert.IsFalse(contest1.IsSafeMove(new Vector(5, 4), new Vector(5, 3)));
+		}
 	}
 }
