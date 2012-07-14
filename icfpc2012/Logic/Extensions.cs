@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Logic
+﻿namespace Logic
 {
 	public static class Extensions
 	{
@@ -17,26 +15,6 @@ namespace Logic
 				for (int x = 1; x < map.GetLength(0) - 1; x++)
 					res[x - 1, y - 1] = map[x, y];
 			return res;
-		}
-
-		public static RobotMove ToRobotMove(this char move)
-		{
-			switch (move)
-			{
-				case 'D':
-					return RobotMove.Down;
-				case 'U':
-					return RobotMove.Up;
-				case 'L':
-					return RobotMove.Left;
-				case 'R':
-					return RobotMove.Right;
-				case 'W':
-					return RobotMove.Wait;
-				case 'A':
-					return RobotMove.Abort;
-			}
-			throw new Exception(move.ToString());
 		}
 	}
 }

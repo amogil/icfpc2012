@@ -27,6 +27,14 @@ namespace Tests
 		{
 			return string.Format("{0}\r\n{1}\r\n{2}\r\n{3}\r\n", Moves.Aggregate(string.Empty, (s, m) => s + m.ToChar()), Score, Result, FinalMapState);
 		}
+
+		public void AssertEngineState(Engine e)
+		{
+			var actalMap = e.Map;
+			Assert.AreEqual(Result, actalMap.State);
+			Assert.AreEqual(Score, actalMap.Score);
+			Assert.AreEqual(FinalMapState, actalMap.GetMapStateAsAscii());
+		}
 	}
 
 	[TestFixture]
@@ -34,11 +42,11 @@ namespace Tests
 	{
 		private const string mapsBaseDir = @"..\..\..\..\maps";
 
-		private static IEnumerable<Tuple<string, Map>> GetReferenceMaps()
+		private static IEnumerable<Tuple<string, string[]>> GetReferenceMaps()
 		{
 			return Directory
 				.EnumerateFiles(mapsBaseDir, "*.txt")
-				.Select(file => Tuple.Create(GetMapName(file), new Map(File.ReadAllLines(file))));
+				.Select(file => Tuple.Create(GetMapName(file), File.ReadAllLines(file)));
 		}
 
 		private static string GetMapName(string file)
@@ -84,8 +92,10 @@ namespace Tests
 				foreach (var testItem in GetReferenceTestItems(mapName))
 				{
 					Console.WriteLine(testItem);
+					var engine = new Engine(new Map(t.Item2));
+					engine.RunProgram(testItem.Moves);
+					testItem.AssertEngineState(engine);
 				}
-				
 			}
 		}
 	}

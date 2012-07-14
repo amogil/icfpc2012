@@ -115,7 +115,11 @@ namespace Visualizer
 		private void LoadMap(string mapFile)
 		{
 			moves.Clear();
-			UpdateMap(new Map(File.ReadAllLines(mapFile)));
+			var newMap = new Map(File.ReadAllLines(mapFile));
+			engine = new Engine(newMap);
+			engine.OnMapUpdate += UpdateMap;
+			engine.OnMoveAdded += m => moves.Add(m);
+			UpdateMap(newMap);
 			Text = mapFile;
 			robot = null;
 		}
@@ -191,29 +195,14 @@ namespace Visualizer
 
 		private void DoMove(RobotMove robotMove)
 		{
-			if (map.State != CheckResult.Nothing) return;
-			Map newMap;
 			try
 			{
-				newMap = map.Move(robotMove);
-				if (newMap.State != CheckResult.Nothing)
-					throw new GameFinishedException();
+				engine.DoMove(robotMove);
 			}
 			catch (GameFinishedException)
 			{
-				moves.Add(robotMove);
-				UpdateMap(map);
 				SaveMoves();
-				return;
 			}
-			catch (NoMoveException)
-			{
-				moves.Add(robotMove);
-				UpdateMap(map);
-				return;
-			}
-			moves.Add(robotMove);
-			UpdateMap(newMap);
 		}
 
 		private void SaveMoves()
@@ -242,5 +231,6 @@ namespace Visualizer
 
 		private readonly List<RobotMove> moves = new List<RobotMove>();
 		private RobotAI robot;
+		private Engine engine;
 	}
 }

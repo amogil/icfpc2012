@@ -5,7 +5,7 @@ namespace Logic
 {
 	public class MapSerializer
 	{
-		public string Serialize(MapCell[,] map, int water, int flooding, int waterproof)
+		public StringBuilder SerializeMapOnly(MapCell[,] map)
 		{
 			var builder = new StringBuilder();
 			int xUpperBound = map.GetLength(0);
@@ -16,6 +16,12 @@ namespace Logic
 					builder.Append(GetCellChar(map[x, y]));
 				builder.AppendLine();
 			}
+			return builder;
+		}
+
+		public string Serialize(MapCell[,] map, int water, int flooding, int waterproof)
+		{
+			var builder = SerializeMapOnly(map);
 			builder.AppendLine();
 			builder.AppendFormat("Water {0}", water);
 			builder.AppendLine();

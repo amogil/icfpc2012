@@ -23,5 +23,25 @@ namespace Logic
 			if (move == RobotMove.Right) return new Vector(1, 0);
 			return new Vector(0, 0);
 		}
+
+		public static RobotMove ToRobotMove(this char move)
+		{
+			switch (move)
+			{
+				case 'D':
+					return RobotMove.Down;
+				case 'U':
+					return RobotMove.Up;
+				case 'L':
+					return RobotMove.Left;
+				case 'R':
+					return RobotMove.Right;
+				case 'W':
+					return RobotMove.Wait;
+				case 'A':
+					return RobotMove.Abort;
+			}
+			throw new Exception(move.ToString());
+		}
 	}
 }

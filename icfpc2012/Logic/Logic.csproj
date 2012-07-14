@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="CodeAnnotations.cs" />
     <Compile Include="StackExtensions.cs" />
+    <Compile Include="Engine.cs" />
     <Compile Include="GreedyBot.cs" />
     <Compile Include="RobotAI.cs" />
     <Compile Include="MapSerializer_Test.cs" />

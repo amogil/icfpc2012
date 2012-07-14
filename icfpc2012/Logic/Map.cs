@@ -189,6 +189,11 @@ namespace Logic
 			return new MapSerializer().Serialize(map.SkipBorder(), Water, Flooding, Waterproof);
 		}
 
+		public string GetMapStateAsAscii()
+		{
+			return new MapSerializer().SerializeMapOnly(map.SkipBorder()).ToString();
+		}
+
 		private static MapCell Parse(char c)
 		{
 			switch (c)
