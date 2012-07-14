@@ -74,7 +74,7 @@ namespace Visualizer
 		private void UpdateInfoPanel()
 		{
 			waterproofLabel.Text = map.WaterproofLeft.ToString(CultureInfo.InvariantCulture);
-			scoreLabel.Text = map.Score.ToString(CultureInfo.InvariantCulture);
+			scoreLabel.Text = map.GetScore().ToString(CultureInfo.InvariantCulture);
 		}
 
 		private void UpdateMoves()
@@ -226,7 +226,7 @@ namespace Visualizer
 				+ Environment.NewLine
 				+ string.Format("LambdasGathered: {0}", map.LambdasGathered)
 				+ Environment.NewLine
-				+ string.Format("Score: {0}", map.Score)
+				+ string.Format("Score: {0}", map.GetScore())
 				+ Environment.NewLine
 				+ map);
 			MessageBox.Show("Moves saved to " + movesFile);

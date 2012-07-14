@@ -32,12 +32,13 @@ namespace Logic
 	{
 		Nothing,
 		Win,
-		Fail
+		Fail,
+		Abort,
 	}
 
 	public interface IMap
 	{
-		int Score { get; }
+		int MovesCount { get; }
 		int LambdasGathered { get; }
 		CheckResult State { get; }
 		int TotalLambdaCount { get; }
@@ -58,7 +59,7 @@ namespace Logic
 
 	public class Map : IMap
 	{
-		public int Score { get; private set; }
+		public int MovesCount { get; private set; }
 		public int LambdasGathered { get; private set; }
 		public CheckResult State { get; private set; }
 
@@ -248,15 +249,14 @@ namespace Logic
 
              if (move == RobotMove.Abort)
 			{
-				Score += LambdasGathered * 25;
-				State = CheckResult.Win;
+				State = CheckResult.Abort;
 				return this;
 			}
 
 			if (State != CheckResult.Nothing)
 				throw new GameFinishedException();
             
-			Score -= 1;
+			MovesCount++;
 			if (move != RobotMove.Wait)
 			{
 				int newRobotX = RobotX;
@@ -308,7 +308,6 @@ namespace Logic
 		{
 			if (map[newRobotX, newRobotY] == MapCell.Lambda)
 			{
-				Score += 25;
 				LambdasGathered++;
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.Earth)
@@ -316,7 +315,6 @@ namespace Logic
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
 			{
-				Score += LambdasGathered * 50;
 				State = CheckResult.Win;
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.Rock)
@@ -449,7 +447,6 @@ namespace Logic
             if (RobotX == LiftX && RobotY == LiftY && map[LiftX, LiftY] == MapCell.OpenedLift)
             {
                 State = CheckResult.Win;
-                Score += 50*LambdasGathered;
             }
 
 			CheckWeatherConditions();
@@ -477,14 +474,14 @@ namespace Logic
 			if (map[x, y - 1] == MapCell.Robot)
 			{
 				State = CheckResult.Fail;
-				throw new KilledByRockException();
+				throw new GameFinishedException();
 			}
 		}
 
         public bool LoadPreviousState()
         {
 			if (log.Count == 0) return false;
-			Score += 1;
+        	MovesCount--;
 
             var stateLog = log.Pop();
         	stateLog.MovingRocks.Reverse();
@@ -500,22 +497,13 @@ namespace Logic
             map[RobotX, RobotY] = MapCell.Robot;
             map[stateLog.RobotMove.NextX, stateLog.RobotMove.NextY] = stateLog.EatedObject;
 
-            switch (stateLog.EatedObject)
-            {
-                case MapCell.OpenedLift:
-                    Score -= 50 * LambdasGathered;
-                    break;
-                case MapCell.Lambda:
-                    Score -= 25;
-                    if(LambdasGathered == TotalLambdaCount) map[LiftX, LiftY] = MapCell.ClosedLift;
-                    LambdasGathered--;
-                    break;
-                default:
-                    if (State == CheckResult.Win) Score -= 25*LambdasGathered;
-                    break;
-            }
+        	if (stateLog.EatedObject == MapCell.Lambda)
+        	{
+        		if (LambdasGathered == TotalLambdaCount) map[LiftX, LiftY] = MapCell.ClosedLift;
+        		LambdasGathered--;
+        	}
 
-            State = CheckResult.Nothing;
+        	State = CheckResult.Nothing;
         	return true;
         }
 	}
@@ -540,10 +528,6 @@ namespace Logic
 	}
 
 	public class GameFinishedException : Exception
-	{
-	}
-
-	public class KilledByRockException : GameFinishedException
 	{
 	}
 

@@ -51,7 +51,7 @@
     <Compile Include="GreedyBot.cs" />
     <Compile Include="RobotAI.cs" />
     <Compile Include="MapSerializer_Test.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="MapExtensions.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

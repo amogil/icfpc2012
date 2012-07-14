@@ -5,7 +5,7 @@ namespace Logic
 {
 	public class MapV1 : IMap
 	{
-		public int Score { get; private set; }
+		public int MovesCount { get; private set; }
 		public int LambdasGathered { get; private set; }
 		public CheckResult State { get; private set; }
 
@@ -144,15 +144,14 @@ namespace Logic
 		{
 			if (move == RobotMove.Abort)
 			{
-				Score += LambdasGathered * 25;
-				State = CheckResult.Win;
+				State = CheckResult.Abort;
 				return this;
 			}
 
 			if (State != CheckResult.Nothing)
 				throw new GameFinishedException();
 
-			Score -= 1;
+			MovesCount++;
 			if (move != RobotMove.Wait)
 			{
 				int newRobotX = RobotX;
@@ -201,7 +200,6 @@ namespace Logic
 		{
 			if (map[newRobotX, newRobotY] == MapCell.Lambda)
 			{
-				Score += 25;
 				LambdasGathered++;
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.Earth)
@@ -209,7 +207,6 @@ namespace Logic
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.OpenedLift)
 			{
-				Score += LambdasGathered * 50;
 				State = CheckResult.Win;
 			}
 			else if (map[newRobotX, newRobotY] == MapCell.Rock)
