@@ -292,6 +292,14 @@ namespace Logic
 			{
 				int rockX = newRobotX * 2 - RobotX;
 				map[rockX, newRobotY] = MapCell.Rock;
+				log.Peek().MovingRocks.Add(
+					new Movement
+					{
+						PreviousX = newRobotX,
+						PreviousY = newRobotY,
+						NextX = rockX,
+						NextY = newRobotY
+						});
 			    activeRocks.Add(new Tuple<int, int>(rockX, newRobotY));
 			}
 			map[RobotX, RobotY] = MapCell.Empty;
@@ -355,7 +363,7 @@ namespace Logic
 	        foreach (var activeRockCoords in activeRocks)
 	        {
                 var newCoords = TryToMoveRock(activeRockCoords);
-                if (!activeRockCoords.Equals(newCoords))
+                if (!activeRockCoords.Equals(newCoords) && map[activeRockCoords.Item1, activeRockCoords.Item2] == MapCell.Rock)
                     rockMoves.Add(activeRockCoords, newCoords);
 	        }
 
@@ -365,7 +373,7 @@ namespace Logic
                 if (map[rockMove.Value.Item1, rockMove.Value.Item2] != MapCell.Rock)
                     newActiveRocks.Add(rockMove.Value);
                 map[rockMove.Value.Item1, rockMove.Value.Item2] = MapCell.Rock;
-                log.Peek().FallingRocks.Add(
+                log.Peek().MovingRocks.Add(
                     new Movement
                         {
                             PreviousX = rockMove.Key.Item1, 
@@ -423,8 +431,9 @@ namespace Logic
 			Score += 1;
 
             var stateLog = log.Pop();
+        	stateLog.MovingRocks.Reverse();
 
-            foreach (var rock in stateLog.FallingRocks)
+            foreach (var rock in stateLog.MovingRocks)
             {
                 map[rock.PreviousX, rock.PreviousY] = MapCell.Rock;
                 map[rock.NextX, rock.NextY] = MapCell.Empty;
@@ -467,7 +476,7 @@ namespace Logic
     {
 		public Movement RobotMove;
         public MapCell EatedObject;
-        public List<Movement> FallingRocks = new List<Movement>();
+        public List<Movement> MovingRocks = new List<Movement>();
     }
 
     public class NoMoveException : Exception
