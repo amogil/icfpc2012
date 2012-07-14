@@ -3,7 +3,7 @@ using Logic;
 
 namespace MapGenerator
 {
-	internal class RandomMapGenerator
+	public class RandomMapGenerator : IMapGenerator
 	{
 		private readonly MapGeneratorOptions options;
 		private readonly Random random = new Random();
