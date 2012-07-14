@@ -367,7 +367,7 @@ namespace Logic
 
 			bool isSafe = true;
 
-			if(movesDone <= 2 && to.Y == from.Y - 1)
+			if(to.Y == from.Y - 1)
 			{
 				for (int x = to.X - 1; x <= to.X + 1; x++)
 				{
