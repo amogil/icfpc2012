@@ -329,7 +329,7 @@ namespace Logic
 
 		public bool IsSafeMove(Vector from, Vector to)
 		{
-			if (to.Y + 2 > Height)
+			if (to.Y + 2 >= Height)
 				return true;
 
 			bool isSafe = true;
