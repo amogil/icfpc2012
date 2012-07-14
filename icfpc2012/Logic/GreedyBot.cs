@@ -39,53 +39,91 @@ namespace Logic
 		private static Tuple<Vector, Stack<RobotMove>> FindBestTarget(IMap map, bool checkBestIsNotBad = true)
 		{
 			var waveRun = new WaveRun(map, map.Robot);
-			Tuple<Vector, Stack<RobotMove>> someTarget = null;
-			foreach (Tuple<Vector, Stack<RobotMove>> target in waveRun.EnumerateTargets())
-			{
-				bool isBad = checkBestIsNotBad && IsBadTarget(target, map);
-				if (!isBad) return target;
-				else someTarget = someTarget ?? target;
+			Tuple<Vector, Stack<RobotMove>> result = null;
 
+			if (checkBestIsNotBad)
+			{
+				var orderedMoves = waveRun.EnumerateTargets().Take(9)
+					.OrderBy(t => CalculateTargetBadness(t, map)).ToArray();
+				result = orderedMoves.FirstOrDefault();
 			}
-			if (someTarget != null) return someTarget;
+			else result = waveRun.EnumerateTargets().FirstOrDefault();
+			if (result != null) return result;
 			if (waveRun.Lift != null && map[waveRun.Lift.Item1] == MapCell.OpenedLift)
 				return waveRun.Lift;
 			return null;
 		}
-
-		private static bool IsBadTarget(Tuple<Vector, Stack<RobotMove>> target, IMap map)
+		
+		private static double CalculateTargetBadness(Tuple<Vector, Stack<RobotMove>> target, IMap map)
 		{
+			double badness = 0.0;
 			bool deadend = false;
-			bool moved = TryMoveToTargetFairly(
-				target.Item1, target.Item2, map, 
+			bool moved = CanMoveToTargetExactlyByPath(target.Item2, map,
 				m =>
-					{
-						deadend = FindBestTarget(m, false) == null && m[m.Robot] != MapCell.OpenedLift;
-					});
-			return !moved || deadend;
+				{
+					deadend = FindBestTarget(m, false) == null && m[m.Robot] != MapCell.OpenedLift;
+				});
+			if (moved && deadend) badness += 100;
+			if (!CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
+				badness += 500;
+			badness += target.Item2.Count;
+			return badness;
 		}
 
-		private static bool TryMoveToTargetFairly(Vector target, Stack<RobotMove> robotMoves, IMap initialMap,
-		                                          Action<IMap> analyseMap)
+		private static bool CanMoveToTargetExactlyByPathWithNoRocksMoved(Stack<RobotMove> robotMoves, IMap map)
 		{
-			if (initialMap.State != CheckResult.Nothing) return false;
-			IMap mapAfterOneMove = initialMap.Move(robotMoves.First());
+			int moved = 0;
 			try
 			{
-				if (mapAfterOneMove.Robot.Equals(target))
+				foreach (var move in robotMoves)
 				{
-					analyseMap(mapAfterOneMove);
-					return true;
+					try
+					{
+						moved++;
+						map = map.Move(move);
+					}
+					catch (GameFinishedException)
+					{
+						return false;
+					}
+					if (map.RocksFallAfterMoveTo(map.Robot))
+					{
+						return false;
+					}
 				}
-				Tuple<Vector, Stack<RobotMove>> newBestTarget = FindBestTarget(initialMap, false);
-				if (newBestTarget == null) return false;
-				if (newBestTarget.Item1.Equals(target))
-					return TryMoveToTargetFairly(target, newBestTarget.Item2, mapAfterOneMove, analyseMap);
-				return false;
+				return true;
 			}
 			finally
 			{
-				initialMap.LoadPreviousState();
+				for (int i = 0; i < moved; i++)
+					map.LoadPreviousState();
+			}
+		}
+		
+		private static bool CanMoveToTargetExactlyByPath(Stack<RobotMove> robotMoves, IMap map, Action<IMap> analyseMap)
+		{
+			int moved = 0;
+			try
+			{
+				foreach (var move in robotMoves)
+				{
+					try
+					{
+						moved++;
+						map = map.Move(move);
+					}
+					catch (GameFinishedException)
+					{
+						return false;
+					}
+				}
+				analyseMap(map);
+				return true;
+			}
+			finally
+			{
+				for (int i = 0; i < moved; i++)
+					map.LoadPreviousState();
 			}
 		}
 	}

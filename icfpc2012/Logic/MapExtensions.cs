@@ -1,4 +1,6 @@
-﻿namespace Logic
+﻿using System.Collections.Generic;
+
+namespace Logic
 {
 	public static class MapExtensions
 	{
@@ -24,5 +26,57 @@
 			if (map.State == CheckResult.Fail) c = 25;
 			return map.LambdasGathered * c - map.MovesCount;
 		}
+
+		public static bool RocksFallAfterMoveTo(this IMap map, Vector to)
+		{
+			for (int rockX = to.X - 1; rockX <= to.X + 1; rockX++)
+			{
+				for (int rockY = to.Y; rockY <= to.Y + 1; rockY++)
+				{
+					var coords = new Vector(rockX, rockY);
+					if (!coords.Equals(map.TryToMoveRock(coords)))
+						return true;
+				}
+			}
+			return false;
+		}
+
+		
+		public static Vector TryToMoveRock(this IMap map, Vector coords)
+		{
+			return TryToMoveRock(map, coords.X, coords.Y);
+		}
+
+		private static bool IsEmptyOrRobot(MapCell cell)
+		{
+			return cell == MapCell.Empty || cell == MapCell.Robot;
+		}
+
+		public static Vector TryToMoveRock(this IMap map, int x, int y)
+		{
+			if (map[x, y] == MapCell.Rock && IsEmptyOrRobot(map[x, y - 1]))
+			{
+				return new Vector(x, y - 1);
+			}
+			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
+				&& IsEmptyOrRobot(map[x + 1, y]) && IsEmptyOrRobot(map[x + 1, y - 1]))
+			{
+				return new Vector(x + 1, y - 1);
+			}
+			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
+				&& (!IsEmptyOrRobot(map[x + 1, y]) || !IsEmptyOrRobot(map[x + 1, y - 1]))
+				&& IsEmptyOrRobot(map[x - 1, y]) && IsEmptyOrRobot(map[x - 1, y - 1]))
+			{
+				return new Vector(x - 1, y - 1);
+			}
+			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Lambda
+				&& IsEmptyOrRobot(map[x + 1, y]) && IsEmptyOrRobot(map[x + 1, y - 1]))
+			{
+				return new Vector(x + 1, y - 1);
+			}
+
+			return new Vector(x, y);
+		}
+
 	}
 }
