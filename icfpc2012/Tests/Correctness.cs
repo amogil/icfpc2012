@@ -103,7 +103,7 @@ namespace Tests
 		[Test]
 		public void AgainstValidator()
 		{
-			var someTestsFailed = false;
+			var allTestsPassed = true;
 			foreach (var t in GetReferenceMaps())
 			{
 				var mapName = t.Item1;
@@ -111,10 +111,10 @@ namespace Tests
 				{
 					var engine = new Engine(new Map(t.Item2));
 					engine.RunProgram(testItem.Moves);
-					someTestsFailed |= testItem.AssertEngineState(engine);
+					allTestsPassed &= testItem.AssertEngineState(engine);
 				}
 			}
-			Assert.False(someTestsFailed);
+			Assert.IsTrue(allTestsPassed);
 		}
 	}
 }

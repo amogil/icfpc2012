@@ -153,7 +153,7 @@ namespace Logic
 				if (parts[0] == "Waterproof") Waterproof = int.Parse(parts[1]);
 			}
 			StepsToIncreaseWater = Flooding;
-			WaterproofLeft = Waterproof;
+			WaterproofLeft = Waterproof + 1;
 		}
 
 		private void InitializeActiveRocks()
@@ -466,7 +466,7 @@ namespace Logic
 		private bool IsRobotKilledByFlood()
 		{
 			if (Water >= RobotY) WaterproofLeft--;
-			else WaterproofLeft = Waterproof;
+			else WaterproofLeft = Waterproof + 1;
 			if (WaterproofLeft <= 0) return true;
 			if (Flooding > 0)
 			{
