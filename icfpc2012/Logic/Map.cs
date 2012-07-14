@@ -168,10 +168,9 @@ namespace Logic
 			if (State != CheckResult.Nothing)
 				throw new GameFinishedException();
 
+			Score -= 1;
 			if (move != RobotMove.Wait)
 			{
-				Score -= 1;
-
 				int newRobotX = RobotX;
 				int newRobotY = RobotY;
 
