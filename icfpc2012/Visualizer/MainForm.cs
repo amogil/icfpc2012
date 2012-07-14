@@ -133,6 +133,7 @@ namespace Visualizer
 		{
 			LoadMap(LastOpenedMapFile);
 			robot = RobotAI.Create(robotType, map).GetMoves().GetEnumerator();
+			robot.MoveNext();
 		}
 
 		public string LastOpenedMapFile
