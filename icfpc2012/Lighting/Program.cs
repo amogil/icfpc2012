@@ -12,7 +12,7 @@ namespace Lighting
 		static void Main(string[] args)
 		{
 			string[] lines = Console.In.ReadToEnd().Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
-			var map = new Map(lines);
+			IMap map = new Map(lines);
 			var bot = new GreedyBot();
 			var timer = Stopwatch.StartNew();
 			RobotMove robotMove = RobotMove.Wait;

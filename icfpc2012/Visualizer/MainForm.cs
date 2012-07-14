@@ -137,8 +137,7 @@ namespace Visualizer
 			var fixedProgramItem = new ToolStripMenuItem("Program from clipboard", null, (sender, args) =>
 			{
 				LoadMap(LastOpenedMapFile);
-				robot = new RollbackableEnumerator<RobotMove>(Clipboard.GetText().Select(c => c.ToRobotMove()).GetEnumerator());
-				robot.MoveNext();
+				robot = new FixedProgramRobot(Clipboard.GetText().Select(c => c.ToRobotMove()).ToArray());
 			});
 			robotToolStripMenuItem.DropDownItems.Add(fixedProgramItem);
 		}

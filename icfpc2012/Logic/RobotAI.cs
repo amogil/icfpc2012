@@ -25,7 +25,23 @@ namespace Logic
 			return (RobotAI) constructorInfo.Invoke(new object[0]);
 		}
 
-		public abstract RobotMove NextMove(Map map);
+		public abstract RobotMove NextMove(IMap map);
+	}
+
+	public class FixedProgramRobot : RobotAI
+	{
+		private int index = 0;
+		private readonly RobotMove[] moves;
+
+		public FixedProgramRobot(params RobotMove[] moves)
+		{
+			this.moves = moves;
+		}
+
+		public override RobotMove NextMove(IMap map)
+		{
+			return moves[index++];
+		}
 	}
 
 	public class StupidRobot : RobotAI
@@ -33,7 +49,7 @@ namespace Logic
 		private RobotMove[] moves = new[] {RobotMove.Down, RobotMove.Left, RobotMove.Right, RobotMove.Up, RobotMove.Wait,};
 		private int index = 0;
 
-		public override RobotMove NextMove(Map map)
+		public override RobotMove NextMove(IMap map)
 		{
 			return moves[(index++)%moves.Length];
 		}

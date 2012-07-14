@@ -11,7 +11,7 @@ namespace Logic
 		/*
 		 * 
 		 */
-		public override RobotMove NextMove(Map map)
+		public override RobotMove NextMove(IMap map)
 		{
 			if (currentTarget == null)
 			{
@@ -34,7 +34,7 @@ namespace Logic
 			return true;
 		}
 
-		private Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map)
+		private Tuple<Vector, Stack<RobotMove>> FindBestTarget(IMap map)
 		{
 			var waveRun = new WaveRun(map, map.Robot);
 			foreach (var target in waveRun.EnumerateTargets())
