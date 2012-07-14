@@ -42,13 +42,19 @@ namespace Logic
 		private MapCell[,] map;
 		private MapCell[,] swapMap;
 
-		private int totalLambdaCount;
+		private readonly int totalLambdaCount;
+		public int Water { get; private set; }
+		public int Flooding { get; private set; }
+		public int Waterproof { get; private set; }
+		public int StepsToIncreaseWater { get; private set; }
+		public int WaterproofLeft { get; private set; }
 
 		public Map(string[] lines)
 		{
 			lambdaCounter = 0;
 
-			Height = lines.Length;
+			int firstBlankLineIndex = Array.IndexOf(lines, "");
+			Height = firstBlankLineIndex == -1 ? lines.Length : firstBlankLineIndex;
 			Width = lines.Max(a => a.Length);
 
 			map = new MapCell[Width + 2,Height + 2];
@@ -91,11 +97,28 @@ namespace Logic
                     }
 				}
 			}
+			InitializeFlooding(lines.Skip(Height + 1).ToArray());
 
 			Height += 2;
 			Width += 2;
 
 			totalLambdaCount = lambdaCounter;
+		}
+
+		private void InitializeFlooding(string[] floodingSpecs)
+		{
+			Water = 0;
+			Flooding = 0;
+			Waterproof = 10;
+			foreach (var floodingSpec in floodingSpecs)
+			{
+				string[] parts = floodingSpec.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+				if (parts[0] == "Water") Water = int.Parse(parts[1]);
+				if (parts[0] == "Flooding") Flooding = int.Parse(parts[1]);
+				if (parts[0] == "Waterproof") Waterproof = int.Parse(parts[1]);
+			}
+			StepsToIncreaseWater = Flooding;
+			WaterproofLeft = Waterproof;
 		}
 
 		public int RobotX { get; private set; }
@@ -265,6 +288,24 @@ namespace Logic
 			MapCell[,] swap = swapMap;
 			swapMap = map;
 			map = swap;
+			CheckWeatherConditions();
+		}
+
+		private void CheckWeatherConditions()
+		{
+			if (Water >= RobotY) WaterproofLeft--;
+			else WaterproofLeft = Waterproof;
+			if (WaterproofLeft <= 0) throw new GameFinishedException(); //утонули
+			if (Flooding > 0)
+			{
+				StepsToIncreaseWater--;
+				if (StepsToIncreaseWater == 0)
+				{
+					Water++;
+					StepsToIncreaseWater = Flooding;
+				}
+			}
+
 		}
 
 		private void CheckRobotDanger(int x, int y)

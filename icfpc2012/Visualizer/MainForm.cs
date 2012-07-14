@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using Logic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace Visualizer
 		private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			var openDialog = new OpenFileDialog();
+			openDialog.InitialDirectory = @"../../../maps";
 			if (openDialog.ShowDialog(this) == DialogResult.OK)
 			{
 				LoadMap(openDialog.FileName);
@@ -39,6 +41,13 @@ namespace Visualizer
 					UpdateCell(x, y);
 			picture.Image = bitmap;
 			UpdateMoves();
+			UpdateInfoPanel();
+		}
+
+		private void UpdateInfoPanel()
+		{
+			waterproofLabel.Text = map.WaterproofLeft.ToString();
+			scoreLabel.Text = "N/A";
 		}
 
 		private void UpdateMoves()
@@ -54,7 +63,12 @@ namespace Visualizer
 		private void UpdateCell(int x, int y)
 		{
 			Graphics g = Graphics.FromImage(bitmap);
-			g.DrawImage(CellImages.Bitmaps[map[x, y]], (x-1)*CellSize, (map.Height - y-1-1)*CellSize, CellSize, CellSize);
+			var rect = new Rectangle((x-1)*CellSize, (map.Height - y-1-1)*CellSize, CellSize, CellSize);
+			g.DrawImage(CellImages.Bitmaps[map[x, y]], rect);
+			if (map.Water >= y)
+				g.FillRectangle(new SolidBrush(Color.FromArgb(150, 0, 0, 255)), rect);
+			if (map.Flooding > 0 && map.StepsToIncreaseWater == 1 && y == map.Water+1)
+				g.FillRectangle(new SolidBrush(Color.FromArgb(50, 0, 0, 255)), rect);
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -69,6 +83,7 @@ namespace Visualizer
 		{
 			moves.Clear();
 			UpdateMap(new Map(File.ReadAllLines(mapFile)));
+			Text = mapFile;
 		}
 
 		public string LastOpenedMapFile
@@ -111,6 +126,8 @@ namespace Visualizer
 			try
 			{
 				newMap = map.Move(robotMove);
+				if (newMap.State != CheckResult.Nothing)
+					throw new GameFinishedException();
 			}
 			catch (GameFinishedException)
 			{
@@ -121,6 +138,7 @@ namespace Visualizer
 			}
 			catch (NoMoveException)
 			{
+				//ход в стену
 				return;
 			}
 			moves.Add(robotMove);
@@ -137,7 +155,6 @@ namespace Visualizer
 				Path.GetFileNameWithoutExtension(LastOpenedMapFile) + "_" + DateTime.Now.Ticks + ".moves");
 			File.WriteAllText(movesFile, GetMovesString() + Environment.NewLine + map);
 			MessageBox.Show("Moves saved to " + movesFile);
-
 		}
 
 		private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
