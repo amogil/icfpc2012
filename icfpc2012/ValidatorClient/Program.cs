@@ -22,12 +22,12 @@ namespace ValidatorClient
 							if(File.Exists(Path.GetFileNameWithoutExtension(filename) + Extension))
 								continue;
 							ProcessMovesFile(filename);
-							Thread.Sleep(600000 + random.Next(60000));
 						}
 						catch(Exception e)
 						{
 							Console.WriteLine(e);
 						}
+						Thread.Sleep(600000 + random.Next(60000));
 					}
 					return;
 				}

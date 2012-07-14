@@ -7,7 +7,7 @@ namespace ValidatorClient
 	{
 		public static ValidatorResponse Parse(string content)
 		{
-			var match = Regex.Match(content, @"<pre>(?<map>.*?)</pre>\s*<br>\s*Score:\s*(?<score>\d*)\s*<br>(?<result>.*?)<br>\s*<h3>High scores</h3>", RegexOptions.Singleline);
+			var match = Regex.Match(content, @"<pre>(?<map>.*?)</pre>\s*<br>\s*Score:\s*(?<score>\d*)\s*<br>(?:(?<result>.*?)<br>)?\s*<h3>High scores</h3>", RegexOptions.Singleline);
 			if(!match.Success)
 				throw new FormatException(string.Format("Invalid response: '{0}'", content));
 			
