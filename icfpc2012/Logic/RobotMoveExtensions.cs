@@ -20,7 +20,7 @@ namespace Logic
 			if (move == RobotMove.Down) return new Vector(0, -1);
 			if (move == RobotMove.Up) return new Vector(0, 1);
 			if (move == RobotMove.Left) return new Vector(-1, 0);
-			if (move == RobotMove.Right) return new Vector(0, 1);
+			if (move == RobotMove.Right) return new Vector(1, 0);
 			return new Vector(0, 0);
 		}
 	}

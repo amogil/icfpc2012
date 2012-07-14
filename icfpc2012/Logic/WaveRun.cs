@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace Logic
 {
-	internal class WaveRun
+	public class WaveRun
 	{
 		private readonly Map map;
 		private readonly Vector startPosition;
@@ -75,14 +75,23 @@ namespace Logic
 		public void Test()
 		{
 			Map map = WellKnownMaps.Contest1();
+			var formattedTargets = GetTargets(map.Robot, map);
+			Assert.That(formattedTargets, Contains.Item("(4, 4) via DL"));
+			Assert.That(formattedTargets, Contains.Item("(2, 3) via DLLDL"));
+			
+			formattedTargets = GetTargets(new Vector(2, 2), map);
+			Assert.That(formattedTargets, Contains.Item("(2, 3) via U"));
+		}
+
+		private static string[] GetTargets(Vector from, Map map)
+		{
 			Console.WriteLine(map.ToString());
-			var waveRun = new WaveRun(map, map.Robot);
+			var waveRun = new WaveRun(map, from);
 			Tuple<Vector, RobotMove[]>[] targets = waveRun.EnumerateTargets().ToArray();
 			string[] formattedTargets = targets.Select(FormatTarget).ToArray();
 			foreach (var target in formattedTargets)
 				Console.WriteLine(target);
-			Assert.That(formattedTargets, Contains.Item("(4, 4) via DL"));
-			Assert.That(formattedTargets, Contains.Item("(2, 3) via DLLDL"));
+			return formattedTargets;
 		}
 
 		private static string FormatTarget(Tuple<Vector, RobotMove[]> target)
