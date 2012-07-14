@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using Logic;
 using System.Linq;
@@ -23,6 +25,7 @@ namespace Visualizer
 		private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			var openDialog = new OpenFileDialog();
+			openDialog.InitialDirectory = @"../../../maps";
 			if (openDialog.ShowDialog(this) == DialogResult.OK)
 			{
 				LoadMap(openDialog.FileName);
@@ -39,6 +42,13 @@ namespace Visualizer
 					UpdateCell(x, y);
 			picture.Image = bitmap;
 			UpdateMoves();
+			UpdateInfoPanel();
+		}
+
+		private void UpdateInfoPanel()
+		{
+			waterproofLabel.Text = map.WaterproofLeft.ToString(CultureInfo.InvariantCulture);
+			scoreLabel.Text = map.Score.ToString(CultureInfo.InvariantCulture);
 		}
 
 		private void UpdateMoves()
@@ -54,7 +64,12 @@ namespace Visualizer
 		private void UpdateCell(int x, int y)
 		{
 			Graphics g = Graphics.FromImage(bitmap);
-			g.DrawImage(CellImages.Bitmaps[map[x, y]], (x-1)*CellSize, (map.Height - y-1-1)*CellSize, CellSize, CellSize);
+			var rect = new Rectangle((x-1)*CellSize, (map.Height - y-1-1)*CellSize, CellSize, CellSize);
+			g.DrawImage(CellImages.Bitmaps[map[x, y]], rect);
+			if (map.Water >= y)
+				g.FillRectangle(new SolidBrush(Color.FromArgb(150, 0, 0, 255)), rect);
+			if (map.Flooding > 0 && map.StepsToIncreaseWater == 1 && y == map.Water+1)
+				g.FillRectangle(new SolidBrush(Color.FromArgb(50, 0, 0, 255)), rect);
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -63,12 +78,31 @@ namespace Visualizer
 			if (mapFile != null)
 				LoadMap(mapFile);
 			zoomBar.Value = CellSize;
+			InitRobots();
 		}
 
 		private void LoadMap(string mapFile)
 		{
 			moves.Clear();
 			UpdateMap(new Map(File.ReadAllLines(mapFile)));
+			Text = mapFile;
+		}
+
+		private void InitRobots()
+		{
+			Type[] robotTypes = RobotAI.GetAllRobotsTypes();
+			foreach (var robotType in robotTypes.OrderBy(t => t.Name))
+			{
+				var rt = robotType;
+				var robotItem = new ToolStripMenuItem(robotType.Name, null, (sender, args) => RunRobot(rt));
+				robotToolStripMenuItem.DropDownItems.Add(robotItem);
+			}
+		}
+
+		private void RunRobot(Type robotType)
+		{
+			LoadMap(LastOpenedMapFile);
+			robot = RobotAI.Create(robotType, map).GetMoves().GetEnumerator();
 		}
 
 		public string LastOpenedMapFile
@@ -102,6 +136,15 @@ namespace Visualizer
 			if (e.KeyCode == Keys.Up) DoMove(RobotMove.Up);
 			if (e.KeyCode == Keys.Down) DoMove(RobotMove.Down);
 			if (e.KeyCode == Keys.Space) DoMove(RobotMove.Wait);
+			if (e.KeyCode == Keys.Enter)
+			{
+				if (robot != null)
+				{
+					DoMove(robot.Current);
+					if (!robot.MoveNext())
+						robot = null;
+				}
+			}
 		}
 
 		private void DoMove(RobotMove robotMove)
@@ -111,6 +154,8 @@ namespace Visualizer
 			try
 			{
 				newMap = map.Move(robotMove);
+				if (newMap.State != CheckResult.Nothing)
+					throw new GameFinishedException();
 			}
 			catch (GameFinishedException)
 			{
@@ -121,6 +166,8 @@ namespace Visualizer
 			}
 			catch (NoMoveException)
 			{
+				moves.Add(robotMove);
+				UpdateMap(map);
 				return;
 			}
 			moves.Add(robotMove);
@@ -134,10 +181,16 @@ namespace Visualizer
 			string movesFile = 
 				Path.Combine(
 				directoryName,
-				Path.GetFileNameWithoutExtension(LastOpenedMapFile) + "_" + DateTime.Now.Ticks + ".moves");
-			File.WriteAllText(movesFile, GetMovesString() + Environment.NewLine + map);
+				Path.GetFileNameWithoutExtension(LastOpenedMapFile) + "_" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-ffff") + ".moves");
+			File.WriteAllText(movesFile,
+				GetMovesString()
+				+ Environment.NewLine
+				+ string.Format("LambdasGathered: {0}", map.LambdasGathered)
+				+ Environment.NewLine
+				+ string.Format("Score: {0}", map.Score)
+				+ Environment.NewLine
+				+ map);
 			MessageBox.Show("Moves saved to " + movesFile);
-
 		}
 
 		private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
@@ -146,5 +199,6 @@ namespace Visualizer
 		}
 
 		private readonly List<RobotMove> moves = new List<RobotMove>();
+		private IEnumerator<RobotMove> robot;
 	}
 }

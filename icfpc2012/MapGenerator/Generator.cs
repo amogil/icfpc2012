@@ -8,7 +8,7 @@ namespace MapGenerator
 		private readonly Random random = new Random();
 
 		public Generator(int height, int width, bool hasLift = true, int rocksCount = 0, int earthCount = 0, int wallCount = 0,
-		                 int lambdaCount = 1)
+		                 int lambdaCount = 1, int waterLevel = 0, int flooding = 0, int waterproof = 0)
 		{
 			Height = height;
 			Width = width;
@@ -17,6 +17,9 @@ namespace MapGenerator
 			EarthCount = earthCount;
 			WallCount = wallCount;
 			LambdaCount = lambdaCount;
+			WaterLevel = waterLevel;
+			Flooding = flooding;
+			Waterproof = waterproof;
 		}
 
 		private int Height { get; set; }
@@ -26,19 +29,21 @@ namespace MapGenerator
 		private int EarthCount { get; set; }
 		private int WallCount { get; set; }
 		private int LambdaCount { get; set; }
+		private int WaterLevel { get; set; }
+		private int Flooding { get; set; }
+		private int Waterproof { get; set; }
 
 		public string Generate()
 		{
-			var map = new MapCell[Width,Height];
-			PutBordersWalls(map);
-			PutLift(map);
-			PutElements(map, RocksCount, MapCell.Rock);
-			PutElements(map, EarthCount, MapCell.Earth);
-			PutElements(map, WallCount, MapCell.Wall);
-			PutElements(map, LambdaCount, MapCell.Lambda);
-			PutElements(map, 1, MapCell.Robot);
-			var mapSerializer = new MapSerializer();
-			return mapSerializer.Serialize(map);
+			var mapCells = new MapCell[Width,Height];
+			PutBordersWalls(mapCells);
+			PutLift(mapCells);
+			PutElements(mapCells, RocksCount, MapCell.Rock);
+			PutElements(mapCells, EarthCount, MapCell.Earth);
+			PutElements(mapCells, WallCount, MapCell.Wall);
+			PutElements(mapCells, LambdaCount, MapCell.Lambda);
+			PutElements(mapCells, 1, MapCell.Robot);
+			return new MapSerializer().Serialize(mapCells, WaterLevel, Flooding, Waterproof);
 		}
 
 		private void PutElements(MapCell[,] map, int count, MapCell mapCell)
