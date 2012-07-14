@@ -547,7 +547,6 @@ namespace Logic
 		{
 			if (Water >= RobotY) WaterproofLeft--;
 			else WaterproofLeft = Waterproof + 1;
-			if (WaterproofLeft <= 0) return true;
 			if (Flooding > 0)
 			{
 				StepsToIncreaseWater--;
@@ -557,7 +556,7 @@ namespace Logic
 					StepsToIncreaseWater = Flooding;
 				}
 			}
-			return false;
+			return WaterproofLeft <= 0;
 		}
 
 		private bool IsRobotKilledByRock(int x, int y)

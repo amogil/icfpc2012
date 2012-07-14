@@ -75,6 +75,7 @@ namespace Visualizer
 		{
 			waterproofLabel.Text = map.WaterproofLeft.ToString(CultureInfo.InvariantCulture);
 			scoreLabel.Text = map.GetScore().ToString(CultureInfo.InvariantCulture);
+			movesLabel.Text = map.MovesCount.ToString(CultureInfo.InvariantCulture);
 		}
 
 		private void UpdateMoves()
