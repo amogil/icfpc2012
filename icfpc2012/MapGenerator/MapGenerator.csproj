@@ -70,6 +70,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PatternMapGenerator.cs" />
     <Compile Include="RandomMapGenerator.cs" />
     <Compile Include="MapGeneratorOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

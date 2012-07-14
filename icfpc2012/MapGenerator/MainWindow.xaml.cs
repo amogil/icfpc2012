@@ -25,7 +25,7 @@ namespace MapGenerator
 			                                      waterLevel: Convert.ToInt32(tbWater.Text),
 			                                      flooding: Convert.ToInt32(tbFlooding.Text),
 			                                      waterproof: Convert.ToInt32(tbWaterproof.Text));
-			var generator = new RandomMapGenerator(options);
+			var generator = new PatternMapGenerator(options);
 			var map = generator.Generate();
 			tbResult.Text = map;
 			Clipboard.SetText(map);

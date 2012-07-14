@@ -6,14 +6,14 @@ namespace MapGenerator
 	public class RandomMapGenerator : IMapGenerator
 	{
 		private readonly MapGeneratorOptions options;
-		private readonly Random random = new Random();
+		protected readonly Random random = new Random();
 
 		public RandomMapGenerator(MapGeneratorOptions options)
 		{
 			this.options = options;
 		}
 
-		public string Generate()
+		public virtual string Generate()
 		{
 			var mapCells = new MapCell[options.Width,options.Height];
 			PutBordersWalls(mapCells);
@@ -26,13 +26,13 @@ namespace MapGenerator
 			return new MapSerializer().Serialize(mapCells, options.WaterLevel, options.Flooding, options.Waterproof);
 		}
 
-		private void PutElements(MapCell[,] map, int count, MapCell mapCell)
+		protected void PutElements(MapCell[,] map, int count, MapCell mapCell)
 		{
 			for(int i = 0; i < count; i++)
 				PutElement(map, mapCell);
 		}
 
-		private void PutElement(MapCell[,] map, MapCell mapCell)
+		protected void PutElement(MapCell[,] map, MapCell mapCell)
 		{
 			var indexX = random.Next(1, map.GetLength(0) - 1);
 			var indexY = random.Next(1, map.GetLength(1) - 1);
@@ -42,7 +42,7 @@ namespace MapGenerator
 				PutElement(map, mapCell);
 		}
 
-		private void PutLift(MapCell[,] map)
+		protected void PutLift(MapCell[,] map)
 		{
 			if(options.HasLift)
 			{
@@ -58,13 +58,13 @@ namespace MapGenerator
 			}
 		}
 
-		private static bool IsSurroundWall(MapCell[,] map, int indexX, int indexY)
+		protected static bool IsSurroundWall(MapCell[,] map, int indexX, int indexY)
 		{
 			return map[indexX, indexY] == MapCell.Wall
 			       && (indexX == 0 || indexX == map.GetLength(0) - 1 || indexY == 0 || indexY == map.GetLength(1) - 1);
 		}
 
-		public static bool IsCornerBlock(MapCell[,] map, int indexX, int indexY)
+		protected static bool IsCornerBlock(MapCell[,] map, int indexX, int indexY)
 		{
 			return (indexX == 0 && indexY == 0)
 			       || (indexX == map.GetLength(0) - 1 && indexY == 0)
@@ -72,7 +72,7 @@ namespace MapGenerator
 			       || (indexX == map.GetLength(0) - 1 && indexY == map.GetLength(1) - 1);
 		}
 
-		private void PutBordersWalls(MapCell[,] map)
+		protected void PutBordersWalls(MapCell[,] map)
 		{
 			for(int i = 0; i < options.Width; i++)
 			{
