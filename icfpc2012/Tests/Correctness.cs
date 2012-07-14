@@ -41,7 +41,7 @@ namespace Tests
 	}
 
 	[TestFixture]
-	public class Correctnes
+	public class Correctness
 	{
 		private const string mapsBaseDir = @"..\..\..\..\maps";
 
