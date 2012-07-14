@@ -77,6 +77,7 @@ namespace Visualizer
 			if (mapFile != null)
 				LoadMap(mapFile);
 			zoomBar.Value = CellSize;
+			InitRobots();
 		}
 
 		private void LoadMap(string mapFile)
@@ -84,6 +85,23 @@ namespace Visualizer
 			moves.Clear();
 			UpdateMap(new Map(File.ReadAllLines(mapFile)));
 			Text = mapFile;
+		}
+
+		private void InitRobots()
+		{
+			Type[] robotTypes = RobotAI.GetAllRobotsTypes();
+			foreach (var robotType in robotTypes.OrderBy(t => t.Name))
+			{
+				var rt = robotType;
+				var robotItem = new ToolStripMenuItem(robotType.Name, null, (sender, args) => RunRobot(rt));
+				robotToolStripMenuItem.DropDownItems.Add(robotItem);
+			}
+		}
+
+		private void RunRobot(Type robotType)
+		{
+			LoadMap(LastOpenedMapFile);
+			robot = RobotAI.Create(robotType, map).GetMoves().GetEnumerator();
 		}
 
 		public string LastOpenedMapFile
@@ -117,6 +135,15 @@ namespace Visualizer
 			if (e.KeyCode == Keys.Up) DoMove(RobotMove.Up);
 			if (e.KeyCode == Keys.Down) DoMove(RobotMove.Down);
 			if (e.KeyCode == Keys.Space) DoMove(RobotMove.Wait);
+			if (e.KeyCode == Keys.Enter)
+			{
+				if (robot != null)
+				{
+					DoMove(robot.Current);
+					if (!robot.MoveNext())
+						robot = null;
+				}
+			}
 		}
 
 		private void DoMove(RobotMove robotMove)
@@ -163,5 +190,6 @@ namespace Visualizer
 		}
 
 		private readonly List<RobotMove> moves = new List<RobotMove>();
+		private IEnumerator<RobotMove> robot;
 	}
 }

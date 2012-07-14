@@ -30,6 +30,7 @@
 		{
 			this.infoPanel = new System.Windows.Forms.Panel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.waterproofLabel = new System.Windows.Forms.Label();
 			this.scoreLabel = new System.Windows.Forms.Label();
@@ -41,7 +42,8 @@
 			this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.movesBox = new System.Windows.Forms.TextBox();
-			this.label2 = new System.Windows.Forms.Label();
+			this.robotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.label3 = new System.Windows.Forms.Label();
 			this.infoPanel.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
@@ -57,7 +59,7 @@
 			this.infoPanel.Dock = System.Windows.Forms.DockStyle.Left;
 			this.infoPanel.Location = new System.Drawing.Point(0, 24);
 			this.infoPanel.Name = "infoPanel";
-			this.infoPanel.Size = new System.Drawing.Size(237, 488);
+			this.infoPanel.Size = new System.Drawing.Size(289, 488);
 			this.infoPanel.TabIndex = 1;
 			// 
 			// tableLayoutPanel1
@@ -69,6 +71,7 @@
 			this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.waterproofLabel, 1, 0);
 			this.tableLayoutPanel1.Controls.Add(this.scoreLabel, 1, 1);
+			this.tableLayoutPanel1.Controls.Add(this.label3, 0, 7);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -82,8 +85,18 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 61F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 62F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(237, 443);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(289, 443);
 			this.tableLayoutPanel1.TabIndex = 7;
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.label2.Location = new System.Drawing.Point(8, 48);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(51, 20);
+			this.label2.TabIndex = 9;
+			this.label2.Text = "Score";
 			// 
 			// label1
 			// 
@@ -99,7 +112,7 @@
 			// 
 			this.waterproofLabel.AutoSize = true;
 			this.waterproofLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.waterproofLabel.Location = new System.Drawing.Point(121, 5);
+			this.waterproofLabel.Location = new System.Drawing.Point(147, 5);
 			this.waterproofLabel.Name = "waterproofLabel";
 			this.waterproofLabel.Size = new System.Drawing.Size(41, 29);
 			this.waterproofLabel.TabIndex = 7;
@@ -109,9 +122,9 @@
 			// 
 			this.scoreLabel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.scoreLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.scoreLabel.Location = new System.Drawing.Point(121, 48);
+			this.scoreLabel.Location = new System.Drawing.Point(147, 48);
 			this.scoreLabel.Name = "scoreLabel";
-			this.scoreLabel.Size = new System.Drawing.Size(108, 43);
+			this.scoreLabel.Size = new System.Drawing.Size(134, 43);
 			this.scoreLabel.TabIndex = 8;
 			this.scoreLabel.Text = "42";
 			// 
@@ -123,7 +136,7 @@
 			this.zoomBar.Maximum = 76;
 			this.zoomBar.Minimum = 4;
 			this.zoomBar.Name = "zoomBar";
-			this.zoomBar.Size = new System.Drawing.Size(237, 45);
+			this.zoomBar.Size = new System.Drawing.Size(289, 45);
 			this.zoomBar.TabIndex = 4;
 			this.zoomBar.TabStop = false;
 			this.zoomBar.TickFrequency = 4;
@@ -133,9 +146,9 @@
 			// picture
 			// 
 			this.picture.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.picture.Location = new System.Drawing.Point(237, 24);
+			this.picture.Location = new System.Drawing.Point(289, 24);
 			this.picture.Name = "picture";
-			this.picture.Size = new System.Drawing.Size(559, 488);
+			this.picture.Size = new System.Drawing.Size(507, 488);
 			this.picture.TabIndex = 2;
 			this.picture.TabStop = false;
 			// 
@@ -143,7 +156,8 @@
 			// 
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.mapToolStripMenuItem});
+            this.mapToolStripMenuItem,
+            this.robotToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Size = new System.Drawing.Size(796, 24);
@@ -185,21 +199,28 @@
 			// movesBox
 			// 
 			this.movesBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.movesBox.Location = new System.Drawing.Point(237, 492);
+			this.movesBox.Location = new System.Drawing.Point(289, 492);
 			this.movesBox.Name = "movesBox";
 			this.movesBox.ReadOnly = true;
-			this.movesBox.Size = new System.Drawing.Size(559, 20);
+			this.movesBox.Size = new System.Drawing.Size(507, 20);
 			this.movesBox.TabIndex = 4;
 			// 
-			// label2
+			// robotToolStripMenuItem
 			// 
-			this.label2.AutoSize = true;
-			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.label2.Location = new System.Drawing.Point(8, 48);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(51, 20);
-			this.label2.TabIndex = 9;
-			this.label2.Text = "Score";
+			this.robotToolStripMenuItem.Name = "robotToolStripMenuItem";
+			this.robotToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
+			this.robotToolStripMenuItem.Text = "Run robot";
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.tableLayoutPanel1.SetColumnSpan(this.label3, 2);
+			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.label3.Location = new System.Drawing.Point(8, 375);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(235, 34);
+			this.label3.TabIndex = 10;
+			this.label3.Text = "SPACE — wait\r\nENTER — perform one robotAI move";
 			// 
 			// MainForm
 			// 
@@ -245,6 +266,8 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label scoreLabel;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.ToolStripMenuItem robotToolStripMenuItem;
+		private System.Windows.Forms.Label label3;
 	}
 }
 
