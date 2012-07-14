@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Logic
 {
-	public class OldMap : IMap
+	public class MapV1 : IMap
 	{
 		public int Score { get; private set; }
 		public int LambdasGathered { get; private set; }
@@ -21,7 +21,7 @@ namespace Logic
 		public int StepsToIncreaseWater { get; private set; }
 		public int WaterproofLeft { get; private set; }
 
-		public OldMap(string[] lines)
+		public MapV1(string[] lines)
 		{
 			State = CheckResult.Nothing;
 
@@ -164,11 +164,16 @@ namespace Logic
 				if (move == RobotMove.Right) newRobotX++;
 
 				if (!CheckValid(newRobotX, newRobotY))
+				{
+					Update();
 					throw new NoMoveException();
+				}
 
 				DoMove(newRobotX, newRobotY);
 			}
-			Update();
+
+			if (State != CheckResult.Win)
+				Update();
 
 			return this;
 		}
@@ -212,15 +217,20 @@ namespace Logic
 				int rockX = newRobotX * 2 - RobotX;
 				map[rockX, newRobotY] = MapCell.Rock;
 			}
-			map[RobotX, RobotY] = MapCell.Empty;
-			map[newRobotX, newRobotY] = MapCell.Robot;
 
-			RobotX = newRobotX;
-			RobotY = newRobotY;
+			map[RobotX, RobotY] = MapCell.Empty;
+			if (State != CheckResult.Win)
+			{
+				map[newRobotX, newRobotY] = MapCell.Robot;
+
+				RobotX = newRobotX;
+				RobotY = newRobotY;
+			}
 		}
 
 		private void Update()
 		{
+			var robotFailed = false;
 			for (int y = 1; y < Height - 1; y++)
 			{
 				for (int x = 1; x < Width - 1; x++)
@@ -231,7 +241,7 @@ namespace Logic
 					{
 						swapMap[x, y] = MapCell.Empty;
 						swapMap[x, y - 1] = MapCell.Rock;
-						CheckRobotDanger(x, y - 1);
+						robotFailed |= IsRobotKilledByRock(x, y - 1);
 					}
 					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
 						&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
@@ -239,7 +249,7 @@ namespace Logic
 						swapMap[x, y] = MapCell.Empty;
 						swapMap[x + 1, y] = MapCell.Empty;
 						swapMap[x + 1, y - 1] = MapCell.Rock;
-						CheckRobotDanger(x + 1, y - 1);
+						robotFailed |= IsRobotKilledByRock(x + 1, y - 1);
 					}
 					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
 						&& (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
@@ -248,7 +258,7 @@ namespace Logic
 						swapMap[x, y] = MapCell.Empty;
 						swapMap[x - 1, y] = MapCell.Empty;
 						swapMap[x - 1, y - 1] = MapCell.Rock;
-						CheckRobotDanger(x - 1, y - 1);
+						robotFailed |= IsRobotKilledByRock(x - 1, y - 1);
 					}
 					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Lambda
 						&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
@@ -256,7 +266,7 @@ namespace Logic
 						swapMap[x, y] = MapCell.Empty;
 						swapMap[x + 1, y] = MapCell.Empty;
 						swapMap[x + 1, y - 1] = MapCell.Rock;
-						CheckRobotDanger(x + 1, y - 1);
+						robotFailed |= IsRobotKilledByRock(x + 1, y - 1);
 					}
 					if (map[x, y] == MapCell.ClosedLift && LambdasGathered == TotalLambdaCount)
 					{
@@ -265,17 +275,23 @@ namespace Logic
 				}
 			}
 
-			MapCell[,] swap = swapMap;
+			var swap = swapMap;
 			swapMap = map;
 			map = swap;
-			CheckWeatherConditions();
+			robotFailed |= IsRobotKilledByFlood();
+
+			if (robotFailed)
+			{
+				State = CheckResult.Fail;
+				throw new GameFinishedException();
+			}
 		}
 
-		private void CheckWeatherConditions()
+		private bool IsRobotKilledByFlood()
 		{
 			if (Water >= RobotY) WaterproofLeft--;
 			else WaterproofLeft = Waterproof;
-			if (WaterproofLeft <= 0) throw new GameFinishedException(); //утонули
+			if (WaterproofLeft <= 0) return true;
 			if (Flooding > 0)
 			{
 				StepsToIncreaseWater--;
@@ -285,16 +301,12 @@ namespace Logic
 					StepsToIncreaseWater = Flooding;
 				}
 			}
-
+			return false;
 		}
 
-		private void CheckRobotDanger(int x, int y)
+		private bool IsRobotKilledByRock(int x, int y)
 		{
-			if (map[x, y - 1] == MapCell.Robot)
-			{
-				State = CheckResult.Fail;
-				throw new KilledByRockException();
-			}
+			return map[x, y - 1] == MapCell.Robot;
 		}
 
 		public bool LoadPreviousState()
