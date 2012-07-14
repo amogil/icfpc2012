@@ -225,7 +225,7 @@ namespace Logic
 			}
 		}
 
-		public bool IsSafeMove(Vector from, Vector to)
+		public bool IsSafeMove(Vector from, Vector to, int movesDone)
 		{
 			return true;
 		}

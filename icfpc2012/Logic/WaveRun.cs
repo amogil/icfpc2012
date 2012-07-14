@@ -22,6 +22,8 @@ namespace Logic
 			var q = new Queue<WaveCell>();
 			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait));
 			var used = new HashSet<Vector>();
+			used.Add(startPosition);
+
 			while (q.Any())
 			{
 				var cell = q.Dequeue();
@@ -31,9 +33,11 @@ namespace Logic
 				foreach (var move in new[]{RobotMove.Down, RobotMove.Left, RobotMove.Right, RobotMove.Up, })
 				{
 					var newPos = cell.Pos.Add(move.ToVector());
-					if (!used.Contains(newPos) && map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos) && map.IsSafeMove(cell.Pos, newPos))
+					if (!used.Contains(newPos) && map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos) && map.IsSafeMove(cell.Pos, newPos, 1 + cell.StepNumber))
+					{
 						q.Enqueue(new WaveCell(newPos, cell.StepNumber + 1, cell, move));
-					used.Add(newPos);
+						used.Add(newPos);
+					}
 				}
 			}
 		}

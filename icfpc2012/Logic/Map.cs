@@ -50,7 +50,7 @@ namespace Logic
 		int Width { get; }
 		string GetMapStateAsAscii();
 		IMap Move(RobotMove move);
-		bool IsSafeMove(Vector from, Vector to);
+		bool IsSafeMove(Vector from, Vector to, int movesDone);
 		bool LoadPreviousState();
 		MapCell this[Vector pos] { get; }
 		MapCell this[int x, int y] { get; }
@@ -356,29 +356,50 @@ namespace Logic
 			}
 		}
 
-		public bool IsSafeMove(Vector from, Vector to)
+		public bool IsSafeMove(Vector from, Vector to, int movesDone)
 		{
-			if (to.Y + 2 >= Height)
-				return true;
-
-			bool isSafe = true;
-
 			var swap = map[from.X, from.Y];
 			map[RobotX, RobotY] = MapCell.Empty;
 			map[from.X, from.Y] = MapCell.Empty;
 
-			int y = to.Y + 2;
-			for (int x = to.X - 1; x <= to.X + 1; x++)
+			bool isSafe = true;
+
+			if(movesDone <= 2)
 			{
-				var newPosition = TryToMoveRock(new Vector(x, y));
-				if (newPosition.X == to.X && newPosition.Y == to.Y + 1)
-					isSafe = false;
+				for (int x = to.X - 1; x <= to.X + 1; x++)
+				{
+					var newPosition = TryToMoveRock(new Vector(x, to.Y + 2));
+					if (newPosition.X == to.X && newPosition.Y == to.Y + 1)
+						isSafe = false;
+				}
+			}
+
+			if (to.Y + movesDone + 1 < Height)//камни сверху
+			{
+				int y = to.Y + movesDone + 1;
+				for (int x = to.X - 1; x <= to.X + 1; x++)
+				{
+					var newPosition = TryToMoveRock(new Vector(x, y));
+
+					if (newPosition.X == to.X && newPosition.Y == y - 1 && IsColumnEmpty(to.X, to.Y + 1, y - 2))
+						isSafe = false;
+				}
 			}
 
 			map[from.X, from.Y] = swap;
 			map[RobotX, RobotY] = MapCell.Robot;
 
 			return isSafe;
+		}
+
+		private bool IsColumnEmpty(int x, int bottomY, int topY)
+		{
+			for(int y = bottomY; y <= topY; y++)
+			{
+				if (map[x, y] != MapCell.Empty)
+					return false;
+			}
+			return true;
 		}
 
 		private Vector TryToMoveRock(Vector coords)
