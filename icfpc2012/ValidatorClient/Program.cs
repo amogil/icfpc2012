@@ -71,10 +71,10 @@ namespace ValidatorClient
 			using(var writer = new StreamWriter(string.Format("{0}.map_{1}.ref", map, id)))
 			{
 				writer.WriteLine(moves);
-				writer.WriteLine("Score: {0}", response.Score);
 				writer.WriteLine("Result: {0}", response.Result);
-				writer.WriteLine();
+				writer.WriteLine("Score: {0}", response.Score);
 				writer.Write(response.Map);
+				writer.WriteLine();
 			}
 		}
 
