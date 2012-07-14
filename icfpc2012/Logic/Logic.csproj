@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StackExtensions.cs" />
     <Compile Include="GreedyBot.cs" />
     <Compile Include="RobotAI.cs" />
     <Compile Include="MapSerializer_Test.cs" />

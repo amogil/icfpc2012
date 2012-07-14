@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Logic;
 
@@ -12,7 +13,7 @@ namespace Visualizer
 			var first = true;
 			drawer.AddStyle("target", new Pen(Color.Gold, 1));
 			drawer.AddStyle("firstTarget", new Pen(Color.Fuchsia, 3));
-			Tuple<Vector, RobotMove[]> firstTarget = null;
+			Tuple<Vector, Stack<RobotMove>> firstTarget = null;
 			foreach (var target in waveRun.EnumerateTargets())
 			{
 				if (first) firstTarget = target;
@@ -24,7 +25,7 @@ namespace Visualizer
 				DrawTarget(map, drawer, "firstTarget", firstTarget);
 		}
 
-		private static void DrawTarget(Map map, Drawer drawer, string style, Tuple<Vector, RobotMove[]> target)
+		private static void DrawTarget(Map map, Drawer drawer, string style, Tuple<Vector, Stack<RobotMove>> target)
 		{
 			drawer.Dot(style, target.Item1);
 			Vector pos = map.Robot;

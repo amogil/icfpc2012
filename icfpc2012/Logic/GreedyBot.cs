@@ -6,32 +6,41 @@ namespace Logic
 {
 	public class GreedyBot : RobotAI
 	{
-		public GreedyBot(Map map) : base(map)
+		private Vector currentTarget;
+		private Stack<RobotMove> plan;
+		/*
+		 * 
+		 */
+		public override RobotMove NextMove(Map map)
 		{
-		}
-
-		public override IEnumerable<RobotMove> GetMoves()
-		{
-			while(true)
+			if (currentTarget == null)
 			{
-				Tuple<Vector, RobotMove[]> target = FindClosestLambda();
-				if (target == null) yield return RobotMove.Abort;
-				else
-				{
-					foreach (var move in target.Item2)
-						yield return move;
-				}
+				Tuple<Vector, Stack<RobotMove>> target = FindBestTarget(map);
+				if (target == null) return RobotMove.Abort; //TODO
+				currentTarget = target.Item1;
+				plan = target.Item2;
 			}
+			RobotMove move = plan.PeekAndPop();
+			if (MoveChangeMapSignificantly(move))
+			{
+				currentTarget = null;
+				plan = null;
+			}
+			return move;
 		}
 
-		private Tuple<Vector, RobotMove[]> FindClosestLambda()
+		private bool MoveChangeMapSignificantly(RobotMove move)
 		{
-			var waveRun = new WaveRun(Map, new Vector(Map.RobotX, Map.RobotY));
+			return true;
+		}
+
+		private Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map)
+		{
+			var waveRun = new WaveRun(map, map.Robot);
 			foreach (var target in waveRun.EnumerateTargets())
-			{
 				return target;
-			}
-			if (waveRun.Lift != null) return waveRun.Lift;
+			if (waveRun.Lift != null && map[waveRun.Lift.Item1] == MapCell.OpenedLift) 
+				return waveRun.Lift;
 			return null;
 		}
 	}
