@@ -487,6 +487,9 @@ namespace Logic
 
 		public bool LoadPreviousState()
 		{
+			if (MovesCount == 0)
+				return false;
+
 			if(Flooding > 0)
 			{
 				if (WaterproofLeft < Waterproof)
@@ -521,6 +524,9 @@ namespace Logic
 				if (LambdasGathered == TotalLambdaCount) map[LiftX, LiftY] = MapCell.ClosedLift;
 				LambdasGathered--;
 			}
+
+			activeRocks = new HashSet<Vector>(); 
+			stateLog.MovingRocks.ForEach(a => activeRocks.Add(new Vector(a.PreviousX, a.PreviousY)));
 
 			State = CheckResult.Nothing;
 			return true;

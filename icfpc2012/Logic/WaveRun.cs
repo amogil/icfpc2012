@@ -64,7 +64,6 @@ namespace Logic
 			public readonly int StepNumber;
 			public readonly RobotMove Move;
 			public readonly WaveCell PrevCell;
-
 		}
 	}
 }
