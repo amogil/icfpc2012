@@ -489,6 +489,8 @@ namespace Logic
 		{
 			if(Flooding > 0)
 			{
+				if (WaterproofLeft < Waterproof)
+					WaterproofLeft++;
 				StepsToIncreaseWater++;
 				if(StepsToIncreaseWater == Flooding + 1)
 				{
