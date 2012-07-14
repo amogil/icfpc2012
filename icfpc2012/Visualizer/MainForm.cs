@@ -132,7 +132,7 @@ namespace Visualizer
 		private void RunRobot(Type robotType)
 		{
 			LoadMap(LastOpenedMapFile);
-			robot = RobotAI.Create(robotType, map).GetMoves().GetEnumerator();
+			robot = new RollbackableEnumerator<RobotMove>(RobotAI.Create(robotType, map).GetMoves().GetEnumerator());
 			robot.MoveNext();
 		}
 
@@ -176,13 +176,16 @@ namespace Visualizer
 						robot = null;
 				}
 			}
-			if (e.KeyCode == Keys.Back)
+			if (e.KeyCode == Keys.Back) RollbackMove();
+		}
+
+		private void RollbackMove()
+		{
+			if (map.LoadPreviousState())
 			{
-				if (map.LoadPreviousState())
-				{
-					moves.RemoveAt(moves.Count - 1);
-					UpdateMap(map);
-				}
+				if (robot != null) robot.Rollback();
+				moves.RemoveAt(moves.Count - 1);
+				UpdateMap(map);
 			}
 		}
 
@@ -238,6 +241,6 @@ namespace Visualizer
 		}
 
 		private readonly List<RobotMove> moves = new List<RobotMove>();
-		private IEnumerator<RobotMove> robot;
+		private RollbackableEnumerator<RobotMove> robot;
 	}
 }
