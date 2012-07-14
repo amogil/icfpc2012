@@ -60,7 +60,13 @@ namespace Tests
 
 		private static IEnumerable<ReferenceTestItem> GetReferenceTestItems(string mapName)
 		{
-			var refFile = Path.Combine(mapsBaseDir, mapName + ".ref");
+			return Directory
+				.EnumerateFiles(mapsBaseDir, mapName + "*.ref")
+				.SelectMany(f => GetReferenceTestItems(mapName, f));
+		}
+
+		private static IEnumerable<ReferenceTestItem> GetReferenceTestItems(string mapName, string refFile)
+		{
 			if (!File.Exists(refFile)) yield break;
 			using (var r = new StreamReader(refFile))
 			{
