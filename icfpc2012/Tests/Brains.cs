@@ -13,12 +13,19 @@ namespace Tests
 		[Test]
 		public void TestGreedyBot()
 		{
-			TestBrains(new GreedyBot());
+			TestBrains(new GreedyBot(), MapsDir);
 		}
 
-		private void TestBrains(RobotAI bot)
+		[Test, Explicit]
+		public void TestPerformanceGreedyBot()
+		{
+			TestBrains(new GreedyBot(), PerformanceMapsDir);
+		}
+
+		private void TestBrains(RobotAI bot, string dir)
 		{
 			var now = DateTime.Now;
+			long sum = 0;
 			using (var writer = new StreamWriter(Path.Combine(TestsDir, bot.GetType().Name + "_" + now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt")))
 			{
 
@@ -26,7 +33,7 @@ namespace Tests
 				WriteLineAndShow(writer);
 
 				WriteLineAndShow(writer, "file".PadRight(FilenamePadding) + "score".PadRight(ValuePadding) + "moves".PadRight(ValuePadding) +"state".PadRight(ValuePadding) + "ms".PadRight(ValuePadding));
-				foreach (var file in Directory.GetFiles(MapsDir, "*.map.txt"))
+				foreach (var file in Directory.GetFiles(dir, "*.map.txt"))
 				{
 					var lines = File.ReadAllLines(file);
 					WriteAndShow(writer, Path.GetFileName(file).PadRight(FilenamePadding));
@@ -38,26 +45,21 @@ namespace Tests
 
 					var builder = new StringBuilder();
 					var timer = Stopwatch.StartNew();
-					while (robotMove != RobotMove.Abort)
+					while(robotMove != RobotMove.Abort && map.State == CheckResult.Nothing)
 					{
 						robotMove = (timer.Elapsed.TotalSeconds < 150) ? bot.NextMove(map) : RobotMove.Abort;
 						movesCount++;
 
 						builder.Append(robotMove.ToChar());
-						try
-						{
-							map = map.Move(robotMove);
-						}
-						catch (GameFinishedException)
-						{
-							break;
-						}
+						map = map.Move(robotMove);
 					}
 
+					sum += map.GetScore();
 					WriteAndShow(writer, map.GetScore().ToString().PadRight(ValuePadding) + map.MovesCount.ToString().PadRight(ValuePadding) + map.State.ToString().PadRight(ValuePadding) + timer.ElapsedMilliseconds.ToString().PadRight(ValuePadding));
 					WriteLineAndShow(writer, builder.ToString());
 				}
 			}
+			Console.WriteLine(sum);
 		}
 
 		private void WriteLineAndShow(StreamWriter writer, string text = null)
@@ -72,7 +74,8 @@ namespace Tests
 		}
 
 		private const string TestsDir = "../../../../tests";
-		private const string MapsDir = "../../../../maps";
+		private const string MapsDir = "../../../../maps/tests";
+		private const string PerformanceMapsDir = "../../../../maps/tests/performance";
 		private const int FilenamePadding = 24;
 		private const int ValuePadding = 8;
 	}

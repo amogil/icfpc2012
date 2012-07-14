@@ -53,3 +53,59 @@ Score: 1787
 #........ ..#.... ...#..... #
 #........         ........#*#
 ###########################L#
+
+UUUUUUDLLLLLLRDDDRRRLLDULLDRDDRRRLLLLUULLLLDLLLLDDDLLLLLUULULLLURRRRULLLULRRUULLLLLLLUUURUULUUURRRUULUUURDDRURRRDDRDDRRRRRRDDDRRUUUUURRRUDDLLUUURRRDRRRRDDDRRRUUUUUULLLLLLLLLLLLDDDDDDDDDRDDRDLLLULLDRDUURURRDDRRRRRUURLDDDDRRRUUUULDRDDDDDDDDDDDD
+Result: Win
+Score: 3583
+#############################
+#..............             #
+#..  ###...#...         ### #
+#..      . #...  . ##     # #
+#..   .. . #...  . # #... # #
+#..  ###   #...      #... # #
+#... ....  ....   ####...   #
+#   *#...            .......#
+# ..*#..#. .... *  ##.......#
+# #....... ...# .  ....######
+#  ...#... ...#     ...# *  #
+## ....... ...#   # ...# #  #
+#  ... ... ....   #      .* #
+#    .  .......******... .# #
+# *** * ................    #
+#.#####    .######    ##### #
+#....   ................... #
+#....     ..#.##.....       #
+#....     ..#.....     *... #
+#....  * ...#.       # ###. #
+#....**** ..#. .. ...#    . #
+#........ ..#. .. ...#..... #
+#........         ........# #
+###########################O#
+
+UUUUDDUUUUUUUUULRULLLDDDDRRDRDDDLLLLLLLDRURRDLDDRRRRRUUULLLLLLLLLLLLLLLLLLLLLLLLDDLLLUUUULDDLDDDDULLLULLLLDRRRRUUUULDLLLLLLUURRRRRRUUULLLLLUURUUULLUURRRULUUURDDRURRRRRDDDDDRRRRRRRURRDDDLULURRDDDDUUUUUUURRRUDDLULUUURRRDRRRRLLUUURRRRRDDDDDDDDDDDDDDDDDLLLLLLLDDDDLLUULLDLLDDLDDRRULURURURRRDDRDDDDDRRRRRR
+Result: Nothing
+Score: 2250
+#############################
+#......................     #
+#..  ###...#....        ### #
+#..        #.... . ##     # #
+#..   .... #.... . # #....# #
+#    ###.. #....     #....# #
+# .. ..... .....  ####..... #
+#    #....           ...... #
+#.. *#..#.         ##       #
+#.# ...... ...#    .. .######
+#.  ..#... ...#.      .#    #
+## *    .. ...#   #   .# #  #
+#.....  .. ...    #   .. .* #
+#.   .  ......  ***** .. .# #
+# *** * ...... **.... ..    #
+# #####    .######    ##### #
+#        ..   ....... ..... #
+#....    .. # ##           R#
+#...     .. # .. ... *  ... #
+#...        #        # ###. #
+#....**** . #.... ...#      #
+#........ ..#.... ...#..... #
+#........*        ........#*#
+###########################O#
