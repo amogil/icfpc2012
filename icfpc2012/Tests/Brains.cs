@@ -16,7 +16,7 @@ namespace Tests
 			TestBrains(new GreedyBot(), MapsDir);
 		}
 
-		[Test]
+		[Test, Explicit]
 		public void TestPerformanceGreedyBot()
 		{
 			TestBrains(new GreedyBot(), PerformanceMapsDir);
