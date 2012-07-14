@@ -27,7 +27,7 @@ namespace ValidatorClient
 						{
 							Console.WriteLine(e);
 						}
-						Thread.Sleep(600000 + random.Next(60000));
+						Thread.Sleep(60000 + random.Next(60000));
 					}
 					return;
 				}

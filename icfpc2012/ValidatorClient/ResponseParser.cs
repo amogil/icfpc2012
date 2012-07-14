@@ -35,7 +35,7 @@ namespace ValidatorClient
 					throw new Exception(string.Format("Invalid response: unknown result '{0}'", result));
 			}
 
-			return new ValidatorResponse {Map = match.Groups["map"].Value.Trim(), Score = score, Result = checkResult};
+			return new ValidatorResponse {Map = match.Groups["map"].Value, Score = score, Result = checkResult};
 		}
 	}
 }
