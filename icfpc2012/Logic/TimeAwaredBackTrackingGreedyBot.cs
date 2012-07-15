@@ -30,11 +30,13 @@ namespace Logic
 
 		private void StartThread()
 		{
-			new Thread(() =>
-			           	{
-			           		Thread.Sleep(timeLimit * 1000);
-			           		backTrackingGreedyBot.StopNow = true;
-			           	}).Start();
+			var thread = new Thread(() =>
+			                        	{
+			                        		Thread.Sleep(timeLimit*1000);
+			                        		backTrackingGreedyBot.StopNow = true;
+			                        	});
+			thread.IsBackground = true;
+			thread.Start();
 		}
 	}
 }
