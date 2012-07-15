@@ -7,7 +7,7 @@ namespace Visualizer
 {
 	public class ToLambdasOverlay : IOverlay
 	{
-		public void Draw(IMap map, Drawer drawer)
+		public void Draw(Map map, Drawer drawer)
 		{
 			var waveRun = new WaveRun(map, map.Robot);
 			var first = true;
@@ -25,7 +25,7 @@ namespace Visualizer
 				DrawTarget(map, drawer, "firstTarget", firstTarget);
 		}
 
-		private static void DrawTarget(IMap map, Drawer drawer, string style, Tuple<Vector, Stack<RobotMove>> target)
+		private static void DrawTarget(Map map, Drawer drawer, string style, Tuple<Vector, Stack<RobotMove>> target)
 		{
 			drawer.Dot(style, target.Item1);
 			Vector pos = map.Robot;

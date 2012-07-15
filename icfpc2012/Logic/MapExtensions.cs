@@ -4,7 +4,7 @@ namespace Logic
 {
 	public static class MapExtensions
 	{
-		public static bool IsValidMoveWithoutMovingRocks(this IMap map, Vector from, Vector to)
+		public static bool IsValidMoveWithoutMovingRocks(this Map map, Vector from, Vector to)
 		{
 			var toCell = map[to];
 			return toCell.IsTrampoline() || toCell == MapCell.OpenedLift || toCell == MapCell.Lambda || toCell == MapCell.Empty || toCell == MapCell.Earth || toCell == MapCell.Robot;
@@ -19,7 +19,7 @@ namespace Logic
 			return res;
 		}
 
-		public static long GetScore(this IMap map)
+		public static long GetScore(this Map map)
 		{
 			var c = 50;
 			if (map.State == CheckResult.Win) c = 75;
@@ -27,7 +27,7 @@ namespace Logic
 			return map.LambdasGathered * c - map.MovesCount;
 		}
 
-		public static bool RocksFallAfterMoveTo(this IMap map, Vector to)
+		public static bool RocksFallAfterMoveTo(this Map map, Vector to)
 		{
 			for (int rockX = to.X - 1; rockX <= to.X + 1; rockX++)
 			{
@@ -42,7 +42,7 @@ namespace Logic
 		}
 
 		
-		public static Vector TryToMoveRock(this IMap map, Vector coords)
+		public static Vector TryToMoveRock(this Map map, Vector coords)
 		{
 			return TryToMoveRock(map, coords.X, coords.Y);
 		}
@@ -52,7 +52,7 @@ namespace Logic
 			return cell == MapCell.Empty || cell == MapCell.Robot;
 		}
 
-		public static Vector TryToMoveRock(this IMap map, int x, int y)
+		public static Vector TryToMoveRock(this Map map, int x, int y)
 		{
 			if (map[x, y] == MapCell.Rock && IsEmptyOrRobot(map[x, y - 1]))
 			{

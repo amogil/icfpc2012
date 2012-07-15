@@ -6,10 +6,10 @@ namespace Logic
 {
 	public class WaveRun
 	{
-		private readonly IMap map;
+		private readonly Map map;
 		private readonly Vector startPosition;
 
-		public WaveRun(IMap map, Vector startPosition)
+		public WaveRun(Map map, Vector startPosition)
 		{
 			this.map = map;
 			this.startPosition = startPosition;

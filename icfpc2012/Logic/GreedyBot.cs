@@ -13,7 +13,7 @@ namespace Logic
 		 * 
 		 */
 
-		public override RobotMove NextMove(IMap map)
+		public override RobotMove NextMove(Map map)
 		{
 			if (currentTarget == null)
 			{
@@ -36,7 +36,7 @@ namespace Logic
 			return true;
 		}
 
-		private static Tuple<Vector, Stack<RobotMove>> FindBestTarget(IMap map, bool checkBestIsNotBad = true)
+		private static Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map, bool checkBestIsNotBad = true)
 		{
 			var waveRun = new WaveRun(map, map.Robot);
 			Tuple<Vector, Stack<RobotMove>> result = null;
@@ -54,7 +54,7 @@ namespace Logic
 			return null;
 		}
 		
-		private static double CalculateTargetBadness(Tuple<Vector, Stack<RobotMove>> target, IMap map)
+		private static double CalculateTargetBadness(Tuple<Vector, Stack<RobotMove>> target, Map map)
 		{
 			double badness = 0.0;
 			bool deadend = false;
@@ -70,7 +70,7 @@ namespace Logic
 			return badness;
 		}
 
-		private static bool CanMoveToTargetExactlyByPathWithNoRocksMoved(Stack<RobotMove> robotMoves, IMap map)
+		private static bool CanMoveToTargetExactlyByPathWithNoRocksMoved(Stack<RobotMove> robotMoves, Map map)
 		{
 			int moved = 0;
 			try
@@ -100,7 +100,7 @@ namespace Logic
 			}
 		}
 		
-		private static bool CanMoveToTargetExactlyByPath(Stack<RobotMove> robotMoves, IMap map, Action<IMap> analyseMap)
+		private static bool CanMoveToTargetExactlyByPath(Stack<RobotMove> robotMoves, Map map, Action<Map> analyseMap)
 		{
 			int moved = 0;
 			try

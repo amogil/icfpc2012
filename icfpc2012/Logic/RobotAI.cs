@@ -19,13 +19,13 @@ namespace Logic
 			return constructorInfo != null;
 		}
 
-		public static RobotAI Create(Type robotType, IMap map)
+		public static RobotAI Create(Type robotType, Map map)
 		{
 			ConstructorInfo constructorInfo = robotType.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, new Type[0], null);
 			return (RobotAI) constructorInfo.Invoke(new object[0]);
 		}
 
-		public abstract RobotMove NextMove(IMap map);
+		public abstract RobotMove NextMove(Map map);
 	}
 
 	public class FixedProgramRobot : RobotAI
@@ -38,7 +38,7 @@ namespace Logic
 			this.moves = moves;
 		}
 
-		public override RobotMove NextMove(IMap map)
+		public override RobotMove NextMove(Map map)
 		{
 			return moves[index++];
 		}
@@ -49,7 +49,7 @@ namespace Logic
 		private RobotMove[] moves = new[] {RobotMove.Down, RobotMove.Left, RobotMove.Right, RobotMove.Up, RobotMove.Wait,};
 		private int index = 0;
 
-		public override RobotMove NextMove(IMap map)
+		public override RobotMove NextMove(Map map)
 		{
 			return moves[(index++)%moves.Length];
 		}

@@ -5,14 +5,14 @@ namespace Logic
 {
 	public class Engine
 	{
-		public Engine(IMap map)
+		public Engine(Map map)
 		{
 			Map = map;
 		}
 
-		public IMap Map { get; private set; }
+		public Map Map { get; private set; }
 
-		public event Action<IMap> OnMapUpdate;
+		public event Action<Map> OnMapUpdate;
 		public event Action<RobotMove> OnMoveAdded;
 
 		public virtual void RunProgram(IEnumerable<RobotMove> moves)
@@ -30,7 +30,7 @@ namespace Logic
 		public void DoMove(RobotMove robotMove)
 		{
 			if (Map.State != CheckResult.Nothing) return;
-			IMap newMap;
+			Map newMap;
 			try
 			{
 				newMap = Map.Move(robotMove);
@@ -53,7 +53,7 @@ namespace Logic
 			UpdateMap(newMap);
 		}
 
-		private void UpdateMap(IMap newMap)
+		private void UpdateMap(Map newMap)
 		{
 			if (OnMapUpdate != null) OnMapUpdate(newMap);
 			Map = newMap;

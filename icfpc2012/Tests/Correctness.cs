@@ -140,7 +140,7 @@ namespace Tests
 
 	public class RollbackEngine : Engine
 	{
-		public RollbackEngine(IMap map) : base(map)
+		public RollbackEngine(Map map) : base(map)
 		{
 		}
 		public override void RunProgram(IEnumerable<RobotMove> moves)

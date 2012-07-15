@@ -38,7 +38,7 @@ namespace Tests
 					var lines = File.ReadAllLines(file);
 					WriteAndShow(writer, Path.GetFileName(file).PadRight(FilenamePadding));
 
-					IMap map = new Map(lines);
+					Map map = new Map(lines);
 
 					var robotMove = RobotMove.Wait;
 					int movesCount = 0;

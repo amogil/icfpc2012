@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="CodeAnnotations.cs" />
     <Compile Include="FloodChecker.cs" />
-    <Compile Include="MapV1.cs" />
     <Compile Include="MapIsSafeMove_Test.cs" />
     <Compile Include="StackExtensions.cs" />
     <Compile Include="Engine.cs" />

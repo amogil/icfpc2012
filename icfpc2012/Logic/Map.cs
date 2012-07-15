@@ -53,30 +53,7 @@ namespace Logic
 		Abort,
 	}
 
-	public interface IMap
-	{
-		int MovesCount { get; }
-		int LambdasGathered { get; }
-		CheckResult State { get; }
-		int TotalLambdaCount { get; }
-		int Water { get; }
-		int Flooding { get; }
-		int Waterproof { get; }
-		int StepsToIncreaseWater { get; }
-		int WaterproofLeft { get; }
-		int Height { get; }
-		int Width { get; }
-		string GetMapStateAsAscii();
-		IMap Move(RobotMove move);
-		bool IsSafeMove(Vector from, Vector to, int movesDone);
-		bool Rollback();
-		MapCell this[Vector pos] { get; }
-		MapCell this[int x, int y] { get; }
-		Vector Robot { get; }
-		Vector GetTrampolineTarget(Vector trampolineOrJustCell);
-	}
-
-	public class Map : IMap
+	public class Map
 	{
 		public Vector GetTrampolineTarget(Vector trampolineOrJustCell)
 		{
@@ -294,7 +271,7 @@ namespace Logic
 			throw new Exception("InvalidMap " + c);
 		}
 
-		public IMap Move(RobotMove move)
+		public Map Move(RobotMove move)
 		{
 			log.Push(new MoveLog());
 
