@@ -118,6 +118,7 @@ namespace MapGenerator
 
 		protected Dictionary<MapCell, MapCell> PutTrampolines(MapCell[,] map)
 		{
+			if(options.TrampolineCount == 0) return new Dictionary<MapCell, MapCell>();
 			var trampolines = PutElements(map, GetEnumValuesByNamePrefixSorted("Trampoline", options.TrampolineCount));
 			var trampolinesHasOneTarget = random.Next(0, 2);
 			var targetsCount = trampolinesHasOneTarget == 0 ? options.TrampolineCount : options.TrampolineCount / 2 + 1;

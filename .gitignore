@@ -10,3 +10,4 @@ TestResults
 _ReSharper*
 *.dotCover
 maps/*.moves
+maps/tests/*.moves
