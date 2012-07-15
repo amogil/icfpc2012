@@ -17,8 +17,7 @@ namespace Logic
 				if(bestMoves == null) return RobotMove.Abort;
 			}
 
-			if(currentMove > bestMoves.Length - 1) return RobotMove.Abort;
-			return bestMoves[currentMove++];
+			return currentMove <= bestMoves.Length - 1 ? bestMoves[currentMove++] : RobotMove.Abort;
 		}
 
 		private void CalcSolution(Map map)
