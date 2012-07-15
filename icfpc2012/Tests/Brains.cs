@@ -28,6 +28,21 @@ namespace Tests
 			TestBrains(() => new GreedyBot(), PerformanceMapsDir);
 		}
 
+		[Test, Explicit]
+		public void TestPerformanceOnConcreteMap()
+		{
+			var map = new Map(Path.Combine(MapsDir, "random20_fl_50.map.txt"));
+			var robotMove = RobotMove.Wait;
+			var bot = new GreedyBot();
+			var botWrapper = new BotWithBestMomentsMemory(bot);
+			while (robotMove != RobotMove.Abort && map.State == CheckResult.Nothing)
+			{
+				robotMove = botWrapper.NextMove(map);
+				map = map.Move(robotMove);
+				botWrapper.UpdateBestSolution(map);
+			}
+		}
+
 		private void TestBrains(Func<RobotAI> botFactory, string dir)
 		{
 			var now = DateTime.Now;
