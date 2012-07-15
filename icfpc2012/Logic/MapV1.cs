@@ -92,6 +92,11 @@ namespace Logic
 		}
 
 		public Vector Robot { get { return new Vector(RobotX, RobotY); } }
+		public Vector GetTrampolineTarget(Vector trampolineOrJustCell)
+		{
+			throw new NotImplementedException();
+		}
+
 		public int RobotX { get; private set; }
 		public int RobotY { get; private set; }
 

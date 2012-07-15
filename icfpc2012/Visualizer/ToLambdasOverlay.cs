@@ -33,7 +33,7 @@ namespace Visualizer
 			{
 				Vector pos2 = pos.Add(move.ToVector());
 				drawer.Line(style, pos, pos2);
-				pos = pos2;
+				pos = map.GetTrampolineTarget(pos2);
 			}
 		}
 	}

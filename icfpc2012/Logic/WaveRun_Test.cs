@@ -19,6 +19,14 @@ namespace Logic
 			Assert.That(formattedTargets, Contains.Item("(2, 3) via U"));
 		}
 
+		[Test]
+		public void Trampolines()
+		{
+			Map map = WellKnownMaps.TramTest();
+			var formattedTargets = GetTargets(map.Robot, map);
+			Assert.That(formattedTargets, Contains.Item("(6, 2) via RR"));
+		}
+
 		private static string[] GetTargets(Vector from, Map map)
 		{
 			Console.WriteLine(map.ToString());

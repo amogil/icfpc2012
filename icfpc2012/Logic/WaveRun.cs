@@ -32,8 +32,10 @@ namespace Logic
 				if (toCell == MapCell.OpenedLift || toCell == MapCell.ClosedLift) Lift = CreateTarget(cell);
 				foreach (var move in new[]{RobotMove.Down, RobotMove.Left, RobotMove.Right, RobotMove.Up, })
 				{
-					var newPos = cell.Pos.Add(move.ToVector());
-					if (!used.Contains(newPos) && map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos) && map.IsSafeMove(cell.Pos, newPos, 1 + cell.StepNumber))
+					Vector newPos = cell.Pos.Add(move.ToVector());
+					if (!map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos)) continue;
+					newPos = map.GetTrampolineTarget(newPos);
+					if (!used.Contains(newPos) && map.IsSafeMove(cell.Pos, newPos, 1 + cell.StepNumber))
 					{
 						q.Enqueue(new WaveCell(newPos, cell.StepNumber + 1, cell, move));
 						used.Add(newPos);

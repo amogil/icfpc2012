@@ -73,10 +73,16 @@ namespace Logic
 		MapCell this[Vector pos] { get; }
 		MapCell this[int x, int y] { get; }
 		Vector Robot { get; }
+		Vector GetTrampolineTarget(Vector trampolineOrJustCell);
 	}
 
 	public class Map : IMap
 	{
+		public Vector GetTrampolineTarget(Vector trampolineOrJustCell)
+		{
+			if (!this[trampolineOrJustCell].IsTrampoline()) return trampolineOrJustCell;
+			else return Targets[TrampToTarget[this[trampolineOrJustCell]]];
+		}
 		private Dictionary<MapCell, Vector> Targets = new Dictionary<MapCell, Vector>();
 		private Dictionary<MapCell, Vector> Trampolines = new Dictionary<MapCell, Vector>();
 		private Dictionary<MapCell, MapCell> TrampToTarget = new Dictionary<MapCell, MapCell>();
@@ -228,6 +234,7 @@ namespace Logic
 		}
 
 		public Vector Robot { get { return new Vector(RobotX, RobotY); } }
+
 		public int RobotX { get; private set; }
 		public int RobotY { get; private set; }
 
@@ -355,11 +362,13 @@ namespace Logic
 				newRobotX = targetCoords.X;
 				newRobotY = targetCoords.Y;
 
-				foreach (var pair in TrampToTarget.Where(a => a.Value == target))
+				log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(targetCoords, target));
+				foreach (KeyValuePair<MapCell, MapCell> pair in TrampToTarget.Where(a => a.Value == target))
 				{
-					Vector vector = Trampolines[pair.Key];
-					this[vector] = MapCell.Empty;
-					log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(targetCoords, target));
+					Vector trampolinePos = Trampolines[pair.Key];
+					this[trampolinePos] = MapCell.Empty;
+					log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(trampolinePos, pair.Key));
+					CheckNearRocks(activeRocks, trampolinePos.X, trampolinePos.Y);
 				}
 			}
 			else if (newMapCell == MapCell.Earth)
