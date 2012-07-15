@@ -228,7 +228,7 @@ namespace Logic
 			{
 				for (int x = 1; x < Width - 1; x++)
 				{
-					if (map[x, y].IsRock() && map[x, y - 1].IsRock())
+					if (map[x, y].IsRock() && map[x, y - 1] == MapCell.Empty)
 					{
 						activeRocks.Add(new Vector(x, y));
 					}
