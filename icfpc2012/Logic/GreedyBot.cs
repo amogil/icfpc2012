@@ -223,6 +223,7 @@ namespace Logic
 				if (map.State == CheckResult.Fail)
 					return false;
 			}
+			analyseMap(map);
 			return true;
 		}
 	}
