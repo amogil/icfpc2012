@@ -5,7 +5,6 @@ namespace Logic
 {
 	public class BackTrakingGreedyBot : RobotAI
 	{
-		private readonly Random random = new Random();
 		private RobotMove[] bestMoves;
 		private int currentMove;
 
@@ -22,35 +21,49 @@ namespace Logic
 
 		private void CalcSolution(Map map)
 		{
-			var count = 0;
-			Vector banned = null;
+			var alreadyBanned = new HashSet<Vector>();
+			Vector toBan = null;
 			long bestScores = long.MinValue;
-			do
+			while(true)
 			{
 				if(StopNow) return;
-				var moves = GetMoves(map, banned);
+				var moves = GetMoves(map, toBan);
 				if(moves == null) return;
 				if(bestScores < moves.Item2)
 				{
 					bestScores = moves.Item2;
 					bestMoves = moves.Item1;
 				}
-				banned = GetBanned(map);
-				count += 1;
-			} while(count <= 5);
+				toBan = GetBanned(map, alreadyBanned);
+				if(toBan != null)
+					alreadyBanned.Add(toBan);
+				else
+					return;
+			}
 		}
 
-		private Vector GetBanned(Map map)
+		private Vector GetBanned(Map map, HashSet<Vector> alreadyBanned)
 		{
-			var toBanIndex = random.Next(1, map.TotalLambdaCount);
-			var current = 0;
+			//if(alreadyBanned.Count < map.TotalLambdaCount)
+				return GetBannedLambdas(map, alreadyBanned);
+			//return GetBannedTrampolines(map, alreadyBanned);
+		}
+
+		private Vector GetBannedTrampolines(Map map, HashSet<Vector> alreadyBanned)
+		{
+			return null;
+		}
+
+		private Vector GetBannedLambdas(Map map, HashSet<Vector> alreadyBanned)
+		{
 			for(int i = 0; i < map.Width; i++)
 				for(int j = 0; j < map.Height; j++)
 					if(map.GetCell(i, j) == MapCell.Lambda)
-						if(current == toBanIndex)
-							return new Vector(i, j);
-						else
-							current += 1;
+					{
+						var current = new Vector(i, j);
+						if(!alreadyBanned.Contains(current))
+							return current;
+					}
 			return null;
 		}
 

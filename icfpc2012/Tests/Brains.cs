@@ -17,9 +17,9 @@ namespace Tests
 		}
 
 		[Test]
-		public void TestBackTrackingGreedyBot()
+		public void TestTimeAwareBackTrackingGreedyBot()
 		{
-			TestBrains(() => new BackTrakingGreedyBot(), MapsDir);
+			TestBrains(() => new TimeAwaredBackTrakingGreedyBot(60), MapsDir);
 		}
 		
 		[Test]
