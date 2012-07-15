@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Logic
 {
-	public class BackTrakingGreedyBot : RobotAI
+	public class BackTrañkingGreedyBot : RobotAI
 	{
 		private RobotMove[] bestMoves;
 		private long bestScores = long.MinValue;

@@ -7,7 +7,8 @@ namespace Logic
 {
 	public class GreedyBot : RobotAI, IOverlay
 	{
-		private Vector bannedTarget;
+		private Vector specialTarget;
+		private SpecialTargetType specialTargetType = SpecialTargetType.None;
 		private Vector currentTarget;
 		private Vector lastRobotPos;
 		private Tuple<Vector, Stack<RobotMove>> moveRockTarget;
@@ -20,9 +21,10 @@ namespace Logic
 			drawer.DrawTarget(map, lastRobotPos, "rock", moveRockTarget);
 		}
 
-		public RobotMove NextMove(Map map, Vector banned)
+		public RobotMove NextMove(Map map, Vector target, SpecialTargetType type)
 		{
-			bannedTarget = banned;
+			specialTarget = target;
+			specialTargetType = type;
 			return NextMove(map);
 		}
 
@@ -136,7 +138,7 @@ namespace Logic
 				var orderedMoves = waveRun
 					.EnumerateTargets((lmap, pos, stepNumber) => lmap.GetCell(pos) == MapCell.Lambda 
 						|| (lmap.LambdasGathered != lmap.TotalLambdaCount && lmap.GetCell(pos) == MapCell.Razor))
-					.Where(tuple => bannedTarget == null || (tuple.Item1.X != bannedTarget.X && tuple.Item1.Y != bannedTarget.Y))
+					.Where(tuple => specialTargetType != SpecialTargetType.Banned || specialTarget == null || (tuple.Item1.X != specialTarget.X && tuple.Item1.Y != specialTarget.Y))
 					.Take(9)
 					.OrderBy(t => CalculateTargetBadness(t, map)).ToArray();
 				result = orderedMoves.FirstOrDefault();
@@ -160,11 +162,16 @@ namespace Logic
 			                                          		          m.GetCell(m.Robot) != MapCell.OpenedLift;
 			                                          	});
 			if(moved && deadend) badness += 100;
-			if(!CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
+			if(specialTargetType == SpecialTargetType.Kamikadze || !CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
 				badness += 500;
 			if (map.IsInWater(target.Item2.Count, target.Item1.Y) && !CanEscapeFromUnderwater(target, map))
 				badness += 500;
 			badness += target.Item2.Count;
+
+			if (specialTargetType == SpecialTargetType.Favorite && specialTarget != null
+				&& target.Item1.X == specialTarget.X && target.Item1.Y == specialTarget.Y)
+				badness -= 550;
+
 			return badness;
 		}
 

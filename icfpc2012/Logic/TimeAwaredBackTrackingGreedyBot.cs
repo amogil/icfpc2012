@@ -2,18 +2,18 @@ using System.Threading;
 
 namespace Logic
 {
-	public class TimeAwaredBackTrakingGreedyBot : RobotAI
+	public class TimeAwaredBackTrackingGreedyBot : RobotAI
 	{
-		private readonly BackTrakingGreedyBot backTrakingGreedyBot = new BackTrakingGreedyBot();
+		private readonly BackTrañkingGreedyBot _backTrañkingGreedyBot = new BackTrañkingGreedyBot();
 		private readonly int timeLimit;
 		private bool isThreadStarted;
 
-		public TimeAwaredBackTrakingGreedyBot()
-			:this(15)
+		public TimeAwaredBackTrackingGreedyBot()
+			: this(15)
 		{
-			
 		}
-		public TimeAwaredBackTrakingGreedyBot(int timeLimit)
+
+		public TimeAwaredBackTrackingGreedyBot(int timeLimit)
 		{
 			this.timeLimit = timeLimit;
 		}
@@ -25,7 +25,7 @@ namespace Logic
 				isThreadStarted = true;
 				StartThread();
 			}
-			return backTrakingGreedyBot.NextMove(map);
+			return _backTrañkingGreedyBot.NextMove(map);
 		}
 
 		private void StartThread()
@@ -33,7 +33,7 @@ namespace Logic
 			new Thread(() =>
 			           	{
 			           		Thread.Sleep(timeLimit * 1000);
-			           		backTrakingGreedyBot.StopNow = true;
+			           		_backTrañkingGreedyBot.StopNow = true;
 			           	}).Start();
 		}
 	}
