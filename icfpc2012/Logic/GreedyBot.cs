@@ -97,8 +97,8 @@ namespace Logic
 						if (lmap.GetCell(position) == MapCell.Earth && lmap.GetCell(position.Add(right)).IsRock()
 								&& lmap.GetCell(position.Add(right).Add(right)) != MapCell.Wall && !lmap.GetCell(position.Add(right).Add(right)).IsRock())
 							return true;
-						if (lmap.GetCell(position) == MapCell.Earth && lmap.GetCell(position.Add(left)) == MapCell.Rock
-								&& lmap.GetCell(position.Add(right).Add(right)) != MapCell.Wall && lmap.GetCell(position.Add(right).Add(right)) != MapCell.Rock)
+						if (lmap.GetCell(position) == MapCell.Earth && lmap.GetCell(position.Add(left)).IsRock()
+								&& lmap.GetCell(position.Add(right).Add(right)) != MapCell.Wall && !lmap.GetCell(position.Add(right).Add(right)).IsRock())
 							return true;
 						return false;
 					}).FirstOrDefault();
@@ -204,6 +204,7 @@ namespace Logic
 				if (map.State == CheckResult.Fail)
 					return false;
 			}
+			analyseMap(map);
 			return true;
 		}
 	}

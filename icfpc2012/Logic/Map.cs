@@ -358,7 +358,7 @@ namespace Logic
 		private void CutBeard(Map newMap)
 		{
 			if (Razors == 0) return;
-			Razors--;
+			newMap.Razors--;
 			newMap.Beard = new List<Vector>();
 			foreach (var b in Beard)
 			{
