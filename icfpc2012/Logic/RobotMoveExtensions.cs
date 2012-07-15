@@ -25,6 +25,7 @@ namespace Logic
 			if (move == RobotMove.Right) return 'R';
 			if (move == RobotMove.Abort) return 'A';
 			if (move == RobotMove.Wait) return 'W';
+			if (move == RobotMove.CutBeard) return 'S';
 			throw new Exception(move.ToString());
 		}
 

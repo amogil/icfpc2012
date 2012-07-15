@@ -52,6 +52,8 @@ namespace Visualizer
 					{MapCell.OpenedLift, Brushes.Gold},
 					{MapCell.Lambda, Brushes.GreenYellow},
 					{MapCell.Robot, Brushes.Magenta},
+					{MapCell.Beard, Brushes.Red},
+					{MapCell.Razor, Brushes.Blue},
 					{MapCell.Earth, Brushes.Brown},
 					{MapCell.Empty, Brushes.Black},
 					{MapCell.Rock, Brushes.BlueViolet},

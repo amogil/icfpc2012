@@ -189,6 +189,7 @@ namespace Visualizer
 			if (e.KeyCode == Keys.Up) DoMove(RobotMove.Up);
 			if (e.KeyCode == Keys.Down) DoMove(RobotMove.Down);
 			if (e.KeyCode == Keys.Space) DoMove(RobotMove.Wait);
+			if (e.KeyCode == Keys.C) DoMove(RobotMove.CutBeard);
 			if (e.KeyCode == Keys.Enter)
 			{
 				if (robot != null)

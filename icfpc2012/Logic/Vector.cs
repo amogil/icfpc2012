@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Logic
 {
@@ -51,6 +52,22 @@ namespace Logic
 		public int Distance(Vector diff)
 		{
 			return Math.Max(Math.Abs(diff.X - X), Math.Abs(diff.Y - Y));
+		}
+	}
+
+	public class VectorComparer : IComparer<Vector>
+	{
+		public int Compare(Vector x, Vector y)
+		{
+			return x.Y > y.Y
+			       	? 1
+			       	: x.Y < y.Y
+			       	  	? -1
+			       	  	: x.X < y.X
+			       	  	  	? 1
+			       	  	  	: x.X > y.X
+			       	  	  	  	? -1
+			       	  	  	  	: 0;
 		}
 	}
 }

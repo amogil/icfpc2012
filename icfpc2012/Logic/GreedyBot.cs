@@ -186,6 +186,7 @@ namespace Logic
 						return false;
 					}
 				}
+
 				return true;
 			}
 			finally

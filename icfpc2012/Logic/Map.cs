@@ -24,8 +24,8 @@ namespace Logic
 		Lambda = '\\',
 		Wall = '#',
 		Robot = 'R',
-		//Beard = 'W',
-		//Razor = '!',
+		Beard = 'W',
+		Razor = '!',
 		ClosedLift = 'L',
 		OpenedLift = 'O',
 		Trampoline1 = 'A',
@@ -84,7 +84,7 @@ namespace Logic
 		private MapCell[,] map;
 
 		private Stack<MoveLog> log = new Stack<MoveLog>();
-		private HashSet<Vector> activeRocks = new HashSet<Vector>();
+		private SortedSet<Vector> activeRocks = new SortedSet<Vector>(new VectorComparer());
 
 		public int TotalLambdaCount { get; private set; }
 		public int InitialWater { get; private set; }
@@ -145,10 +145,10 @@ namespace Logic
 						LiftX = col + 1;
 						LiftY = newY + 1;
 					}
-					/*if (map[col + 1, newY + 1] == MapCell.Beard)
+					if (map[col + 1, newY + 1] == MapCell.Beard)
 					{
 						Beard.Add(new Vector(col + 1, newY + 1));
-					}*/
+					}
 					if (TargetsChars.Contains((char)map[col + 1, newY + 1]))
 					{
 						Targets[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
@@ -191,6 +191,8 @@ namespace Logic
 				if (parts[0] == "Growth") Growth = int.Parse(parts[1]);
 				if (parts[0] == "Razors") Razors = int.Parse(parts[1]);
 			}
+
+			GrowthLeft = Growth;
 			StepsToIncreaseWater = Flooding;
 			WaterproofLeft = Waterproof;
 			InitialWater = Water;
@@ -285,10 +287,10 @@ namespace Logic
 					return MapCell.OpenedLift;
 				case 'R':
 					return MapCell.Robot;
-				/*case '!':
+				case '!':
 					return MapCell.Razor;
 				case 'W':
-					return MapCell.Beard;*/
+					return MapCell.Beard;
 				default:
 					if (TrampolinesChars.Contains(c))
 						return (MapCell)c;
@@ -347,14 +349,26 @@ namespace Logic
 		{
 			if (Razors == 0)
 				return false;
-			Beard = Beard.Where(b => Robot.Distance(b) > 1).ToList();
+
+			var list = new List<Vector>();
+
+			foreach (var b in Beard)
+			{
+				if(Robot.Distance(b) > 1)
+					list.Add(b);
+				else
+					this[b] = MapCell.Empty;
+			}
+
+			Beard = list;
+
 			return true;
 		}
 
 		private bool CheckValid(int newRobotX, int newRobotY)
 		{
-			if (map[newRobotX, newRobotY] == MapCell.Wall || map[newRobotX, newRobotY].IsTarget() || 
-				map[newRobotX, newRobotY] == MapCell.ClosedLift/* || this[Robot] == MapCell.Beard*/)
+			if (map[newRobotX, newRobotY] == MapCell.Wall || map[newRobotX, newRobotY].IsTarget() ||
+				map[newRobotX, newRobotY] == MapCell.ClosedLift || map[newRobotX, newRobotY] == MapCell.Beard)
 				return false;
 
 			if (map[newRobotX, newRobotY] != MapCell.Rock)
@@ -397,7 +411,7 @@ namespace Logic
 			else if (newMapCell == MapCell.Earth)
 			{
 			}
-			else if ( false/*newMapCell == MapCell.Razor*/)
+			else if (newMapCell == MapCell.Razor)
 			{
 				Razors++;
 			}
@@ -429,7 +443,7 @@ namespace Logic
 			RobotY = newRobotY;
 		}
 
-		private void CheckNearRocks(HashSet<Vector> updateableRocks, int x, int y)
+		private void CheckNearRocks(SortedSet<Vector> updateableRocks, int x, int y)
 		{
 			for (int rockX = x - 1; rockX <= x + 1; rockX++)
 			{
@@ -536,7 +550,7 @@ namespace Logic
 		{
 			var robotFailed = false;
 
-			var newActiveRocks = new HashSet<Vector>();
+			var newActiveRocks = new SortedSet<Vector>(new VectorComparer());
 			var rockMoves = new Dictionary<Vector, Vector>();
 
 			foreach (var activeRockCoords in activeRocks)
@@ -630,8 +644,8 @@ namespace Logic
 							var newVector = b.Add(new Vector(i, j));
 							if(this[newVector] == MapCell.Empty)
 							{
-								/*this[newVector] = MapCell.Beard;*/
-								Beard.Add(b);
+								this[newVector] = MapCell.Beard;
+								Beard.Add(newVector);
 							}
 						}
 					}
@@ -692,7 +706,7 @@ namespace Logic
 				}
 			}
 
-			activeRocks = new HashSet<Vector>(); 
+			activeRocks = new SortedSet<Vector>(new VectorComparer());
 			stateLog.MovingRocks.ForEach(a => activeRocks.Add(new Vector(a.PreviousX, a.PreviousY)));
 
 			State = CheckResult.Nothing;
