@@ -78,7 +78,7 @@ namespace Logic
 		private Tuple<RobotMove[], long> GetMoves(Map map, Tuple<Vector, SpecialTargetType> special)
 		{
 			var moves = new List<RobotMove>();
-			var bot = new GreedyBot();
+			var bot = new BotWithBestMomentsMemory(new GreedyBot());
 			RobotMove robotMove;
 			Map localMap = map;
 			do

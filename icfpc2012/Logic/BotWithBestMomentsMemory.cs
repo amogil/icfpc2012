@@ -5,13 +5,13 @@ namespace Logic
 {
 	public class BotWithBestMomentsMemory // =)
 	{
-		private readonly RobotAI bot;
+		private readonly GreedyBot bot;
 		private readonly List<RobotMove> currentMoves = new List<RobotMove>();
+		private CheckResult bestMovesEndState;
 		private int bestMovesSequenceLen;
 		private long bestScore;
-		private CheckResult bestMovesEndState;
 
-		public BotWithBestMomentsMemory(RobotAI bot)
+		public BotWithBestMomentsMemory(GreedyBot bot)
 		{
 			this.bot = bot;
 			bestScore = 0;
@@ -29,6 +29,16 @@ namespace Logic
 			get { return bestScore; }
 		}
 
+		public CheckResult BestMovesEndState
+		{
+			get { return bestMovesEndState; }
+		}
+
+		public int BestMovesSequenceLen
+		{
+			get { return bestMovesSequenceLen + (EndsWithAbort(bestMovesEndState) ? 1 : 0); }
+		}
+
 		public RobotMove NextMove(Map map)
 		{
 			RobotMove robotMove = bot.NextMove(map);
@@ -36,10 +46,17 @@ namespace Logic
 			return robotMove;
 		}
 
+		public RobotMove NextMove(Map map, Vector target, SpecialTargetType type)
+		{
+			RobotMove robotMove = bot.NextMove(map, target, type);
+			currentMoves.Add(robotMove);
+			return robotMove;
+		}
+
 		public void UpdateBestSolution(Map map)
 		{
 			long score = map.GetScore();
-			if (score > bestScore)
+			if(score > bestScore)
 			{
 				bestScore = score;
 				bestMovesSequenceLen = currentMoves.Count;
@@ -52,20 +69,10 @@ namespace Logic
 			return checkResult != CheckResult.Win && checkResult != CheckResult.Fail;
 		}
 
-		public CheckResult BestMovesEndState
-		{
-			get { return bestMovesEndState; }
-		}
-
-		public int BestMovesSequenceLen
-		{
-			get { return bestMovesSequenceLen + (EndsWithAbort(bestMovesEndState) ? 1 : 0); }
-		}
-
 		public string GetBestMoves()
 		{
 			var res = new string(currentMoves.Take(bestMovesSequenceLen).Select(m => m.ToChar()).ToArray());
-			if (EndsWithAbort(bestMovesEndState)) res = res + "A";
+			if(EndsWithAbort(bestMovesEndState)) res = res + "A";
 			return res;
 		}
 	}
