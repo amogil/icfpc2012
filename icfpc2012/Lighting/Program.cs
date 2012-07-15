@@ -31,7 +31,7 @@ namespace Lighting
 					map.Move(RobotMove.Abort);
 					if(maxPath.Item1 < map.GetScore())
 						maxPath = new Tuple<long, string>(map.GetScore(), path + "A");
-					map.Rollback();
+					//map.Rollback();
 				}
 				catch(GameFinishedException)
 				{

@@ -96,10 +96,14 @@
 			return new Vector(x, y);
 		}
 
-		public static bool IsSafeMove(this Map map, Vector from, Vector to, int movesDone)
+		public static bool IsSafeMove(this Map map, Vector from, Vector to, int movesDone, int waterproofLeft)
 		{
-			if (map.WaterproofLeft == 1 && map.Water >= to.Y)
+			if (waterproofLeft <= 0 && map.WaterLevelAfterUpdate(map.MovesCount + movesDone - 1) >= to.Y)
 				return false;
+
+			//var swap = map[from.X, from.Y];
+			//map[RobotX, RobotY] = MapCell.Empty;
+			//map[from.X, from.Y] = MapCell.Empty;
 
 			bool isSafe = true;
 
@@ -124,6 +128,9 @@
 						isSafe = false;
 				}
 			}
+
+			//map[from.X, from.Y] = swap;
+			//map[RobotX, RobotY] = MapCell.Robot;
 
 			return isSafe;
 		}

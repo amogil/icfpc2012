@@ -258,7 +258,7 @@ namespace Logic
 
 		public bool HasActiveRocks
 		{
-			get { return activeRocks.Any(a => a != TryToMoveRock(a)); }
+			get { return activeRocks.Any(a => a != TryToMoveRock(a, this)); }
 		}
 
 		public override string ToString()
@@ -319,6 +319,7 @@ namespace Logic
 				RobotX = RobotX,
 				RobotY = RobotY,
 				State = State,
+				InitialWater = InitialWater,
 				StepsToIncreaseWater = StepsToIncreaseWater,
 				Targets = new Dictionary<MapCell, Vector>(Targets.Select(kvp => new {kvp.Key, kvp.Value}).ToDictionary(kvp => kvp.Key, kvp=>kvp.Value)),
 				TotalLambdaCount = TotalLambdaCount,
@@ -473,55 +474,6 @@ namespace Logic
 		public int WaterLevelAfterUpdate(int updateNumber)
 		{
 			return Flooding == 0 ? Water : updateNumber / Flooding + InitialWater;
-		}
-
-		public bool IsSafeMove(Vector from, Vector to, int movesDone, int waterproofLeft)
-		{
-			if (waterproofLeft <= 0 && WaterLevelAfterUpdate(MovesCount + movesDone-1) >= to.Y)
-				return false;
-
-			var swap = map[from.X, from.Y];
-			map[RobotX, RobotY] = MapCell.Empty;
-			map[from.X, from.Y] = MapCell.Empty;
-
-			bool isSafe = true;
-
-			if(to.Y == from.Y - 1)
-			{
-				for (int x = to.X - 1; x <= to.X + 1; x++)
-				{
-					var newPosition = TryToMoveRock(new Vector(x, to.Y + 2));
-					if (newPosition.X == to.X && newPosition.Y == to.Y + 1)
-						isSafe = false;
-				}
-			}
-
-			if (to.Y + movesDone + 1 < Height)//камни сверху
-			{
-				int y = to.Y + movesDone + 1;
-				for (int x = to.X - 1; x <= to.X + 1; x++)
-				{
-					var newPosition = TryToMoveRock(new Vector(x, y));
-
-					if (newPosition.X == to.X && newPosition.Y == y - 1 && IsColumnEmpty(to.X, to.Y + 1, y - 2))
-						isSafe = false;
-				}
-			}
-
-			map[from.X, from.Y] = swap;
-			map[RobotX, RobotY] = MapCell.Robot;
-
-			return isSafe;
-		}
-
-		private bool IsColumnEmpty(int x, int bottomY, int topY)
-		{
-			for(int y = bottomY; y <= topY; y++)
-			{
-				if (map[x, y] != MapCell.Empty)
-					return false;
-			}
-			return true;
 		}
 
 		private static Vector TryToMoveRock(Vector coords, Map mapToUse)
