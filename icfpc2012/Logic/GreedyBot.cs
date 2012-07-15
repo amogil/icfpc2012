@@ -37,13 +37,16 @@ namespace Logic
 			if(currentTarget == null)
 			{
 				Tuple<Vector, Stack<RobotMove>> target = FindBestTarget(map);
-				if(target == null)
+				RobotMove newmove = RobotMove.Abort;
+				if(target == null && map.TotalLambdaCount > map.LambdasGathered)
+					newmove = FindMovableRock(map);
+				if (target == null && newmove != RobotMove.Abort)
+					return newmove;
+				if(target == null && newmove == RobotMove.Abort)
 				{
 					if(map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks)
 						return FindSafePlace(map);
-					else
-						return FindMovableRock(map); // TODO move rocks
-					//return RobotMove.Abort;
+					return RobotMove.Abort;
 				}
 				currentTarget = target.Item1;
 				plan = target.Item2;
@@ -60,28 +63,6 @@ namespace Logic
 
 		private RobotMove FindMovableRock(Map map)
 		{
-			//R* 
-
-			// *R
-
-			//*
-			//R
-
-			//*
-			//..
-
-			// *
-			//..
-
-			//.* 
-			//
-
-			// *.
-
-			//.*.
-			//A A
-
-
 			var left = new Vector(-1, 0);
 			var right = new Vector(1, 0);
 			var up = new Vector(0, 1);
