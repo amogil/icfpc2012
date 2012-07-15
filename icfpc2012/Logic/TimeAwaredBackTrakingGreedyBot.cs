@@ -8,6 +8,11 @@ namespace Logic
 		private readonly int timeLimit;
 		private bool isThreadStarted;
 
+		public TimeAwaredBackTrakingGreedyBot()
+			:this(15)
+		{
+			
+		}
 		public TimeAwaredBackTrakingGreedyBot(int timeLimit)
 		{
 			this.timeLimit = timeLimit;
