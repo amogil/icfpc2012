@@ -4,7 +4,7 @@ namespace Logic
 {
 	public class TimeAwaredBackTrackingGreedyBot : RobotAI
 	{
-		private readonly BackTrackingGreedyBot backTrañkingGreedyBot = new BackTrackingGreedyBot();
+		private readonly BackTrackingGreedyBot backTrackingGreedyBot = new BackTrackingGreedyBot();
 		private readonly int timeLimit;
 		private bool isThreadStarted;
 
@@ -25,7 +25,7 @@ namespace Logic
 				isThreadStarted = true;
 				StartThread();
 			}
-			return backTrañkingGreedyBot.NextMove(map);
+			return backTrackingGreedyBot.NextMove(map);
 		}
 
 		private void StartThread()
@@ -33,7 +33,7 @@ namespace Logic
 			new Thread(() =>
 			           	{
 			           		Thread.Sleep(timeLimit * 1000);
-			           		backTrañkingGreedyBot.StopNow = true;
+			           		backTrackingGreedyBot.StopNow = true;
 			           	}).Start();
 		}
 	}

@@ -58,6 +58,7 @@ namespace Visualizer
 					{MapCell.Empty, Brushes.Black},
 					{MapCell.Rock, Brushes.BlueViolet},
 					{MapCell.Wall, Brushes.White},
+					{MapCell.LambdaRock, Brushes.DarkGreen}
 				};
 
 		static CellImages()
