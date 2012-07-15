@@ -519,7 +519,6 @@ namespace Logic
 				if (!activeRockCoords.Equals(newCoords) && GetCell(activeRockCoords.X, activeRockCoords.Y).IsRock())
 					rockMoves.Add(activeRockCoords, newCoords);
 			}
-			bool killedByRock = false;
 			foreach (var rockMove in rockMoves)
 			{
 				if (!map[rockMove.Value.X, rockMove.Value.Y].IsRock())
