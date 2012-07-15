@@ -32,21 +32,31 @@ namespace Logic
 				mapCells[1, 3] = MapCell.Earth;
 				mapCells[2, 1] = MapCell.Rock;
 				mapCells[2, 2] = MapCell.Lambda;
+				mapCells[2, 3] = MapCell.Target1;
+				mapCells[3, 2] = MapCell.Trampoline1;
+				mapCells[3, 3] = MapCell.Trampoline2;
 			}
 			var serializer = new MapSerializer();
 			Assert.AreEqual(
 				@"
 #####
-#.  #
-#R\ #
+#.1B#
+#R\A#
 O * #
 L####
 
 Water 0
 Flooding 1
-Waterproof 10".Trim(),
+Waterproof 10
+Trampoline A targets 1
+Trampoline B targets 1"
+					.Trim(),
 				serializer.Serialize(mapCells, water: 0, flooding: 1, waterproof: 10,
-				                     trampToTarget: new Dictionary<MapCell, MapCell>()));
+				                     trampToTarget: new Dictionary<MapCell, MapCell>
+				                                    	{
+				                                    		{MapCell.Trampoline1, MapCell.Target1},
+				                                    		{MapCell.Trampoline2, MapCell.Target1}
+				                                    	}));
 		}
 
 		[Test]
