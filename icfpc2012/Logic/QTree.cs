@@ -7,7 +7,7 @@ namespace Logic
 		private MapCell data;
 		private QTree[] children;
 
-		private static QTree Set(QTree root, int x, int y, int leftX, int rightX, int leftY, int rightY, MapCell mapCell)
+		public static QTree Set(QTree root, int x, int y, int leftX, int rightX, int leftY, int rightY, MapCell mapCell)
 		{
 			QTree newRoot = new QTree();
 			if (leftX == rightX && leftY == rightY)

@@ -104,7 +104,7 @@ namespace Logic
 
 		public int Height { get; private set; }
 		public int Width { get; private set; }
-		private MapCell[,] map;
+		private QTree field;
 
 		private SortedSet<Vector> activeRocks = new SortedSet<Vector>(new VectorComparer());
 
@@ -136,19 +136,19 @@ namespace Logic
 			Height = firstBlankLineIndex == -1 ? lines.Length : firstBlankLineIndex;
 			Width = lines.Take(Height).Max(a => a.Length);
 
-			map = new MapCell[Width + 2, Height + 2];
+			field = new QTree();
 			for (var row = 0; row < Height + 2; row++)
 				for (var col = 0; col < Width + 2; col++)
 				{
 					if (row == 0 || row == Height + 1 || col == 0 || col == Width + 1)
-						SetCell(col, row, MapCell.Wall);
+						QTree.SimpleAdd(field, col, row, 0, Width + 1, 0, Height + 1, MapCell.Wall);
 					else
 					{
 						var x = col - 1;
 						var y = Height - row;
 						var line = lines[y].PadRight(Width, ' ');
 						var mapCell = Parse(line[x]);
-						SetCell(col, row, mapCell);
+						QTree.SimpleAdd(field, col, row, 0, Width + 1, 0, Height + 1, mapCell);
 						if (mapCell == MapCell.Lambda)
 						{
 							TotalLambdaCount++;
@@ -215,7 +215,7 @@ namespace Logic
 
 		public MapCell GetCell(int x, int y)
 		{
-			return map[x, y];
+			return QTree.Get(field, x, y, 0, Width - 1, 0, Height - 1);
 		}
 
 		public MapCell GetCell(Vector pos)
@@ -223,16 +223,14 @@ namespace Logic
 			return GetCell(pos.X, pos.Y);
 		}
 
-		private MapCell SetCell(Vector pos, MapCell newValue)
+		private QTree SetCell(Vector pos, MapCell newValue)
 		{
 			return SetCell(pos.X, pos.Y, newValue);
 		}
 
-		private MapCell SetCell(int x, int y, MapCell newValue)
+		private QTree SetCell(int x, int y, MapCell newValue)
 		{
-			var oldValue = map[x, y];
-			map[x, y] = newValue;
-			return oldValue;
+			return QTree.Set(field, x, y, 0, Width - 1, 0, Height - 1, newValue);
 		}
 
 		private void InitializeActiveRocks()
@@ -309,7 +307,6 @@ namespace Logic
 			{
 				Width = Width,
 				Height = Height,
-				map = new MapCell[Width,Height],
 				activeRocks = new HashSet<Vector>(),
 				Flooding = Flooding,
 				LambdasGathered = LambdasGathered,
@@ -321,17 +318,15 @@ namespace Logic
 				State = State,
 				InitialWater = InitialWater,
 				StepsToIncreaseWater = StepsToIncreaseWater,
-				Targets = new Dictionary<MapCell, Vector>(Targets.Select(kvp => new {kvp.Key, kvp.Value}).ToDictionary(kvp => kvp.Key, kvp=>kvp.Value)),
+				Targets = new Dictionary<MapCell, Vector>(Targets.Select(kvp => new { kvp.Key, kvp.Value }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value)),
 				TotalLambdaCount = TotalLambdaCount,
-				TrampToTarget = new Dictionary<MapCell, MapCell>(TrampToTarget.Select(kvp => new {kvp.Key, kvp.Value}).ToDictionary(t => t.Key, t => t.Value)),
-				Trampolines = new Dictionary<MapCell, Vector>(Trampolines.Select(kvp => new {kvp.Key, kvp.Value}).ToDictionary(kvp => kvp.Key, kvp=>kvp.Value)),
+				TrampToTarget = new Dictionary<MapCell, MapCell>(TrampToTarget.Select(kvp => new { kvp.Key, kvp.Value }).ToDictionary(t => t.Key, t => t.Value)),
+				Trampolines = new Dictionary<MapCell, Vector>(Trampolines.Select(kvp => new { kvp.Key, kvp.Value }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value)),
 				Water = Water,
 				Waterproof = Waterproof,
 				WaterproofLeft = WaterproofLeft,
+				field = field,
 			};
-			for (var row = 0; row < Height; row++)
-				for (var col = 0; col < Width; col++)
-					clone.SetCell(col, row, GetCell(col, row));
 			return clone;
 		}
 
@@ -422,7 +417,7 @@ namespace Logic
 				foreach (var pair in TrampToTarget.Where(a => a.Value == target))
 				{
 					var trampolinePos = Trampolines[pair.Key];
-					newMap.SetCell(trampolinePos, MapCell.Empty);
+					newMap.field = newMap.SetCell(trampolinePos, MapCell.Empty);
 					CheckNearRocks(newMap.activeRocks, trampolinePos.X, trampolinePos.Y, newMap);
 				}
 			}
@@ -440,12 +435,12 @@ namespace Logic
 			else if (newMapCell.IsRock())
 			{
 				var rockX = newRobotX * 2 - RobotX;
-				newMap.SetCell(rockX, newRobotY, map[newRobotX, newRobotY]);
+				newMap.field = newMap.SetCell(rockX, newRobotY, map[newRobotX, newRobotY]);
 				newMap.activeRocks.Add(new Vector(rockX, newRobotY));
 			}
-			newMap.SetCell(RobotX, RobotY, MapCell.Empty);
+			newMap.field = newMap.SetCell(RobotX, RobotY, MapCell.Empty);
 			if (newMapCell != MapCell.OpenedLift)
-				newMap.SetCell(newRobotX, newRobotY, MapCell.Robot);
+				newMap.field = newMap.SetCell(newRobotX, newRobotY, MapCell.Robot);
 
 			CheckNearRocks(newMap.activeRocks, RobotX, RobotY, newMap);
 
@@ -545,7 +540,7 @@ namespace Logic
 			newMap.activeRocks = newActiveRocks;
 
 			if (newMap.TotalLambdaCount == newMap.LambdasGathered)
-				newMap.SetCell(LiftX, LiftY, MapCell.OpenedLift);
+				newMap.field = newMap.SetCell(LiftX, LiftY, MapCell.OpenedLift);
 
 			CheckBeardGrowth();
 
