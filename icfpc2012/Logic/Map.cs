@@ -303,19 +303,12 @@ namespace Logic
 			MovesCount++;
 			if (move != RobotMove.Wait)
 			{
-				int newRobotX = RobotX;
-				int newRobotY = RobotY;
-
-				if (move == RobotMove.Up) newRobotY++;
-				if (move == RobotMove.Down) newRobotY--;
-				if (move == RobotMove.Left) newRobotX--;
-				if (move == RobotMove.Right) newRobotX++;
-
-				if (CheckValid(newRobotX, newRobotY))
+				Vector newRobot = Robot.Add(move.ToVector());
+				if (CheckValid(newRobot.X, newRobot.Y))
 				{
-					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = newRobotX, NextY = newRobotY };
-					log.Peek().RemovedObjects.Add(Tuple.Create(new Vector(newRobotX, newRobotY), map[newRobotX, newRobotY]));
-					DoMove(newRobotX, newRobotY);
+					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = newRobot.X, NextY = newRobot.Y };
+					log.Peek().RemovedObjects.Add(Tuple.Create(newRobot, this[newRobot]));
+					DoMove(newRobot.X, newRobot.Y);
 				}
 				else
 				{
@@ -366,7 +359,7 @@ namespace Logic
 				{
 					Vector vector = Trampolines[pair.Key];
 					this[vector] = MapCell.Empty;
-					log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(vector, pair.Key));
+					log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(targetCoords, target));
 				}
 			}
 			else if (newMapCell == MapCell.Earth)
@@ -598,7 +591,7 @@ namespace Logic
 			RobotY = stateLog.RobotMove.PreviousY;
 			map[RobotX, RobotY] = MapCell.Robot;
 
-			foreach (var removedObj in stateLog.RemovedObjects)
+			foreach (Tuple<Vector, MapCell> removedObj in stateLog.RemovedObjects)
 			{
 				this[removedObj.Item1] = removedObj.Item2;
 
