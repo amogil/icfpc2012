@@ -98,5 +98,46 @@ namespace Logic
 			return new Vector(x, y);
 		}
 
+		public static bool IsSafeMove(this Map map, Vector from, Vector to, int movesDone)
+		{
+			if (map.WaterproofLeft == 1 && map.Water >= to.Y)
+				return false;
+
+			bool isSafe = true;
+
+			if (to.Y == from.Y - 1)
+			{
+				for (int x = to.X - 1; x <= to.X + 1; x++)
+				{
+					var newPosition = map.TryToMoveRock(new Vector(x, to.Y + 2));
+					if (newPosition.X == to.X && newPosition.Y == to.Y + 1)
+						isSafe = false;
+				}
+			}
+
+			if (to.Y + movesDone + 1 < map.Height)//камни сверху
+			{
+				int y = to.Y + movesDone + 1;
+				for (int x = to.X - 1; x <= to.X + 1; x++)
+				{
+					var newPosition = map.TryToMoveRock(new Vector(x, y));
+
+					if (newPosition.X == to.X && newPosition.Y == y - 1 && map.IsColumnEmpty(to.X, to.Y + 1, y - 2))
+						isSafe = false;
+				}
+			}
+
+			return isSafe;
+		}
+
+		public static bool IsColumnEmpty(this Map map, int x, int bottomY, int topY)
+		{
+			for (int y = bottomY; y <= topY; y++)
+			{
+				if (map[x, y] != MapCell.Empty)
+					return false;
+			}
+			return true;
+		}
 	}
 }
