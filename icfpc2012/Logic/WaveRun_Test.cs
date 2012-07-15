@@ -14,7 +14,7 @@ namespace Logic
 			Map map = WellKnownMaps.Contest1();
 			var formattedTargets = GetTargets(map.Robot, map);
 			Assert.That(formattedTargets, Contains.Item("(4, 4) via DL"));
-			Assert.That(formattedTargets, Contains.Item("(2, 3) via DLLDL"));
+			Assert.That(formattedTargets, Contains.Item("(2, 3) via DLLLD"));
 			formattedTargets = GetTargets(new Vector(2, 2), map);
 			Assert.That(formattedTargets, Contains.Item("(2, 3) via U"));
 		}
@@ -29,10 +29,10 @@ namespace Logic
 
 		[TestCase("xflood1", "(2, 2) via DDD")]
 		[TestCase("xflood2", null)]
-		[TestCase("xflood4", "(5, 2) via DDRRRDD")]
+		[TestCase("xflood4", "(5, 2) via RRRDDDD")]
 		[TestCase("xflood6", "(3, 2) via RD")]
 		[TestCase("xflood7", "(2, 5) via UUU")]
-		[TestCase("xflood9", "(2, 5) via RDDR")]
+		[TestCase("xflood9", "(4, 2) via RRDD")]
 		public void Water(string mapName, string expectedTarget)
 		{
 			Map map = WellKnownMaps.LoadMap(mapName);

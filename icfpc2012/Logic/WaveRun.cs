@@ -39,7 +39,7 @@ namespace Logic
 					yield return CreateTarget(cell);
 				if (toCell == MapCell.OpenedLift || toCell == MapCell.ClosedLift) 
 					Lift = CreateTarget(cell);
-				foreach (var move in new[]{RobotMove.Down, RobotMove.Left, RobotMove.Right, RobotMove.Up, })
+				foreach (var move in new[] { RobotMove.Left, RobotMove.Right, RobotMove.Down, RobotMove.Up, })
 				{
 					Vector newPos = cell.Pos.Add(move.ToVector());
 					if (!map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos)) continue;
