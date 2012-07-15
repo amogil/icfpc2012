@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BackTrakingGreedyBot.cs" />
+    <Compile Include="BackTraсkingGreedyBot.cs" />
     <Compile Include="BotWithBestMomentsMemory.cs" />
     <Compile Include="CodeAnnotations.cs" />
     <Compile Include="DrawerExtensions.cs" />
@@ -65,7 +65,7 @@
     <Compile Include="MapSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RobotMoveExtensions.cs" />
-    <Compile Include="TimeAwaredBackTrakingGreedyBot.cs" />
+    <Compile Include="TimeAwaredBackTrackingGreedyBot.cs" />
     <Compile Include="Vector.cs" />
     <Compile Include="WaveRun.cs" />
     <Compile Include="WaveRun_Test.cs" />
