@@ -94,7 +94,7 @@ namespace Logic
 				bot.UpdateBestSolution(localMap);
 				moves.Add(robotMove);
 			} while(robotMove != RobotMove.Abort && localMap.State == CheckResult.Nothing);
-			return Tuple.Create(moves.ToArray(), localMap.State != CheckResult.Fail ? localMap.GetScore() : long.MinValue);
+			return Tuple.Create(bot.GetBestMovesAsArray(), localMap.State != CheckResult.Fail ? localMap.GetScore() : long.MinValue);
 		}
 	}
 }

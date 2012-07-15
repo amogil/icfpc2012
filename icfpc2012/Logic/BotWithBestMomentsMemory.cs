@@ -72,8 +72,13 @@ namespace Logic
 		public string GetBestMoves()
 		{
 			var res = new string(currentMoves.Take(bestMovesSequenceLen).Select(m => m.ToChar()).ToArray());
-			if(EndsWithAbort(bestMovesEndState)) res = res + "A";
+			if (EndsWithAbort(bestMovesEndState)) res = res + "A";
 			return res;
+		}
+		
+		public RobotMove[] GetBestMovesAsArray()
+		{
+			return currentMoves.Take(bestMovesSequenceLen).ToArray();
 		}
 	}
 }
