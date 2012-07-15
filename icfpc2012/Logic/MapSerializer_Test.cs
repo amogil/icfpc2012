@@ -9,7 +9,9 @@ namespace Logic
 		public static void AllElementsTest()
 		{
 			var mapCells = new MapCell[5,5];
-			for(int i = 0; i < mapCells.GetLength(0); i++)
+			MakeEmpty(mapCells);
+
+			for (int i = 0; i < mapCells.GetLength(0); i++)
 			{
 				mapCells[i, 0] = MapCell.Wall;
 				mapCells[i, mapCells.GetLength(1) - 1] = MapCell.Wall;
@@ -38,10 +40,19 @@ Waterproof 10".Trim(),
 				serializer.Serialize(mapCells, water: 0, flooding: 1, waterproof: 10));
 		}
 
+		private static void MakeEmpty(MapCell[,] mapCells)
+		{
+			for (int x = 0; x < mapCells.GetLength(0); x++)
+				for (int y = 0; y < mapCells.GetLength(1); y++)
+					mapCells[x, y] = MapCell.Empty;
+		}
+
 		[Test]
 		public static void OnlyWallsTest()
 		{
 			var map = new MapCell[4,4];
+			MakeEmpty(map);
+
 			for(int i = 0; i < map.GetLength(0); i++)
 			{
 				map[i, 0] = MapCell.Wall;
@@ -67,6 +78,7 @@ Waterproof 0".Trim(),
 		public static void OrientationTest()
 		{
 			var map = new MapCell[1,2];
+			MakeEmpty(map);
 			map[0, 0] = MapCell.Wall;
 			map[0, 1] = MapCell.Lambda;
 			var serializer = new MapSerializer();

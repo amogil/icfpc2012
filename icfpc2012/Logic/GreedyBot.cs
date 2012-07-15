@@ -29,7 +29,7 @@ namespace Logic
 				plan = target.Item2;
 			}
 			RobotMove move = plan.PeekAndPop();
-			if (MoveChangeMapSignificantly(move))
+			if (!plan.Any() || MoveChangeMapSignificantly(map, move))
 			{
 				currentTarget = null;
 				plan = null;
@@ -46,9 +46,10 @@ namespace Logic
 			return target.Item2.Any() ? target.Item2.Peek() : RobotMove.Wait;
 		}
 
-		private bool MoveChangeMapSignificantly(RobotMove move)
+		private bool MoveChangeMapSignificantly(Map map, RobotMove move)
 		{
 			return true;
+//			return map.HasActiveRocks || map.RocksFallAfterMoveTo(map.Robot.Add(move.ToVector()));
 		}
 
 		private static Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map, bool checkBestIsNotBad = true)
