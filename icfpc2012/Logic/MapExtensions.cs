@@ -63,43 +63,44 @@ namespace Logic
 		}
 
 
-		public static Vector TryToMoveRock(this Map map, Vector coords, params Vector[] emptyCells)
-		{
-			return TryToMoveRock(map, coords.X, coords.Y, emptyCells);
-		}
-
 		private static bool IsEmptyOrRobot(MapCell cell)
 		{
 			return cell == MapCell.Empty || cell == MapCell.Robot;
 		}
 
-		public static Vector TryToMoveRock(this Map map, int x, int y, params Vector[] emptyCells)
+		public static Vector TryToMoveRock(this Map map, Vector p, params Vector[] emptyCells)
 		{
 			Func<int, int, bool> isEmpty =
 				(xx, yy) => emptyCells.Contains(new Vector(xx, yy)) || IsEmptyOrRobot(map.GetCell(xx, yy));
+			var x = p.X;
+			var y = p.Y;
+			if (map.GetCell(x, y).IsRock())
+			{
 
-			if (map.GetCell(x, y) == MapCell.Rock && isEmpty(x, y - 1))
-			{
-				return new Vector(x, y - 1);
-			}
-			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Rock
-				&& isEmpty(x + 1, y) && isEmpty(x + 1, y - 1))
-			{
-				return new Vector(x + 1, y - 1);
-			}
-			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Rock
-				&& (!isEmpty(x + 1, y) || !isEmpty(x + 1, y - 1))
-				&& isEmpty(x - 1, y) && isEmpty(x - 1, y - 1))
-			{
-				return new Vector(x - 1, y - 1);
-			}
-			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Lambda
-				&& isEmpty(x + 1, y) && isEmpty(x + 1, y - 1))
-			{
-				return new Vector(x + 1, y - 1);
+				if (isEmpty(x, y - 1))
+				{
+					return new Vector(x, y - 1);
+				}
+				MapCell upCell = map.GetCell(x, y - 1);
+				if (upCell.IsRock()
+				    && isEmpty(x + 1, y) && isEmpty(x + 1, y - 1))
+				{
+					return new Vector(x + 1, y - 1);
+				}
+				if (upCell.IsRock()
+				    && (!isEmpty(x + 1, y) || !isEmpty(x + 1, y - 1))
+				    && isEmpty(x - 1, y) && isEmpty(x - 1, y - 1))
+				{
+					return new Vector(x - 1, y - 1);
+				}
+				if (upCell == MapCell.Lambda
+				    && isEmpty(x + 1, y) && isEmpty(x + 1, y - 1))
+				{
+					return new Vector(x + 1, y - 1);
+				}
 			}
 
-			return new Vector(x, y);
+			return p;
 		}
 
 		public static bool IsSafeMove(this Map map, Vector from, Vector to, int movesDone, int waterproofLeft)

@@ -29,13 +29,19 @@ namespace Logic
 			throw new Exception(move.ToString());
 		}
 
+		private static readonly Vector up = new Vector(0, 1);
+		private static readonly Vector down = new Vector(0, -1);
+		private static readonly Vector left = new Vector(-1, 0);
+		private static readonly Vector right = new Vector(1, 0);
+		private static readonly Vector zero = new Vector(0, 0);
+
 		public static Vector ToVector(this RobotMove move)
 		{
-			if (move == RobotMove.Down) return new Vector(0, -1);
-			if (move == RobotMove.Up) return new Vector(0, 1);
-			if (move == RobotMove.Left) return new Vector(-1, 0);
-			if (move == RobotMove.Right) return new Vector(1, 0);
-			return new Vector(0, 0);
+			if (move == RobotMove.Down) return down;
+			if (move == RobotMove.Up) return up;
+			if (move == RobotMove.Left) return left;
+			if (move == RobotMove.Right) return right;
+			return zero;
 		}
 
 		public static RobotMove ToRobotMove(this char move)

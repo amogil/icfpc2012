@@ -1,0 +1,137 @@
+From be095f96731af0c4a09371a85814cdf0fe43893c Mon Sep 17 00:00:00 2001
+From: Pavel Egorov <xoposhiy@mail.ru>
+Date: Sun, 15 Jul 2012 20:38:24 +0600
+Subject: [PATCH] fix bugs
+
+---
+ icfpc2012/Logic/GreedyBot.cs     |  6 +++---
+ icfpc2012/Logic/MapExtensions.cs | 37 +++++++++++++++++++------------------
+ 2 files changed, 22 insertions(+), 21 deletions(-)
+
+diff --git a/icfpc2012/Logic/GreedyBot.cs b/icfpc2012/Logic/GreedyBot.cs
+index 44c57b8..01778da 100644
+--- a/icfpc2012/Logic/GreedyBot.cs
++++ b/icfpc2012/Logic/GreedyBot.cs
+@@ -173,7 +173,7 @@ namespace Logic
+ 				var newMap = map.Move(move);
+ 				if (newMap.State == CheckResult.Fail)
+ 					return false;
+-				if (map.RocksFallAfterMoveTo(newMap.Robot))
++				if (newMap.RocksFallAfterMoveTo(newMap.Robot))
+ 					return false;
+ 				map = newMap;
+ 			}
+@@ -184,8 +184,8 @@ namespace Logic
+ 		{
+ 			foreach (var move in robotMoves)
+ 			{
+-				var newMap = map.Move(move);
+-				if (newMap.State == CheckResult.Fail)
++				map = map.Move(move);
++				if (map.State == CheckResult.Fail)
+ 					return false;
+ 			}
+ 			analyseMap(map);
+diff --git a/icfpc2012/Logic/MapExtensions.cs b/icfpc2012/Logic/MapExtensions.cs
+index d39592d..bc7294b 100644
+--- a/icfpc2012/Logic/MapExtensions.cs
++++ b/icfpc2012/Logic/MapExtensions.cs
+@@ -1,4 +1,7 @@
+-﻿namespace Logic
++﻿using System;
++using System.Linq;
++
++namespace Logic
+ {
+ 	public static class MapExtensions
+ 	{
+@@ -49,10 +52,10 @@
+ 			return false;
+ 		}
+ 
+-		
+-		public static Vector TryToMoveRock(this Map map, Vector coords)
++
++		public static Vector TryToMoveRock(this Map map, Vector coords, params Vector[] emptyCells)
+ 		{
+-			return TryToMoveRock(map, coords.X, coords.Y);
++			return TryToMoveRock(map, coords.X, coords.Y, emptyCells);
+ 		}
+ 
+ 		private static bool IsEmptyOrRobot(MapCell cell)
+@@ -60,25 +63,28 @@
+ 			return cell == MapCell.Empty || cell == MapCell.Robot;
+ 		}
+ 
+-		public static Vector TryToMoveRock(this Map map, int x, int y)
++		public static Vector TryToMoveRock(this Map map, int x, int y, params Vector[] emptyCells)
+ 		{
+-			if (map.GetCell(x, y) == MapCell.Rock && IsEmptyOrRobot(map.GetCell(x, y - 1)))
++			Func<int, int, bool> isEmpty =
++				(xx, yy) => emptyCells.Contains(new Vector(xx, yy)) || IsEmptyOrRobot(map.GetCell(xx, yy));
++
++			if (map.GetCell(x, y) == MapCell.Rock && isEmpty(x, y - 1))
+ 			{
+ 				return new Vector(x, y - 1);
+ 			}
+ 			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Rock
+-				&& IsEmptyOrRobot(map.GetCell(x + 1, y)) && IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
++				&& isEmpty(x + 1, y) && isEmpty(x + 1, y - 1))
+ 			{
+ 				return new Vector(x + 1, y - 1);
+ 			}
+ 			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Rock
+-				&& (!IsEmptyOrRobot(map.GetCell(x + 1, y)) || !IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
+-				&& IsEmptyOrRobot(map.GetCell(x - 1, y)) && IsEmptyOrRobot(map.GetCell(x - 1, y - 1)))
++				&& (!isEmpty(x + 1, y) || !isEmpty(x + 1, y - 1))
++				&& isEmpty(x - 1, y) && isEmpty(x - 1, y - 1))
+ 			{
+ 				return new Vector(x - 1, y - 1);
+ 			}
+ 			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Lambda
+-				&& IsEmptyOrRobot(map.GetCell(x + 1, y)) && IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
++				&& isEmpty(x + 1, y) && isEmpty(x + 1, y - 1))
+ 			{
+ 				return new Vector(x + 1, y - 1);
+ 			}
+@@ -91,9 +97,7 @@
+ 			if (waterproofLeft <= 0 && map.WaterLevelAfterUpdate(map.MovesCount + movesDone - 1) >= to.Y)
+ 				return false;
+ 
+-			//var swap = map[from.X, from.Y];
+-			//map[RobotX, RobotY] = MapCell.Empty;
+-			//map[from.X, from.Y] = MapCell.Empty;
++			var emptyCells = new[] {from, to};
+ 
+ 			bool isSafe = true;
+ 
+@@ -101,7 +105,7 @@
+ 			{
+ 				for (int x = to.X - 1; x <= to.X + 1; x++)
+ 				{
+-					var newPosition = map.TryToMoveRock(new Vector(x, to.Y + 2));
++					var newPosition = map.TryToMoveRock(new Vector(x, to.Y + 2), emptyCells);
+ 					if (newPosition.X == to.X && newPosition.Y == to.Y + 1)
+ 						isSafe = false;
+ 				}
+@@ -112,16 +116,13 @@
+ 				int y = to.Y + movesDone + 1;
+ 				for (int x = to.X - 1; x <= to.X + 1; x++)
+ 				{
+-					var newPosition = map.TryToMoveRock(new Vector(x, y));
++					var newPosition = map.TryToMoveRock(new Vector(x, y), emptyCells);
+ 
+ 					if (newPosition.X == to.X && newPosition.Y == y - 1 && map.IsColumnEmpty(to.X, to.Y + 1, y - 2))
+ 						isSafe = false;
+ 				}
+ 			}
+ 
+-			//map[from.X, from.Y] = swap;
+-			//map[RobotX, RobotY] = MapCell.Robot;
+-
+ 			return isSafe;
+ 		}
+ 
+-- 
+1.7.11.msysgit.1
+

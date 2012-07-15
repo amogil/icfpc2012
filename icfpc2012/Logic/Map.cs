@@ -213,7 +213,7 @@ namespace Logic
 
 		public MapCell GetCell(Vector pos)
 		{
-			return GetCell(pos.X, pos.Y);
+			return QTree.Get(field, pos.X, pos.Y, 0, Width - 1, 0, Height - 1);
 		}
 
 		private QTree SetCell(Vector pos, MapCell newValue)
@@ -443,7 +443,7 @@ namespace Logic
 				for (int rockY = y; rockY <= y + 1; rockY++)
 				{
 					var coords = new Vector(rockX, rockY);
-					if (!coords.Equals(TryToMoveRock(rockX, rockY, mapToUse)))
+					if (!coords.Equals(TryToMoveRock(coords, mapToUse)))
 						updateableRocks.Add(coords);
 				}
 			}
@@ -459,35 +459,36 @@ namespace Logic
 			return Flooding == 0 ? Water : updateNumber / Flooding + InitialWater;
 		}
 
-		private static Vector TryToMoveRock(Vector coords, Map mapToUse)
+		private static Vector TryToMoveRock(Vector p, Map mapToUse)
 		{
-			return TryToMoveRock(coords.X, coords.Y, mapToUse);
-		}
-
-		private static Vector TryToMoveRock(int x, int y, Map mapToUse)
-		{
-			if (mapToUse.GetCell(x, y).IsRock() && mapToUse.GetCell(x, y - 1) == MapCell.Empty)
+			int x = p.X;
+			int y = p.Y;
+			MapCell xyCell = mapToUse.GetCell(x, y);
+			if (xyCell.IsRock())
 			{
-				return new Vector(x, y - 1);
+				MapCell upCell = mapToUse.GetCell(x, y - 1);
+				if (upCell == MapCell.Empty)
+				{
+					return new Vector(x, y - 1);
+				}
+				if (upCell.IsRock()
+				    && mapToUse.GetCell(x + 1, y) == MapCell.Empty && mapToUse.GetCell(x + 1, y - 1) == MapCell.Empty)
+				{
+					return new Vector(x + 1, y - 1);
+				}
+				if (upCell.IsRock()
+				    && (mapToUse.GetCell(x + 1, y) != MapCell.Empty || mapToUse.GetCell(x + 1, y - 1) != MapCell.Empty)
+				    && mapToUse.GetCell(x - 1, y) == MapCell.Empty && mapToUse.GetCell(x - 1, y - 1) == MapCell.Empty)
+				{
+					return new Vector(x - 1, y - 1);
+				}
+				if (upCell == MapCell.Lambda
+				    && mapToUse.GetCell(x + 1, y) == MapCell.Empty && mapToUse.GetCell(x + 1, y - 1) == MapCell.Empty)
+				{
+					return new Vector(x + 1, y - 1);
+				}
 			}
-			if (mapToUse.GetCell(x, y).IsRock() && mapToUse.GetCell(x, y - 1).IsRock()
-				&& mapToUse.GetCell(x + 1, y) == MapCell.Empty && mapToUse.GetCell(x + 1, y - 1) == MapCell.Empty)
-			{
-				return new Vector(x + 1, y - 1);
-			}
-			if (mapToUse.GetCell(x, y).IsRock() && mapToUse.GetCell(x, y - 1).IsRock()
-				&& (mapToUse.GetCell(x + 1, y) != MapCell.Empty || mapToUse.GetCell(x + 1, y - 1) != MapCell.Empty)
-				&& mapToUse.GetCell(x - 1, y) == MapCell.Empty && mapToUse.GetCell(x - 1, y - 1) == MapCell.Empty)
-			{
-				return new Vector(x - 1, y - 1);
-			}
-			if (mapToUse.GetCell(x, y).IsRock() && mapToUse.GetCell(x, y - 1) == MapCell.Lambda
-				&& mapToUse.GetCell(x + 1, y) == MapCell.Empty && mapToUse.GetCell(x + 1, y - 1) == MapCell.Empty)
-			{
-				return new Vector(x + 1, y - 1);
-			}
-
-			return new Vector(x, y);
+			return p;
 		}
 
 		private void Update(Map newMap)

@@ -21,6 +21,17 @@ namespace Tests
 		{
 			TestBrains(() => new BackTrakingGreedyBot(), MapsDir);
 		}
+		
+		[Test]
+		public void Profiling()
+		{
+			var greedyBot = new GreedyBot();
+			Map map = WellKnownMaps.LoadMap("tests\\random2_nf_500");
+			while(map.State == CheckResult.Nothing)
+			{
+				map = map.Move(greedyBot.NextMove(map));
+			}
+		}
 
 		[Test, Explicit]
 		public void TestPerformanceGreedyBot()
