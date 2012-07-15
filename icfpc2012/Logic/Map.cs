@@ -129,64 +129,52 @@ namespace Logic
 			Lines = lines;
 			State = CheckResult.Nothing;
 
-			int firstBlankLineIndex = Array.IndexOf(lines, "");
+			var firstBlankLineIndex = Array.IndexOf(lines, "");
 			Height = firstBlankLineIndex == -1 ? lines.Length : firstBlankLineIndex;
 			Width = lines.Take(Height).Max(a => a.Length);
 
 			map = new MapCell[Width + 2, Height + 2];
-
-			for (int row = 0; row < Height + 2; row++)
-			{
-				for (int col = 0; col < Width + 2; col++)
+			for (var row = 0; row < Height + 2; row++)
+				for (var col = 0; col < Width + 2; col++)
 				{
-					map[col, row] = MapCell.Wall;
-				}
-			}
-
-			for (int row = 1; row < Height + 1; row++)
-			{
-				for (int col = 1; col < Width + 1; col++)
-				{
-					map[col, row] = MapCell.Empty;
-				}
-			}
-
-			for (int row = 0; row < Height; row++)
-			{
-				for (int col = 0; col < Width; col++)
-				{
-					int newY = Height - row - 1;
-
-					string line = lines[row].PadRight(Width, ' ');
-					map[col + 1, newY + 1] = Parse(line[col]);
-					if (map[col + 1, newY + 1] == MapCell.Robot)
+					if (row == 0 || row == Height + 1 || col == 0 || col == Width + 1)
+						SetCell(col, row, MapCell.Wall);
+					else
 					{
-						RobotX = col + 1;
-						RobotY = newY + 1;
-					}
-					if (map[col + 1, newY + 1] == MapCell.ClosedLift || map[col + 1, newY + 1] == MapCell.OpenedLift)
-					{
-						LiftX = col + 1;
-						LiftY = newY + 1;
-					}
-					if (map[col + 1, newY + 1] == MapCell.Beard)
-					{
-						Beard.Add(new Vector(col + 1, newY + 1));
-					}
-					if (TargetsChars.Contains((char)map[col + 1, newY + 1]))
-					{
-						Targets[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
-					}
-					if (TrampolinesChars.Contains((char)map[col + 1, newY + 1]))
-					{
-						Trampolines[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
-					}
-					if (map[col + 1, newY + 1] == MapCell.Lambda)
-					{
-						TotalLambdaCount++;
+						var x = col - 1;
+						var y = Height - row;
+						var line = lines[y].PadRight(Width, ' ');
+						var mapCell = Parse(line[x]);
+						SetCell(col, row, mapCell);
+						if (mapCell == MapCell.Lambda)
+						{
+							TotalLambdaCount++;
+						}
+						else if (mapCell == MapCell.Robot)
+						{
+							RobotX = col;
+							RobotY = row;
+						}
+						else if (mapCell == MapCell.ClosedLift || mapCell == MapCell.OpenedLift)
+						{
+							LiftX = col;
+							LiftY = row;
+						}
+						if (mapCell == MapCell.Beard)
+						{
+							Beard.Add(new Vector(col, row));
+						}
+						else if (TargetsChars.Contains((char)mapCell))
+						{
+							Targets[mapCell] = new Vector(col, row);
+						}
+						if (TrampolinesChars.Contains((char)mapCell))
+						{
+							Trampolines[mapCell] = new Vector(col, row);
+						}
 					}
 				}
-			}
+
 			InitializeVariables(lines.Skip(Height + 1).ToArray());
 
 			Height += 2;
@@ -244,35 +232,16 @@ namespace Logic
 			return oldValue;
 		}
 
-
 		private void InitializeActiveRocks()
 		{
-			for (int y = 1; y < Height - 1; y++)
-			{
-				for (int x = 1; x < Width - 1; x++)
+			for (var y = 1; y < Height - 1; y++)
+				for (var x = 1; x < Width - 1; x++)
 				{
-					if (map[x, y].IsRock() && map[x, y - 1] == MapCell.Empty)
-					{
-						activeRocks.Add(new Vector(x, y));
-					}
-					if (map[x, y].IsRock() && map[x, y - 1].IsRock()
-						&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
-					{
-						activeRocks.Add(new Vector(x, y));
-					}
-					if (map[x, y].IsRock() && map[x, y - 1].IsRock()
-						&& (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
-						&& map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
-					{
-						activeRocks.Add(new Vector(x, y));
-					}
-					if (map[x, y].IsRock() && map[x, y - 1] == MapCell.Lambda
-						&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
-					{
-						activeRocks.Add(new Vector(x, y));
-					}
+					var pos = new Vector(x, y);
+					var newRockPos = TryToMoveRock(pos);
+					if (newRockPos != pos)
+						activeRocks.Add(pos);
 				}
-			}
 		}
 
 		public Vector Robot { get { return new Vector(RobotX, RobotY); } }
@@ -293,8 +262,6 @@ namespace Logic
 		{
 			return new MapSerializer().Serialize(this.SkipBorder(), Water, Flooding, Waterproof, TrampToTarget);
 		}
-
-		
 
 		private static MapCell Parse(char c)
 		{
@@ -453,7 +420,7 @@ namespace Logic
 			else if (newMapCell.IsRock())
 			{
 				int rockX = newRobotX * 2 - RobotX;
-				map[rockX, newRobotY] = map[newRobotX, newRobotY];
+				SetCell(rockX, newRobotY, map[newRobotX, newRobotY];
 				log.Peek().MovingRocks.Add(
 					new Movement
 					{
@@ -464,9 +431,9 @@ namespace Logic
 					});
 				activeRocks.Add(new Vector(rockX, newRobotY));
 			}
-			map[RobotX, RobotY] = MapCell.Empty;
+			SetCell(RobotX, RobotY, MapCell.Empty);
 			if (newMapCell != MapCell.OpenedLift)
-				map[newRobotX, newRobotY] = MapCell.Robot;
+				SetCell(newRobotX, newRobotY, MapCell.Robot);
 
 			CheckNearRocks(activeRocks, RobotX, RobotY);
 
@@ -587,7 +554,7 @@ namespace Logic
 			foreach (var activeRockCoords in activeRocks)
 			{
 				var newCoords = TryToMoveRock(activeRockCoords);
-				if (!activeRockCoords.Equals(newCoords) && map[activeRockCoords.X, activeRockCoords.Y].IsRock())
+				if (!activeRockCoords.Equals(newCoords) && GetCell(activeRockCoords.X, activeRockCoords.Y).IsRock())
 					rockMoves.Add(activeRockCoords, newCoords);
 			}
 
@@ -619,7 +586,7 @@ namespace Logic
 			activeRocks = newActiveRocks;
 
 			if (TotalLambdaCount == LambdasGathered)
-				map[LiftX, LiftY] = MapCell.OpenedLift;
+				SetCell(LiftX, LiftY, MapCell.OpenedLift);
 
 			CheckBeardGrowth();
 
@@ -715,8 +682,8 @@ namespace Logic
 
 			foreach (var rock in stateLog.MovingRocks)
 			{
-				map[rock.PreviousX, rock.PreviousY] = MapCell.Rock;
-				map[rock.NextX, rock.NextY] = MapCell.Empty;
+				SetCell(rock.PreviousX, rock.PreviousY, MapCell.Rock);
+				SetCell(rock.NextX, rock.NextY, MapCell.Empty);
 			}
 
 			if(stateLog.RobotMove != null)
@@ -724,7 +691,7 @@ namespace Logic
 				RobotX = stateLog.RobotMove.PreviousX;
 				RobotY = stateLog.RobotMove.PreviousY;
 			}
-			map[RobotX, RobotY] = MapCell.Robot;
+			SetCell(RobotX, RobotY, MapCell.Robot);
 
 			foreach (Tuple<Vector, MapCell> removedObj in stateLog.RemovedObjects)
 			{
@@ -732,7 +699,7 @@ namespace Logic
 
 				if (removedObj.Item2 == MapCell.Lambda)
 				{
-					if (LambdasGathered == TotalLambdaCount) map[LiftX, LiftY] = MapCell.ClosedLift;
+					if (LambdasGathered == TotalLambdaCount) SetCell(LiftX, LiftY, MapCell.ClosedLift);
 					LambdasGathered--;
 				}
 			}
