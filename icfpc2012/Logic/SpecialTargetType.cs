@@ -4,6 +4,7 @@ namespace Logic
 	{
 		None,
 		Banned,
-		Favorite
+		Favorite,
+		Kamikadze
 	}
 }

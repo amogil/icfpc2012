@@ -162,7 +162,7 @@ namespace Logic
 			                                          		          m.GetCell(m.Robot) != MapCell.OpenedLift;
 			                                          	});
 			if(moved && deadend) badness += 100;
-			if(!CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
+			if(specialTargetType == SpecialTargetType.Kamikadze || !CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
 				badness += 500;
 			if (map.IsInWater(target.Item2.Count, target.Item1.Y) && !CanEscapeFromUnderwater(target, map))
 				badness += 500;

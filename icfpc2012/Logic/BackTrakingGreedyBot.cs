@@ -43,14 +43,19 @@ namespace Logic
 
 		private IEnumerable<Tuple<Vector, SpecialTargetType>> GetSpecial(Map map)
 		{
+			// Любимые лябды
 			var lambdas = new List<Vector>(map.TotalLambdaCount);
 			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
 			{
 				lambdas.Add(vector);
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Favorite);
 			}
+			// Пробуем режим камикадзе
+			yield return new Tuple<Vector, SpecialTargetType>(new Vector(1, 1), SpecialTargetType.Kamikadze);
+			// Бан лямбд
 			foreach(var vector in lambdas)
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
+			// Бан трамплинов
 			foreach(var vector in GetBannedElement(map, cell => cell.ToString().StartsWith("Trampoline")))
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
 		}
