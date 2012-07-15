@@ -24,8 +24,8 @@ namespace Logic
 		Lambda = '\\',
 		Wall = '#',
 		Robot = 'R',
-		Beard = 'W',
-		Razor = '!',
+		//Beard = 'W',
+		//Razor = '!',
 		ClosedLift = 'L',
 		OpenedLift = 'O',
 		Trampoline1 = 'A',
@@ -145,10 +145,10 @@ namespace Logic
 						LiftX = col + 1;
 						LiftY = newY + 1;
 					}
-					if (map[col + 1, newY + 1] == MapCell.Beard)
+					/*if (map[col + 1, newY + 1] == MapCell.Beard)
 					{
 						Beard.Add(new Vector(col + 1, newY + 1));
-					}
+					}*/
 					if (TargetsChars.Contains((char)map[col + 1, newY + 1]))
 					{
 						Targets[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
@@ -285,10 +285,10 @@ namespace Logic
 					return MapCell.OpenedLift;
 				case 'R':
 					return MapCell.Robot;
-				case '!':
+				/*case '!':
 					return MapCell.Razor;
 				case 'W':
-					return MapCell.Beard;
+					return MapCell.Beard;*/
 				default:
 					if (TrampolinesChars.Contains(c))
 						return (MapCell)c;
@@ -354,7 +354,7 @@ namespace Logic
 		private bool CheckValid(int newRobotX, int newRobotY)
 		{
 			if (map[newRobotX, newRobotY] == MapCell.Wall || map[newRobotX, newRobotY].IsTarget() || 
-				map[newRobotX, newRobotY] == MapCell.ClosedLift || this[Robot] == MapCell.Beard)
+				map[newRobotX, newRobotY] == MapCell.ClosedLift/* || this[Robot] == MapCell.Beard*/)
 				return false;
 
 			if (map[newRobotX, newRobotY] != MapCell.Rock)
@@ -397,7 +397,7 @@ namespace Logic
 			else if (newMapCell == MapCell.Earth)
 			{
 			}
-			else if (newMapCell == MapCell.Razor)
+			else if ( false/*newMapCell == MapCell.Razor*/)
 			{
 				Razors++;
 			}
@@ -630,7 +630,7 @@ namespace Logic
 							var newVector = b.Add(new Vector(i, j));
 							if(this[newVector] == MapCell.Empty)
 							{
-								this[newVector] = MapCell.Beard;
+								/*this[newVector] = MapCell.Beard;*/
 								Beard.Add(b);
 							}
 						}
