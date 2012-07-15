@@ -52,6 +52,7 @@
     <Compile Include="IDrawer.cs" />
     <Compile Include="IOverlay.cs" />
     <Compile Include="MapIsSafeMove_Test.cs" />
+    <Compile Include="QTree.cs" />
     <Compile Include="RockDangerRating.cs" />
     <Compile Include="StackExtensions.cs" />
     <Compile Include="Engine.cs" />
