@@ -1,0 +1,31 @@
+####################
+##     #     ##    #
+#      #           #
+#   C ##   #   \  D#
+#     ## \\##     *#
+#  *  ##   ##      #
+#E     # \  #   1\ #
+# .*#  #    @   \ ##
+#   # ##\    .\   ##
+#\  # ##  \  ##   ##
+#      #           #
+#   \  #  A      .*#
+#\. \ ##    L*   # #
+####  ## 2     .3#.#
+# R   ##         ###
+####################
+#  #   # ###   \ ! #
+# W#   #      \    #
+#  #B  #       ### #
+####################
+
+Water 0
+Flooding 1
+Waterproof 5
+Trampoline A targets 1
+Trampoline B targets 2
+Trampoline C targets 3
+Trampoline D targets 1
+Trampoline E targets 2
+Growth 1
+Razors 1
