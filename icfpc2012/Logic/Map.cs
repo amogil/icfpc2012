@@ -109,7 +109,7 @@ namespace Logic
 		public int StepsToIncreaseWater { get; private set; }
 		public int WaterproofLeft { get; private set; }
 
-		private List<Vector> Beard = new List<Vector>();
+		private HashSet<Vector> Beard = new HashSet<Vector>();
 
 		private Map()
 		{
@@ -297,7 +297,7 @@ namespace Logic
 				Waterproof = Waterproof,
 				WaterproofLeft = WaterproofLeft,
 				field = field,
-				Beard = new List<Vector>(Beard),
+				Beard = new HashSet<Vector>(Beard),
 				Growth = Growth,
 				GrowthLeft = GrowthLeft,
 				Razors = Razors,
@@ -334,7 +334,7 @@ namespace Logic
 		{
 			if (Razors == 0) return;
 			newMap.Razors--;
-			newMap.Beard = new List<Vector>();
+			newMap.Beard = new HashSet<Vector>();
 			foreach (var b in Beard)
 			{
 				if(Robot.Distance(b) > 1)
@@ -511,6 +511,7 @@ namespace Logic
 
 					robotFailed |= IsRobotKilledByRock(toPos.X, toPos.Y, newMap);
 					CheckNearRocks(newActiveRocks, fromPos.X, fromPos.Y, newMap);
+					newMap.Beard.Remove(toPos);
 				}
 				else if(fromCell == MapCell.Beard)
 				{
