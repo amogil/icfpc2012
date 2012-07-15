@@ -1,17 +1,25 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace Logic
 {
 	[TestFixture]
 	public class MapSerializer_Test
 	{
+		private static void MakeEmpty(MapCell[,] mapCells)
+		{
+			for(int x = 0; x < mapCells.GetLength(0); x++)
+				for(int y = 0; y < mapCells.GetLength(1); y++)
+					mapCells[x, y] = MapCell.Empty;
+		}
+
 		[Test]
 		public static void AllElementsTest()
 		{
 			var mapCells = new MapCell[5,5];
 			MakeEmpty(mapCells);
 
-			for (int i = 0; i < mapCells.GetLength(0); i++)
+			for(int i = 0; i < mapCells.GetLength(0); i++)
 			{
 				mapCells[i, 0] = MapCell.Wall;
 				mapCells[i, mapCells.GetLength(1) - 1] = MapCell.Wall;
@@ -37,14 +45,8 @@ L####
 Water 0
 Flooding 1
 Waterproof 10".Trim(),
-				serializer.Serialize(mapCells, water: 0, flooding: 1, waterproof: 10));
-		}
-
-		private static void MakeEmpty(MapCell[,] mapCells)
-		{
-			for (int x = 0; x < mapCells.GetLength(0); x++)
-				for (int y = 0; y < mapCells.GetLength(1); y++)
-					mapCells[x, y] = MapCell.Empty;
+				serializer.Serialize(mapCells, water: 0, flooding: 1, waterproof: 10,
+				                     trampToTarget: new Dictionary<MapCell, MapCell>()));
 		}
 
 		[Test]
@@ -71,7 +73,7 @@ Waterproof 10".Trim(),
 Water 1
 Flooding 0
 Waterproof 0".Trim(),
-				serializer.Serialize(map, water: 1, flooding: 0, waterproof: 0));
+				serializer.Serialize(map, water: 1, flooding: 0, waterproof: 0, trampToTarget: new Dictionary<MapCell, MapCell>()));
 		}
 
 		[Test]
@@ -90,7 +92,7 @@ Waterproof 0".Trim(),
 Water 1
 Flooding 0
 Waterproof 1".Trim(),
-				serializer.Serialize(map, water: 1, flooding: 0, waterproof: 1));
+				serializer.Serialize(map, water: 1, flooding: 0, waterproof: 1, trampToTarget: new Dictionary<MapCell, MapCell>()));
 		}
 	}
 }

@@ -76,7 +76,7 @@ namespace Tests
 		private const string TestsDir = "../../../../tests";
 		private const string MapsDir = "../../../../maps/tests";
 		private const string PerformanceMapsDir = "../../../../maps/tests/performance";
-		private const int FilenamePadding = 24;
+		private const int FilenamePadding = 35;
 		private const int ValuePadding = 8;
 	}
 }

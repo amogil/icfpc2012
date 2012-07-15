@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Logic;
 
 namespace MapGenerator
 {
 	public class RandomMapGenerator : IMapGenerator
 	{
-		private readonly MapGeneratorOptions options;
+		protected readonly MapGeneratorOptions options;
 		protected readonly Random random = new Random();
 
 		public RandomMapGenerator(MapGeneratorOptions options)
@@ -13,33 +15,61 @@ namespace MapGenerator
 			this.options = options;
 		}
 
-		public virtual string Generate()
+		public string Generate()
+		{
+			var initMap = CreateEmptyMap();
+			PutBordersWalls(initMap);
+			var mapInfo = GenerateMap(initMap);
+			return new MapSerializer().Serialize(mapInfo.Item1, options.WaterLevel, options.Flooding,
+			                                     options.Waterproof, mapInfo.Item2);
+		}
+
+		protected virtual Tuple<MapCell[,], Dictionary<MapCell, MapCell>> GenerateMap(MapCell[,] map)
+		{
+			PutLift(map);
+			PutElements(map, Enumerable.Repeat(MapCell.Rock, options.RockCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Earth, options.EarthCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Wall, options.WallCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Lambda, options.LambdaCount));
+			var trampToTarget = PutTrampolines(map);
+			PutElements(map, new[] {MapCell.Robot});
+			return Tuple.Create(map, trampToTarget);
+		}
+
+		protected static IEnumerable<MapCell> GetEnumValuesByNamePrefixSorted(string prefix, int count)
+		{
+			var names = Enum.GetNames(typeof(MapCell));
+			var trampolinesNames = names
+				.Where(name => name.StartsWith(prefix))
+				.ToArray();
+			Array.Sort(trampolinesNames);
+			return trampolinesNames.Select(name => (MapCell) Enum.Parse(typeof(MapCell), name)).Take(count);
+		}
+
+		private MapCell[,] CreateEmptyMap()
 		{
 			var mapCells = new MapCell[options.Width,options.Height];
-			PutBordersWalls(mapCells);
-			PutLift(mapCells);
-			PutElements(mapCells, options.RockCount, MapCell.Rock);
-			PutElements(mapCells, options.EarthCount, MapCell.Earth);
-			PutElements(mapCells, options.WallCount, MapCell.Wall);
-			PutElements(mapCells, options.LambdaCount, MapCell.Lambda);
-			PutElements(mapCells, 1, MapCell.Robot);
-			return new MapSerializer().Serialize(mapCells, options.WaterLevel, options.Flooding, options.Waterproof);
+			for(int i = 0; i < options.Width; i++)
+				for(int j = 0; j < options.Height; j++)
+					mapCells[i, j] = MapCell.Empty;
+			return mapCells;
 		}
 
-		protected void PutElements(MapCell[,] map, int count, MapCell mapCell)
+		protected Vector[] PutElements(MapCell[,] map, IEnumerable<MapCell> mapCells)
 		{
-			for(int i = 0; i < count; i++)
-				PutElement(map, mapCell);
+			return mapCells.Select(mapCell => PutElement(map, mapCell)).ToArray();
 		}
 
-		protected void PutElement(MapCell[,] map, MapCell mapCell)
+		protected Vector PutElement(MapCell[,] map, MapCell mapCell)
 		{
 			var indexX = random.Next(1, map.GetLength(0) - 1);
 			var indexY = random.Next(1, map.GetLength(1) - 1);
 			if(map[indexX, indexY] == MapCell.Empty)
+			{
 				map[indexX, indexY] = mapCell;
-			else
-				PutElement(map, mapCell);
+				return new Vector(indexX, indexY);
+			}
+			return PutElement(map, mapCell);
 		}
 
 		protected void PutLift(MapCell[,] map)
@@ -72,7 +102,7 @@ namespace MapGenerator
 			       || (indexX == map.GetLength(0) - 1 && indexY == map.GetLength(1) - 1);
 		}
 
-		protected void PutBordersWalls(MapCell[,] map)
+		private void PutBordersWalls(MapCell[,] map)
 		{
 			for(int i = 0; i < options.Width; i++)
 			{
@@ -84,6 +114,25 @@ namespace MapGenerator
 				map[0, j] = MapCell.Wall;
 				map[options.Width - 1, j] = MapCell.Wall;
 			}
+		}
+
+		protected Dictionary<MapCell, MapCell> PutTrampolines(MapCell[,] map)
+		{
+			var trampolines = PutElements(map, GetEnumValuesByNamePrefixSorted("Trampoline", options.TrampolineCount));
+			var trampolinesHasOneTarget = random.Next(0, 2);
+			var targetsCount = trampolinesHasOneTarget == 0 ? options.TrampolineCount : options.TrampolineCount / 2 + 1;
+			var targets = PutElements(map, GetEnumValuesByNamePrefixSorted("Target", targetsCount));
+			var trampToTarget = new Dictionary<MapCell, MapCell>();
+			for(int i = 0; i < targets.Length; i++)
+			{
+				trampToTarget[map[trampolines[i].X, trampolines[i].Y]] = map[targets[i].X, targets[i].Y];
+			}
+			for(int i = targets.Length; i < trampolines.Length; i++)
+			{
+				var targetIndex = random.Next(0, targets.Length);
+				trampToTarget[map[trampolines[i].X, trampolines[i].Y]] = map[targets[targetIndex].X, targets[targetIndex].Y];
+			}
+			return trampToTarget;
 		}
 	}
 }

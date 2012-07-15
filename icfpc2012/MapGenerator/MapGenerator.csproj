@@ -64,13 +64,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IMapGenerator.cs" />
+    <Compile Include="IsolatedMapGenerator.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PatternMapGenerator.cs" />
+    <Compile Include="SmartWallsMapGenerator.cs" />
     <Compile Include="RandomMapGenerator.cs" />
     <Compile Include="MapGeneratorOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

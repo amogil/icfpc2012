@@ -1,34 +1,32 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Logic;
 
 namespace MapGenerator
 {
-	public class PatternMapGenerator : RandomMapGenerator
+	public class SmartWallsMapGenerator : RandomMapGenerator
 	{
-		private readonly MapGeneratorOptions options;
 		private readonly int wallSegmentLengthMax;
 		private readonly int wallSegmentsCount;
 
-		public PatternMapGenerator(MapGeneratorOptions mapGeneratorOptions)
+		public SmartWallsMapGenerator(MapGeneratorOptions mapGeneratorOptions)
 			: base(mapGeneratorOptions)
 		{
-			options = mapGeneratorOptions;
 			wallSegmentsCount = mapGeneratorOptions.Width * mapGeneratorOptions.Height / 7;
 			wallSegmentLengthMax = Math.Min(mapGeneratorOptions.Width, mapGeneratorOptions.Height) / 10;
 		}
 
-		public override string Generate()
+		protected override Tuple<MapCell[,], Dictionary<MapCell, MapCell>> GenerateMap(MapCell[,] map)
 		{
-			var mapCells = new MapCell[options.Width,options.Height];
-			PutBordersWalls(mapCells);
-			PutLift(mapCells);
-			PutWalls(mapCells);
-			PutElements(mapCells, options.RockCount, MapCell.Rock);
-			PutElements(mapCells, options.EarthCount, MapCell.Earth);
-			PutElements(mapCells, options.WallCount, MapCell.Wall);
-			PutElements(mapCells, options.LambdaCount, MapCell.Lambda);
-			PutElements(mapCells, 1, MapCell.Robot);
-			return new MapSerializer().Serialize(mapCells, options.WaterLevel, options.Flooding, options.Waterproof);
+			PutLift(map);
+			PutWalls(map);
+			PutElements(map, Enumerable.Repeat(MapCell.Rock, options.RockCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Earth, options.EarthCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Lambda, options.LambdaCount));
+			var trampToTarget = PutTrampolines(map);
+			PutElements(map, new[] {MapCell.Robot});
+			return Tuple.Create(map, trampToTarget);
 		}
 
 		private void PutWalls(MapCell[,] mapCells)

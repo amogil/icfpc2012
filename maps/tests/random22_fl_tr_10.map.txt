@@ -1,0 +1,15 @@
+##########
+# \ \ A  #
+#1R . ## #
+#*#*  * ##
+###\## . #
+## *  ##.#
+# \      #
+#      * #
+#    ... L
+##########
+
+Water 0
+Flooding 1
+Waterproof 5
+Trampoline A targets 1
