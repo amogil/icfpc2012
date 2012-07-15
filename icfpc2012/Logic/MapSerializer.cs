@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Logic
@@ -19,7 +20,8 @@ namespace Logic
 			return builder;
 		}
 
-		public string Serialize(MapCell[,] map, int water, int flooding, int waterproof)
+		public string Serialize(MapCell[,] map, int water, int flooding, int waterproof,
+		                        Dictionary<MapCell, MapCell> trampToTarget)
 		{
 			var builder = SerializeMapOnly(map);
 			builder.AppendLine();
@@ -28,6 +30,11 @@ namespace Logic
 			builder.AppendFormat("Flooding {0}", flooding);
 			builder.AppendLine();
 			builder.AppendFormat("Waterproof {0}", waterproof);
+			foreach(var trampTargetElem in trampToTarget)
+			{
+				builder.AppendLine();
+				builder.AppendFormat("Trampoline {0} targets {1}", (Char) trampTargetElem.Key, (Char) trampTargetElem.Value);
+			}
 			return builder.ToString();
 		}
 
@@ -37,7 +44,7 @@ namespace Logic
 			{
 				return (char) mapCell;
 			}
-			catch (Exception)
+			catch(Exception)
 			{
 				throw new ArgumentOutOfRangeException("mapCell");
 			}

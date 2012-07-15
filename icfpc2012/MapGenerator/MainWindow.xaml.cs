@@ -24,8 +24,11 @@ namespace MapGenerator
 			                                      lambdaCount: Convert.ToInt32(tbLambdas.Text),
 			                                      waterLevel: Convert.ToInt32(tbWater.Text),
 			                                      flooding: Convert.ToInt32(tbFlooding.Text),
-			                                      waterproof: Convert.ToInt32(tbWaterproof.Text));
-			var generator = new PatternMapGenerator(options);
+			                                      waterproof: Convert.ToInt32(tbWaterproof.Text),
+			                                      trampolineCount: Convert.ToInt32(tbTrampolineCount.Text));
+			var generator = cbIsolatedSegments.IsChecked.Value
+			                	? new IsolatedMapGenerator(options)
+			                	: new SmartWallsMapGenerator(options);
 			var map = generator.Generate();
 			tbResult.Text = map;
 			Clipboard.SetText(map);

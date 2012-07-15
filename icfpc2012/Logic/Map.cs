@@ -237,7 +237,7 @@ namespace Logic
 
 		public override string ToString()
 		{
-			return new MapSerializer().Serialize(map.SkipBorder(), Water, Flooding, Waterproof);
+			return new MapSerializer().Serialize(map.SkipBorder(), Water, Flooding, Waterproof, TrampToTarget);
 		}
 
 		public string GetMapStateAsAscii()

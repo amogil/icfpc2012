@@ -2,8 +2,9 @@ namespace MapGenerator
 {
 	public class MapGeneratorOptions
 	{
-		public MapGeneratorOptions(int height, int width, bool hasLift = true, int rockCount = 0, int earthCount = 0, int wallCount = 0,
-		                           int lambdaCount = 1, int waterLevel = 0, int flooding = 0, int waterproof = 0)
+		public MapGeneratorOptions(int height, int width, bool hasLift = true, int rockCount = 0, int earthCount = 0,
+		                           int wallCount = 0, int lambdaCount = 1, int waterLevel = 0, int flooding = 0,
+		                           int waterproof = 0, int trampolineCount = 0)
 		{
 			Height = height;
 			Width = width;
@@ -15,6 +16,7 @@ namespace MapGenerator
 			WaterLevel = waterLevel;
 			Flooding = flooding;
 			Waterproof = waterproof;
+			TrampolineCount = trampolineCount;
 		}
 
 		public int Height { get; private set; }
@@ -27,5 +29,6 @@ namespace MapGenerator
 		public int WaterLevel { get; private set; }
 		public int Flooding { get; private set; }
 		public int Waterproof { get; private set; }
+		public int TrampolineCount { get; private set; }
 	}
 }
