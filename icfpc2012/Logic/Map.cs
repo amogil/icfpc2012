@@ -365,7 +365,7 @@ namespace Logic
 				if(Robot.Distance(b) > 1)
 					newMap.Beard.Add(b);
 				else
-					newMap.SetCell(b, MapCell.Empty);
+					newMap.field = newMap.SetCell(b, MapCell.Empty);
 			}
 		}
 
