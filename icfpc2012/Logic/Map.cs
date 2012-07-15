@@ -79,7 +79,6 @@ namespace Logic
 
 	public class Map
 	{
-		public string[] Lines { get; private set; }
 		public int Razors { get; private set; }
 		public int Growth { get; private set; }
 		public int GrowthLeft { get; private set; }
@@ -122,7 +121,6 @@ namespace Logic
 
 		public Map(string[] lines)
 		{
-			Lines = lines;
 			State = CheckResult.Nothing;
 
 			var firstBlankLineIndex = Array.IndexOf(lines, "");
