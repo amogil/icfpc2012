@@ -60,6 +60,8 @@ namespace Logic
 					return RobotMove.Wait;
 				case 'A':
 					return RobotMove.Abort;
+				case 'S':
+					return RobotMove.CutBeard;
 			}
 			throw new Exception(move.ToString());
 		}
