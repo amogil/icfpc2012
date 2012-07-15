@@ -28,13 +28,13 @@
 			return toCell.IsTrampoline() || toCell == MapCell.OpenedLift || toCell == MapCell.Lambda || toCell == MapCell.Empty || toCell == MapCell.Earth || toCell == MapCell.Robot;
 		}
 
-		public static MapCell[,] SkipBorder(this MapCell[,] map)
+		public static MapCell[,] SkipBorder(this Map map)
 		{
-			var res = new MapCell[map.GetLength(0) - 2, map.GetLength(1) - 2];
-			for (int y = 1; y < map.GetLength(1) - 1; y++)
-				for (int x = 1; x < map.GetLength(0) - 1; x++)
-					res[x - 1, y - 1] = map[x, y];
-			return res;
+			var field = new MapCell[map.Width - 2, map.Height - 2];
+			for (int y = 1; y < map.Height - 1; y++)
+				for (int x = 1; x < map.Width - 1; x++)
+					field[x - 1, y - 1] = map.GetCell(x, y);
+			return field;
 		}
 
 		public static long GetScore(this Map map)

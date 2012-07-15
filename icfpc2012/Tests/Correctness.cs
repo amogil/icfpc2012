@@ -42,7 +42,7 @@ namespace Tests
 				if (checkResult == CheckResult.Abort) checkResult = CheckResult.Nothing; //Специфика загружалки результатов валидатора
 				Assert.AreEqual(Result, checkResult, this.ToString());
 				Assert.AreEqual(Score, actualMap.GetScore(), this.ToString());
-				var mapStateAsAscii = actualMap.GetMapStateAsAscii();
+				var mapStateAsAscii = GetMapStateAsAscii(actualMap);
 				string actualMap1 = Regex.Replace(mapStateAsAscii, "[A-I]", "T"); //Специфика вывода валидатора
 				string actualMap2 = Regex.Replace(actualMap1, "[1-9]", "t"); //Специфика вывода валидатора
 				Assert.AreEqual(FinalMapState, actualMap2, string.Format("{0}\r\nactual map state:\r\n{1}", this.ToString(), actualMap2));
@@ -53,6 +53,11 @@ namespace Tests
 				Console.WriteLine(ex.Message);
 				return false;
 			}
+		}
+
+		public string GetMapStateAsAscii(Map map)
+		{
+			return new MapSerializer().SerializeMapOnly(map.SkipBorder()).ToString();
 		}
 	}
 

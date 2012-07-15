@@ -271,10 +271,6 @@ namespace Logic
 					{
 						activeRocks.Add(new Vector(x, y));
 					}
-					if (map[x, y] == MapCell.ClosedLift && LambdasGathered == TotalLambdaCount)
-					{
-						map[x, y] = MapCell.OpenedLift;
-					}
 				}
 			}
 		}
@@ -295,13 +291,10 @@ namespace Logic
 
 		public override string ToString()
 		{
-			return new MapSerializer().Serialize(map.SkipBorder(), Water, Flooding, Waterproof, TrampToTarget);
+			return new MapSerializer().Serialize(this.SkipBorder(), Water, Flooding, Waterproof, TrampToTarget);
 		}
 
-		public string GetMapStateAsAscii()
-		{
-			return new MapSerializer().SerializeMapOnly(map.SkipBorder()).ToString();
-		}
+		
 
 		private static MapCell Parse(char c)
 		{
@@ -417,7 +410,7 @@ namespace Logic
 
 			int checkX = newRobotX * 2 - RobotX;
 
-			if (map[checkX, RobotY] == MapCell.Empty)
+			if (GetCell(checkX, RobotY) == MapCell.Empty)
 				return true;
 
 			return false;
@@ -425,7 +418,7 @@ namespace Logic
 
 		private void DoMove(int newRobotX, int newRobotY)
 		{
-			MapCell newMapCell = map[newRobotX, newRobotY];
+			MapCell newMapCell = GetCell(newRobotX, newRobotY);
 			if (newMapCell == MapCell.Lambda)
 			{
 				LambdasGathered++;
@@ -560,23 +553,23 @@ namespace Logic
 
 		private Vector TryToMoveRock(int x, int y)
 		{
-			if (map[x, y].IsRock() && map[x, y - 1] == MapCell.Empty)
+			if (GetCell(x, y).IsRock() && GetCell(x, y - 1) == MapCell.Empty)
 			{
 				return new Vector(x, y - 1);
 			}
-			if (map[x, y].IsRock() && map[x, y - 1].IsRock()
-				&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
+			if (GetCell(x, y).IsRock() && GetCell(x, y - 1).IsRock()
+				&& GetCell(x + 1, y) == MapCell.Empty && GetCell(x + 1, y - 1) == MapCell.Empty)
 			{
 				return new Vector(x + 1, y - 1);
 			}
-			if (map[x, y].IsRock() && map[x, y - 1].IsRock()
-				&& (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
-				&& map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
+			if (GetCell(x, y).IsRock() && GetCell(x, y - 1).IsRock()
+				&& (GetCell(x + 1, y) != MapCell.Empty || GetCell(x + 1, y - 1) != MapCell.Empty)
+				&& GetCell(x - 1, y) == MapCell.Empty && GetCell(x - 1, y - 1) == MapCell.Empty)
 			{
 				return new Vector(x - 1, y - 1);
 			}
-			if (map[x, y].IsRock() && map[x, y - 1] == MapCell.Lambda
-				&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
+			if (GetCell(x, y).IsRock() && GetCell(x, y - 1) == MapCell.Lambda
+				&& GetCell(x + 1, y) == MapCell.Empty && GetCell(x + 1, y - 1) == MapCell.Empty)
 			{
 				return new Vector(x + 1, y - 1);
 			}
@@ -628,11 +621,6 @@ namespace Logic
 			if (TotalLambdaCount == LambdasGathered)
 				map[LiftX, LiftY] = MapCell.OpenedLift;
 
-			if (RobotX == LiftX && RobotY == LiftY && map[LiftX, LiftY] == MapCell.OpenedLift)
-			{
-				State = CheckResult.Win;
-			}
-
 			CheckBeardGrowth();
 
 			if (robotFailed)
@@ -668,7 +656,7 @@ namespace Logic
 
 		private bool IsRobotKilledByRock(int x, int y)
 		{
-			return map[x, y - 1] == MapCell.Robot;
+			return GetCell(x, y - 1) == MapCell.Robot;
 		}
 
 		private void CheckBeardGrowth()
