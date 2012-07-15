@@ -233,10 +233,8 @@ namespace Logic
 					var newRockPos = TryToMoveRock(pos, this);
 					if (!pos.Equals(newRockPos))
 						activeObjects.Add(pos);
-					else if(Growth == 1 && GetCell(pos) == MapCell.Beard)
-					{
+					else if (Growth == 1 && GetCell(pos) == MapCell.Beard)
 						activeObjects.Add(pos);
-					}
 				}
 		}
 
