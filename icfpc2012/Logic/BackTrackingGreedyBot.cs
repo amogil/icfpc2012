@@ -52,19 +52,19 @@ namespace Logic
 			}
 			//  Kamikadze way
 			yield return new Tuple<Vector, SpecialTargetType>(new Vector(1, 1), SpecialTargetType.Kamikadze);
-			// Banned lambdas
-			foreach(var vector in lambdas)
-				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
+			// Favorite trampolines
 			var trampolines = new List<Vector>();
-			// Banned trampoline
 			foreach(var vector in GetBannedElement(map, cell => cell.ToString().StartsWith("Trampoline")))
 			{
 				trampolines.Add(vector);
-				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
-			}
-			// Favorite trampolines
-			foreach(var vector in trampolines)
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Favorite);
+			}
+			// Banned lambdas
+			foreach(var vector in lambdas)
+				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
+			// Banned trampoline
+			foreach(var vector in trampolines)
+				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
 		}
 
 		private IEnumerable<Vector> GetBannedElement(Map map, Predicate<MapCell> predicate)
