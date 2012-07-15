@@ -239,11 +239,8 @@ namespace Logic
 				catch (GameFinishedException)
 				{
 					return false;
-				}
-				if (map.RocksFallAfterMoveTo(map.Robot))
-				{
+				if (newMap.RocksFallAfterMoveTo(newMap.Robot))
 					return false;
-				}
 			}
 			finally
 			{
@@ -271,7 +268,6 @@ namespace Logic
 				catch (GameFinishedException)
 				{
 					return false;
-				}
 			}
 			finally
 			{

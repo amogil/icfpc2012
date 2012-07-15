@@ -550,7 +550,6 @@ namespace Logic
 			CheckBeardGrowth();
 
 			if (robotFailed)
-			{
 				State = CheckResult.Fail;
 				throw new KilledByRockException();
 			}
