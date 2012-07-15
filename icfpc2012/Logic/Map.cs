@@ -69,7 +69,7 @@ namespace Logic
 		string GetMapStateAsAscii();
 		IMap Move(RobotMove move);
 		bool IsSafeMove(Vector from, Vector to, int movesDone);
-		bool LoadPreviousState();
+		bool Rollback();
 		MapCell this[Vector pos] { get; }
 		MapCell this[int x, int y] { get; }
 		Vector Robot { get; }
@@ -565,7 +565,7 @@ namespace Logic
 			return map[x, y - 1] == MapCell.Robot;
 		}
 
-		public bool LoadPreviousState()
+		public bool Rollback()
 		{
 			if (MovesCount == 0)
 				return false;

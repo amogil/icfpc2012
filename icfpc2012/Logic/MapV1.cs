@@ -311,7 +311,7 @@ namespace Logic
 			return map[x, y - 1] == MapCell.Robot;
 		}
 
-		public bool LoadPreviousState()
+		public bool Rollback()
 		{
 			return false;
 		}

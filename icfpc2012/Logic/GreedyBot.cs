@@ -96,7 +96,7 @@ namespace Logic
 			finally
 			{
 				for (int i = 0; i < moved; i++)
-					map.LoadPreviousState();
+					map.Rollback();
 			}
 		}
 		
@@ -123,7 +123,7 @@ namespace Logic
 			finally
 			{
 				for (int i = 0; i < moved; i++)
-					map.LoadPreviousState();
+					map.Rollback();
 			}
 		}
 	}

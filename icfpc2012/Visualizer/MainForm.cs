@@ -199,7 +199,7 @@ namespace Visualizer
 
 		private void RollbackMove()
 		{
-			if (map.LoadPreviousState())
+			if (map.Rollback())
 			{
 				moves.RemoveAt(moves.Count - 1);
 				UpdateMap(map);
