@@ -43,9 +43,13 @@ namespace Logic
 
 		private IEnumerable<Tuple<Vector, SpecialTargetType>> GetSpecial(Map map)
 		{
+			var lambdas = new List<Vector>(map.TotalLambdaCount);
 			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
+			{
+				lambdas.Add(vector);
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Favorite);
-			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
+			}
+			foreach(var vector in lambdas)
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
 			foreach(var vector in GetBannedElement(map, cell => cell.ToString().StartsWith("Trampoline")))
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
