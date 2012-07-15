@@ -126,29 +126,12 @@ namespace Visualizer
 			var newMap = new Map(File.ReadAllLines(mapFile));
 			engine = new Engine(newMap);
 			engine.OnMapUpdate += UpdateMap;
-			engine.OnMoveAdded += m =>
-			                      	{
-			                      		moves.Add(m);
-										if (engine.Map.State != CheckResult.Nothing)
-											CheckState();
-			                      		else
-										{
-											engine.Map.Move(RobotMove.Abort);
-											CheckState();
-											engine.Map.Rollback();
-										}
-			                      	};
+			engine.OnMoveAdded += m => moves.Add(m);
 			if (newMap.Width * newMap.Height > 150 * 150 && CellSize > 2) zoomBar.Value = 2;
 			if (newMap.Width * newMap.Height > 50 * 50 && CellSize > 10) zoomBar.Value = 10;
 			UpdateMap(newMap);
 			Text = mapFile;
 			robot = null;
-		}
-
-		private void CheckState()
-		{
-			if (engine.Map.GetScore() > bestPath.Item1)
-				bestPath = new Tuple<int, string>(bestPath.Item1, GetMovesString() + "A");
 		}
 
 		private void InitRobots()
