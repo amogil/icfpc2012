@@ -48,6 +48,7 @@ namespace Logic
 				currentTarget = target.Item1;
 				plan = target.Item2;
 			}
+			if (!plan.Any()) return RobotMove.Abort;
 			RobotMove move = plan.PeekAndPop();
 			if(!plan.Any() || MoveChangeMapSignificantly(map, move))
 			{
@@ -239,8 +240,9 @@ namespace Logic
 				catch (GameFinishedException)
 				{
 					return false;
-				if (newMap.RocksFallAfterMoveTo(newMap.Robot))
+				if (map.RocksFallAfterMoveTo(newMap.Robot))
 					return false;
+				map = newMap;
 			}
 			finally
 			{
