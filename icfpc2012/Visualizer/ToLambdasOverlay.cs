@@ -14,7 +14,7 @@ namespace Visualizer
 			drawer.AddStyle("target", new Pen(Color.Gold, 1));
 			drawer.AddStyle("firstTarget", new Pen(Color.Fuchsia, 3));
 			Tuple<Vector, Stack<RobotMove>> firstTarget = null;
-			foreach (var target in waveRun.EnumerateTargets())
+			foreach (var target in waveRun.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda))
 			{
 				if (first) firstTarget = target;
 				var style = first ? "firstTarget" : "target";

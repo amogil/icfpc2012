@@ -31,7 +31,7 @@ namespace Logic
 		{
 			Console.WriteLine(map.ToString());
 			var waveRun = new WaveRun(map, from);
-			Tuple<Vector, Stack<RobotMove>>[] targets = waveRun.EnumerateTargets().ToArray();
+			Tuple<Vector, Stack<RobotMove>>[] targets = waveRun.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda).ToArray();
 			string[] formattedTargets = targets.Select(FormatTarget).ToArray();
 			foreach (var target in formattedTargets)
 				Console.WriteLine(target);

@@ -22,14 +22,14 @@ namespace Logic
 				{
 					if (map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks) 
 						return FindSafePlace(map);
-					else 
-						return RobotMove.Abort; // TODO move rocks
+					else
+						return FindMovableRock(map); // TODO move rocks
 				}
 				currentTarget = target.Item1;
 				plan = target.Item2;
 			}
 			RobotMove move = plan.PeekAndPop();
-			if (MoveChangeMapSignificantly(move))
+			if (!plan.Any() || MoveChangeMapSignificantly(map, move))
 			{
 				currentTarget = null;
 				plan = null;
@@ -37,20 +37,44 @@ namespace Logic
 			return move;
 		}
 
+		private RobotMove FindMovableRock(Map map)
+		{
+			//*
+			//..
+
+			// *
+			//..
+
+			//.* 
+			//
+
+			// *.
+
+			//.*.
+			//A A
+
+			var waveRun = new WaveRun(map, map.Robot);
+			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets((lmap, position) => true).FirstOrDefault();
+
+
+			return RobotMove.Abort;
+		}
+
 		private RobotMove FindSafePlace(Map map)
 		{
 			if (map.IsSafeMove(map.Robot, map.Robot.Add(new Vector(0, 1)), 1)) return RobotMove.Up;
 			if (map.IsSafeMove(map.Robot, map.Robot, 1)) return RobotMove.Wait;
 			var waveRun = new WaveRun(map, map.Robot);
-			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets(targetIsAnyCellNotOnlyLambda: true).FirstOrDefault();
+			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets((lmap, position) => true).FirstOrDefault();
 			if (target == null) 
 				return RobotMove.Abort;
 			return target.Item2.Any() ? target.Item2.Peek() : RobotMove.Wait;
 		}
 
-		private bool MoveChangeMapSignificantly(RobotMove move)
+		private bool MoveChangeMapSignificantly(Map map, RobotMove move)
 		{
 			return true;
+//			return map.HasActiveRocks || map.RocksFallAfterMoveTo(map.Robot.Add(move.ToVector()));
 		}
 
 		private static Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map, bool checkBestIsNotBad = true)
@@ -60,11 +84,11 @@ namespace Logic
 
 			if (checkBestIsNotBad)
 			{
-				var orderedMoves = waveRun.EnumerateTargets().Take(9)
+				var orderedMoves = waveRun.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda).Take(9)
 					.OrderBy(t => CalculateTargetBadness(t, map)).ToArray();
 				result = orderedMoves.FirstOrDefault();
 			}
-			else result = waveRun.EnumerateTargets().FirstOrDefault();
+			else result = waveRun.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda).FirstOrDefault();
 			if (result != null) return result;
 			if (waveRun.Lift != null && map[waveRun.Lift.Item1] == MapCell.OpenedLift)
 				return waveRun.Lift;
