@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Logic
 {
 	public class BackTrakingGreedyBot : RobotAI
 	{
 		private RobotMove[] bestMoves;
+		private long bestScores = long.MinValue;
 		private int currentMove;
 
 		public override RobotMove NextMove(Map map)
@@ -21,53 +23,43 @@ namespace Logic
 
 		private void CalcSolution(Map map)
 		{
-			var alreadyBanned = new HashSet<Vector>();
-			Vector toBan = null;
-			long bestScores = long.MinValue;
-			while(true)
+			if(GetItBaby(map, null)) return;
+
+			GetSpecial(map).Any(special => GetItBaby(map, special));
+		}
+
+		private bool GetItBaby(Map map, Tuple<Vector, SpecialTargetType> special)
+		{
+			if(StopNow) return true;
+			var moves = GetMoves(map, special);
+			if(moves == null) return true;
+			if(bestScores < moves.Item2)
 			{
-				if(StopNow) return;
-				var moves = GetMoves(map, toBan);
-				if(moves == null) return;
-				if(bestScores < moves.Item2)
-				{
-					bestScores = moves.Item2;
-					bestMoves = moves.Item1;
-				}
-				toBan = GetBanned(map, alreadyBanned);
-				if(toBan != null)
-					alreadyBanned.Add(toBan);
-				else
-					return;
+				bestScores = moves.Item2;
+				bestMoves = moves.Item1;
 			}
+			return false;
 		}
 
-		private Vector GetBanned(Map map, HashSet<Vector> alreadyBanned)
+		private IEnumerable<Tuple<Vector, SpecialTargetType>> GetSpecial(Map map)
 		{
-			//if(alreadyBanned.Count < map.TotalLambdaCount)
-				return GetBannedLambdas(map, alreadyBanned);
-			//return GetBannedTrampolines(map, alreadyBanned);
+			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
+				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
+			foreach(var vector in GetBannedElement(map, cell => cell.ToString().StartsWith("Trampoline")))
+				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
+			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
+				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Favorite);
 		}
 
-		private Vector GetBannedTrampolines(Map map, HashSet<Vector> alreadyBanned)
-		{
-			return null;
-		}
-
-		private Vector GetBannedLambdas(Map map, HashSet<Vector> alreadyBanned)
+		private IEnumerable<Vector> GetBannedElement(Map map, Predicate<MapCell> predicate)
 		{
 			for(int i = 0; i < map.Width; i++)
 				for(int j = 0; j < map.Height; j++)
-					if(map.GetCell(i, j) == MapCell.Lambda)
-					{
-						var current = new Vector(i, j);
-						if(!alreadyBanned.Contains(current))
-							return current;
-					}
-			return null;
+					if(predicate(map.GetCell(i, j)))
+						yield return new Vector(i, j);
 		}
 
-		private Tuple<RobotMove[], long> GetMoves(Map map, Vector banned)
+		private Tuple<RobotMove[], long> GetMoves(Map map, Tuple<Vector, SpecialTargetType> special)
 		{
 			var moves = new List<RobotMove>();
 			var bot = new GreedyBot();
@@ -76,7 +68,7 @@ namespace Logic
 			do
 			{
 				if(StopNow) return null;
-				robotMove = banned != null ? bot.NextMove(localMap, banned) : bot.NextMove(localMap);
+				robotMove = special != null ? bot.NextMove(localMap, special.Item1, special.Item2) : bot.NextMove(localMap);
 				localMap = localMap.Move(robotMove);
 				moves.Add(robotMove);
 			} while(robotMove != RobotMove.Abort && localMap.State == CheckResult.Nothing);

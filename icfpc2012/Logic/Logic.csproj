@@ -54,6 +54,7 @@
     <Compile Include="MapIsSafeMove_Test.cs" />
     <Compile Include="QTree.cs" />
     <Compile Include="RockDangerRating.cs" />
+    <Compile Include="SpecialTargetType.cs" />
     <Compile Include="StackExtensions.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="GreedyBot.cs" />
