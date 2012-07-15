@@ -133,7 +133,7 @@ namespace Logic
 //			if (map.IsSafeMove(map.Robot, map.Robot.Add(new Vector(0, 1)), 1, map.WaterproofLeft)) return RobotMove.Up;
 			if(map.IsSafeMove(map.Robot, map.Robot, 0, map.WaterproofLeft)) return RobotMove.Wait;
 			var waveRun = new WaveRun(map, map.Robot);
-			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets((lmap, position) => true).FirstOrDefault();
+			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets((lmap, position, stepNumber) => true).FirstOrDefault();
 			if(target == null)
 				return RobotMove.Abort;
 			return target.Item2.Any() ? target.Item2.Peek() : RobotMove.Wait;
@@ -153,13 +153,13 @@ namespace Logic
 			if(checkBestIsNotBad)
 			{
 				var orderedMoves = waveRun
-					.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda)
+					.EnumerateTargets((lmap, pos, stepNumber) => lmap[pos] == MapCell.Lambda)
 					.Where(tuple => bannedTarget == null || (tuple.Item1.X != bannedTarget.X && tuple.Item1.Y != bannedTarget.Y))
 					.Take(9)
 					.OrderBy(t => CalculateTargetBadness(t, map)).ToArray();
 				result = orderedMoves.FirstOrDefault();
 			}
-			else result = waveRun.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda).FirstOrDefault();
+			else result = waveRun.EnumerateTargets((lmap, pos, stepNumber) => lmap[pos] == MapCell.Lambda).FirstOrDefault();
 			if(result != null) return result;
 			if(waveRun.Lift != null && map[waveRun.Lift.Item1] == MapCell.OpenedLift)
 				return waveRun.Lift;
@@ -179,8 +179,42 @@ namespace Logic
 			if(moved && deadend) badness += 100;
 			if(!CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
 				badness += 500;
+			if (map.IsInWater(target.Item2.Count, target.Item1.Y) && !CanEscapeFromUnderwater(target, map))
+				badness += 500;
 			badness += target.Item2.Count;
 			return badness;
+		}
+
+		private static bool CanEscapeFromUnderwater(Tuple<Vector, Stack<RobotMove>> target, Map map)
+		{
+			int moved = 0;
+			try
+			{
+				foreach (var move in target.Item2)
+				{
+					try
+					{
+						moved++;
+						map = map.Move(move);
+					}
+					catch (GameFinishedException)
+					{
+						return false;
+					}
+				}
+				return 
+					new WaveRun(map, map.Robot)
+						.EnumerateTargets(
+							(lmap, pos, moves, stepNumber) =>
+								lmap[pos] == MapCell.OpenedLift ||
+								!lmap.IsInWater(stepNumber, pos.Y) && lmap[pos].CanStepUp())
+						.FirstOrDefault() != null;
+			}
+			finally
+			{
+				for (int i = 0; i < moved; i++)
+					map.Rollback();
+			}
 		}
 
 		private static bool CanMoveToTargetExactlyByPathWithNoRocksMoved(Stack<RobotMove> robotMoves, Map map)

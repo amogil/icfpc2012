@@ -18,12 +18,12 @@ namespace Logic
 		public Tuple<Vector, Stack<RobotMove>> Lift { get; private set; }
 
 
-		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets(Func<Map, Vector, bool> isTarget)
+		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets(Func<Map, Vector, int, bool> isTarget)
 		{
-			return EnumerateTargets((lmap, pos, used) => isTarget(lmap, pos));
+			return EnumerateTargets((lmap, pos, used, stepNumber) => isTarget(lmap, pos, stepNumber));
 		}
 
-		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets(Func<Map, Vector, HashSet<Vector>, bool> isTarget)
+		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets(Func<Map, Vector, HashSet<Vector>, int, bool> isTarget)
 		{
 			var q = new Queue<WaveCell>();
 			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait, map.WaterproofLeft));
@@ -35,7 +35,7 @@ namespace Logic
 				var cell = q.Dequeue();
 				MapCell toCell = map[cell.Pos];
 				if (!cell.Pos.Equals(startPosition)
-					&& (isTarget(map, cell.Pos, used)))
+					&& (isTarget(map, cell.Pos, used, cell.StepNumber)))
 					yield return CreateTarget(cell);
 				if (toCell == MapCell.OpenedLift || toCell == MapCell.ClosedLift) 
 					Lift = CreateTarget(cell);

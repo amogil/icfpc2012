@@ -49,6 +49,26 @@ namespace Logic
 		Target9 = '9'
 	}
 	
+	public static class MapCellExtension
+	{
+		public static bool CanStepUp(this MapCell cell)
+		{
+			return
+				cell == MapCell.Empty ||
+				cell == MapCell.Earth ||
+				cell == MapCell.Lambda ||
+				cell == MapCell.Trampoline1 ||
+				cell == MapCell.Trampoline2 ||
+				cell == MapCell.Trampoline3 ||
+				cell == MapCell.Trampoline4 ||
+				cell == MapCell.Trampoline5 ||
+				cell == MapCell.Trampoline6 ||
+				cell == MapCell.Trampoline7 ||
+				cell == MapCell.Trampoline8 ||
+				cell == MapCell.Trampoline9;
+		}
+	}
+
 	public enum CheckResult
 	{
 		Nothing,
