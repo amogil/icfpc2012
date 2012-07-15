@@ -46,7 +46,7 @@ namespace Logic
 					return newmove;
 				if(target == null && newmove == RobotMove.Abort)
 				{
-					if(map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks)
+					if(map.TotalLambdaCount > map.LambdasGathered && map.HasActiveObjects)
 						return FindSafePlace(map);
 					return RobotMove.Abort;
 				}
@@ -125,7 +125,7 @@ namespace Logic
 		private bool MoveChangeMapSignificantly(Map map, RobotMove move)
 		{
 //			return true;
-			return map.HasActiveRocks || map.RocksFallAfterMoveTo(map.Robot.Add(move.ToVector()));
+			return map.HasActiveObjects || map.RocksFallAfterMoveTo(map.Robot.Add(move.ToVector()));
 		}
 
 		private Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map, bool checkBestIsNotBad = true)
