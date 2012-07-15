@@ -141,31 +141,20 @@ namespace Logic
 						var mapCell = Parse(line[x]);
 						QTree.SimpleAdd(field, col, row, 0, Width + 1, 0, Height + 1, mapCell);
 						if (mapCell == MapCell.Lambda || mapCell == MapCell.LambdaRock)
-						{
 							TotalLambdaCount++;
-						}
 						else if (mapCell == MapCell.Robot)
 						{
 							RobotX = col;
 							RobotY = row;
 						}
 						else if (mapCell == MapCell.ClosedLift || mapCell == MapCell.OpenedLift)
-						{
-							LiftX = col;
-							LiftY = row;
-						}
-						if (mapCell == MapCell.Beard)
-						{
+							Lift = new Vector(col, row);
+						else if (mapCell == MapCell.Beard)
 							Beard.Add(new Vector(col, row));
-						}
-						else if (TargetsChars.Contains((char)mapCell))
-						{
+						else if (TargetsChars.Contains((char) mapCell))
 							Targets[mapCell] = new Vector(col, row);
-						}
-						if (TrampolinesChars.Contains((char)mapCell))
-						{
+						else if (TrampolinesChars.Contains((char) mapCell))
 							Trampolines[mapCell] = new Vector(col, row);
-						}
 					}
 				}
 
@@ -190,14 +179,10 @@ namespace Logic
 				if (parts[0] == "Water") Water = int.Parse(parts[1]);
 				if (parts[0] == "Flooding") Flooding = int.Parse(parts[1]);
 				if (parts[0] == "Waterproof") Waterproof = int.Parse(parts[1]);
-				if (parts[0] == "Trampoline")
-				{
-					TrampToTarget[(MapCell)parts[1][0]] = (MapCell)parts[3][0];
-				}
+				if (parts[0] == "Trampoline") TrampToTarget[(MapCell) parts[1][0]] = (MapCell) parts[3][0];
 				if (parts[0] == "Growth") Growth = int.Parse(parts[1]);
 				if (parts[0] == "Razors") Razors = int.Parse(parts[1]);
 			}
-
 			GrowthLeft = Growth;
 			StepsToIncreaseWater = Flooding;
 			WaterproofLeft = Waterproof;
@@ -243,9 +228,7 @@ namespace Logic
 		public int RobotX { get; private set; }
 		public int RobotY { get; private set; }
 
-		public Vector Lift { get { return new Vector(LiftX, LiftY); } }
-		public int LiftX { get; private set; }
-		public int LiftY { get; private set; }
+		private Vector Lift { get; set; }
 
 		public bool HasActiveRocks
 		{
@@ -290,7 +273,6 @@ namespace Logic
 						return (MapCell)c;
 					break;
 			}
-
 			throw new Exception("InvalidMap " + c);
 		}
 
@@ -303,8 +285,7 @@ namespace Logic
 				activeObjects = new SortedSet<Vector>(new VectorComparer()),
 				Flooding = Flooding,
 				LambdasGathered = LambdasGathered,
-				LiftX = LiftX,
-				LiftY = LiftY,
+				Lift = Lift,
 				MovesCount = MovesCount,
 				RobotX = RobotX,
 				RobotY = RobotY,
@@ -555,7 +536,7 @@ namespace Logic
 			newMap.activeObjects = newActiveRocks;
 
 			if (newMap.TotalLambdaCount == newMap.LambdasGathered)
-				newMap.field = newMap.SetCell(LiftX, LiftY, MapCell.OpenedLift);
+				newMap.field = newMap.SetCell(Lift, MapCell.OpenedLift);
 
 			robotFailed |= IsRobotKilledByFlood(newMap);
 
