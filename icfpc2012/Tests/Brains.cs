@@ -45,17 +45,19 @@ namespace Tests
 
 					var builder = new StringBuilder();
 					var timer = Stopwatch.StartNew();
+					var botWrapper = new BotWithBestMomentsMemory(bot);
 					while(robotMove != RobotMove.Abort && map.State == CheckResult.Nothing)
 					{
-						robotMove = (timer.Elapsed.TotalSeconds < 150) ? bot.NextMove(map) : RobotMove.Abort;
+						robotMove = (timer.Elapsed.TotalSeconds < 150) ? botWrapper.NextMove(map) : RobotMove.Abort;
 						movesCount++;
 
-						builder.Append(robotMove.ToChar());
 						map = map.Move(robotMove);
+						botWrapper.UpdateBestSolution(map);
 					}
 
-					sum += map.GetScore();
-					WriteAndShow(writer, map.GetScore().ToString().PadRight(ValuePadding) + map.MovesCount.ToString().PadRight(ValuePadding) + map.State.ToString().PadRight(ValuePadding) + timer.ElapsedMilliseconds.ToString().PadRight(ValuePadding));
+					builder.Append(botWrapper.GetBestMoves());
+					sum += botWrapper.BestScore;
+					WriteAndShow(writer, botWrapper.BestScore.ToString().PadRight(ValuePadding) + botWrapper.BestMovesSequenceLen.ToString().PadRight(ValuePadding) + botWrapper.BestMovesEndState.ToString().PadRight(ValuePadding) + timer.ElapsedMilliseconds.ToString().PadRight(ValuePadding));
 					WriteLineAndShow(writer, builder.ToString());
 				}
 			}

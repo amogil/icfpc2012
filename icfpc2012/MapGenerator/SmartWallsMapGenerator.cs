@@ -13,7 +13,7 @@ namespace MapGenerator
 		public SmartWallsMapGenerator(MapGeneratorOptions mapGeneratorOptions)
 			: base(mapGeneratorOptions)
 		{
-			wallSegmentsCount = mapGeneratorOptions.Width * mapGeneratorOptions.Height / 7;
+			wallSegmentsCount = Convert.ToInt32(mapGeneratorOptions.WallCount * Math.Sqrt(mapGeneratorOptions.Width * mapGeneratorOptions.Height) / 3);
 			wallSegmentLengthMax = Math.Min(mapGeneratorOptions.Width, mapGeneratorOptions.Height) / 10;
 		}
 

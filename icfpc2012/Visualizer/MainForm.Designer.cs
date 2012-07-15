@@ -48,6 +48,7 @@
 			this.robotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.overlaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.movesBox = new System.Windows.Forms.TextBox();
+			this.bestMovesText = new System.Windows.Forms.TextBox();
 			this.infoPanel.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
@@ -256,11 +257,23 @@
 			this.movesBox.Size = new System.Drawing.Size(507, 20);
 			this.movesBox.TabIndex = 4;
 			// 
+			// bestMovesText
+			// 
+			this.bestMovesText.BackColor = System.Drawing.Color.Gold;
+			this.bestMovesText.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.bestMovesText.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.bestMovesText.Location = new System.Drawing.Point(289, 466);
+			this.bestMovesText.Name = "bestMovesText";
+			this.bestMovesText.ReadOnly = true;
+			this.bestMovesText.Size = new System.Drawing.Size(507, 26);
+			this.bestMovesText.TabIndex = 5;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(796, 512);
+			this.Controls.Add(this.bestMovesText);
 			this.Controls.Add(this.movesBox);
 			this.Controls.Add(this.picture);
 			this.Controls.Add(this.infoPanel);
@@ -307,6 +320,7 @@
 		private System.Windows.Forms.ToolStripMenuItem overlaysToolStripMenuItem;
 		private System.Windows.Forms.Label movesLabel;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.TextBox bestMovesText;
 	}
 }
 
