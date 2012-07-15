@@ -48,7 +48,7 @@ namespace Logic
 		Target8 = '8',
 		Target9 = '9'
 	}
-	
+
 	public static class MapCellExtension
 	{
 		public static bool CanStepUp(this MapCell cell)
@@ -106,7 +106,6 @@ namespace Logic
 		public int Width { get; private set; }
 		private MapCell[,] map;
 
-		private Stack<MoveLog> log = new Stack<MoveLog>();
 		private SortedSet<Vector> activeRocks = new SortedSet<Vector>(new VectorComparer());
 
 		public int TotalLambdaCount { get; private set; }
@@ -118,6 +117,10 @@ namespace Logic
 		public int WaterproofLeft { get; private set; }
 
 		private List<Vector> Beard = new List<Vector>();
+
+		private Map()
+		{
+		}
 
 		public Map(string filename)
 			: this(File.ReadAllLines(filename))
@@ -198,7 +201,7 @@ namespace Logic
 				if (parts[0] == "Waterproof") Waterproof = int.Parse(parts[1]);
 				if (parts[0] == "Trampoline")
 				{
-					TrampToTarget[(MapCell) parts[1][0]] = (MapCell) parts[3][0];
+					TrampToTarget[(MapCell)parts[1][0]] = (MapCell)parts[3][0];
 				}
 				if (parts[0] == "Growth") Growth = int.Parse(parts[1]);
 				if (parts[0] == "Razors") Razors = int.Parse(parts[1]);
@@ -220,12 +223,12 @@ namespace Logic
 			return GetCell(pos.X, pos.Y);
 		}
 
-		public MapCell SetCell(Vector pos, MapCell newValue)
+		private MapCell SetCell(Vector pos, MapCell newValue)
 		{
 			return SetCell(pos.X, pos.Y, newValue);
 		}
 
-		public MapCell SetCell(int x, int y, MapCell newValue)
+		private MapCell SetCell(int x, int y, MapCell newValue)
 		{
 			var oldValue = map[x, y];
 			map[x, y] = newValue;
@@ -300,36 +303,54 @@ namespace Logic
 			throw new Exception("InvalidMap " + c);
 		}
 
+		private Map Clone()
+		{
+			var clone = new Map
+			{
+				Width = Width,
+				Height = Height,
+				map = new MapCell[Width,Height],
+				activeRocks = new HashSet<Vector>(),
+				Flooding = Flooding,
+				LambdasGathered = LambdasGathered,
+				LiftX = LiftX,
+				LiftY = LiftY,
+				MovesCount = MovesCount,
+				RobotX = RobotX,
+				RobotY = RobotY,
+				State = State,
+				StepsToIncreaseWater = StepsToIncreaseWater,
+				Targets = new Dictionary<MapCell, Vector>(Targets.Select(kvp => new {kvp.Key, kvp.Value}).ToDictionary(kvp => kvp.Key, kvp=>kvp.Value)),
+				TotalLambdaCount = TotalLambdaCount,
+				TrampToTarget = new Dictionary<MapCell, MapCell>(TrampToTarget.Select(kvp => new {kvp.Key, kvp.Value}).ToDictionary(t => t.Key, t => t.Value)),
+				Trampolines = new Dictionary<MapCell, Vector>(Trampolines.Select(kvp => new {kvp.Key, kvp.Value}).ToDictionary(kvp => kvp.Key, kvp=>kvp.Value)),
+				Water = Water,
+				Waterproof = Waterproof,
+				WaterproofLeft = WaterproofLeft,
+			};
+			for (var row = 0; row < Height; row++)
+				for (var col = 0; col < Width; col++)
+					clone.SetCell(col, row, GetCell(col, row));
+			return clone;
+		}
+
 		public Map Move(RobotMove move)
 		{
-			log.Push(new MoveLog{PreviousWaterproofLeft = WaterproofLeft});
+			var newMap = Clone();
 
 			if (move == RobotMove.Abort)
 			{
-				State = CheckResult.Abort;
-				return this;
+				newMap.State = CheckResult.Abort;
+				return newMap;
 			}
 
-			if (State != CheckResult.Nothing)
-				throw new GameFinishedException();
-
-			MovesCount++;
+			newMap.MovesCount++;
 			if (move != RobotMove.Wait && move != RobotMove.CutBeard)
 			{
-				Vector newRobot = Robot.Add(move.ToVector());
+				var newRobot = Robot.Add(move.ToVector());
 				if (CheckValid(newRobot.X, newRobot.Y))
-				{
-					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = newRobot.X, NextY = newRobot.Y };
-					log.Peek().RemovedObjects.Add(Tuple.Create(newRobot, GetCell(newRobot)));
-					DoMove(newRobot.X, newRobot.Y);
-				}
-				else
-				{
-					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = RobotX, NextY = RobotY };
-				}
+					DoMove(newRobot.X, newRobot.Y, newMap);
 			}
-			else
-				log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = RobotX, NextY = RobotY };
 
 			if(move == RobotMove.CutBeard)
 			{
@@ -337,10 +358,10 @@ namespace Logic
 					throw new Exception();
 			}
 
-			if (State != CheckResult.Win)
+			if (newMap.State != CheckResult.Win)
 				Update();
 
-			return this;
+			return newMap;
 		}
 
 		private bool CutBeard()
@@ -383,27 +404,25 @@ namespace Logic
 			return false;
 		}
 
-		private void DoMove(int newRobotX, int newRobotY)
+		private void DoMove(int newRobotX, int newRobotY, Map newMap)
 		{
-			MapCell newMapCell = GetCell(newRobotX, newRobotY);
+			var newMapCell = GetCell(newRobotX, newRobotY);
 			if (newMapCell == MapCell.Lambda)
 			{
-				LambdasGathered++;
+				newMap.LambdasGathered++;
 			}
 			else if (newMapCell.IsTrampoline())
 			{
 				var target = TrampToTarget[newMapCell];
-				Vector targetCoords = Targets[target];
+				var targetCoords = Targets[target];
 				newRobotX = targetCoords.X;
 				newRobotY = targetCoords.Y;
 
-				log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(targetCoords, target));
-				foreach (KeyValuePair<MapCell, MapCell> pair in TrampToTarget.Where(a => a.Value == target))
+				foreach (var pair in TrampToTarget.Where(a => a.Value == target))
 				{
-					Vector trampolinePos = Trampolines[pair.Key];
-					SetCell(trampolinePos, MapCell.Empty);
-					log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(trampolinePos, pair.Key));
-					CheckNearRocks(activeRocks, trampolinePos.X, trampolinePos.Y);
+					var trampolinePos = Trampolines[pair.Key];
+					newMap.SetCell(trampolinePos, MapCell.Empty);
+					CheckNearRocks(newMap.activeRocks, trampolinePos.X, trampolinePos.Y);
 				}
 			}
 			else if (newMapCell == MapCell.Earth)
@@ -415,30 +434,22 @@ namespace Logic
 			}
 			else if (newMapCell == MapCell.OpenedLift)
 			{
-				State = CheckResult.Win;
+				newMap.State = CheckResult.Win;
 			}
 			else if (newMapCell.IsRock())
 			{
-				int rockX = newRobotX * 2 - RobotX;
-				SetCell(rockX, newRobotY, map[newRobotX, newRobotY];
-				log.Peek().MovingRocks.Add(
-					new Movement
-					{
-						PreviousX = newRobotX,
-						PreviousY = newRobotY,
-						NextX = rockX,
-						NextY = newRobotY
-					});
-				activeRocks.Add(new Vector(rockX, newRobotY));
+				var rockX = newRobotX * 2 - RobotX;
+				newMap.SetCell(rockX, newRobotY, map[newRobotX, newRobotY]);
+				newMap.activeRocks.Add(new Vector(rockX, newRobotY));
 			}
-			SetCell(RobotX, RobotY, MapCell.Empty);
+			newMap.SetCell(RobotX, RobotY, MapCell.Empty);
 			if (newMapCell != MapCell.OpenedLift)
-				SetCell(newRobotX, newRobotY, MapCell.Robot);
+				newMap.SetCell(newRobotX, newRobotY, MapCell.Robot);
 
-			CheckNearRocks(activeRocks, RobotX, RobotY);
+			CheckNearRocks(newMap.activeRocks, RobotX, RobotY);
 
-			RobotX = newRobotX;
-			RobotY = newRobotY;
+			newMap.RobotX = newRobotX;
+			newMap.RobotY = newRobotY;
 		}
 
 		private void CheckNearRocks(SortedSet<Vector> updateableRocks, int x, int y)
@@ -515,28 +526,38 @@ namespace Logic
 
 		private Vector TryToMoveRock(Vector coords)
 		{
-			return TryToMoveRock(coords.X, coords.Y);
+			return TryToMoveRock(coords, this);
+		}
+
+		private static Vector TryToMoveRock(Vector coords, Map mapToUse)
+		{
+			return TryToMoveRock(coords.X, coords.Y, mapToUse);
 		}
 
 		private Vector TryToMoveRock(int x, int y)
 		{
-			if (GetCell(x, y).IsRock() && GetCell(x, y - 1) == MapCell.Empty)
+			return TryToMoveRock(x, y, this);
+		}
+
+		private static Vector TryToMoveRock(int x, int y, Map mapToUse)
+		{
+			if (mapToUse.GetCell(x, y) == MapCell.Rock && mapToUse.GetCell(x, y - 1) == MapCell.Empty)
 			{
 				return new Vector(x, y - 1);
 			}
-			if (GetCell(x, y).IsRock() && GetCell(x, y - 1).IsRock()
-				&& GetCell(x + 1, y) == MapCell.Empty && GetCell(x + 1, y - 1) == MapCell.Empty)
+			if (mapToUse.GetCell(x, y) == MapCell.Rock && mapToUse.GetCell(x, y - 1) == MapCell.Rock
+				&& mapToUse.GetCell(x + 1, y) == MapCell.Empty && mapToUse.GetCell(x + 1, y - 1) == MapCell.Empty)
 			{
 				return new Vector(x + 1, y - 1);
 			}
-			if (GetCell(x, y).IsRock() && GetCell(x, y - 1).IsRock()
-				&& (GetCell(x + 1, y) != MapCell.Empty || GetCell(x + 1, y - 1) != MapCell.Empty)
-				&& GetCell(x - 1, y) == MapCell.Empty && GetCell(x - 1, y - 1) == MapCell.Empty)
+			if (mapToUse.GetCell(x, y) == MapCell.Rock && mapToUse.GetCell(x, y - 1) == MapCell.Rock
+				&& (mapToUse.GetCell(x + 1, y) != MapCell.Empty || mapToUse.GetCell(x + 1, y - 1) != MapCell.Empty)
+				&& mapToUse.GetCell(x - 1, y) == MapCell.Empty && mapToUse.GetCell(x - 1, y - 1) == MapCell.Empty)
 			{
 				return new Vector(x - 1, y - 1);
 			}
-			if (GetCell(x, y).IsRock() && GetCell(x, y - 1) == MapCell.Lambda
-				&& GetCell(x + 1, y) == MapCell.Empty && GetCell(x + 1, y - 1) == MapCell.Empty)
+			if (mapToUse.GetCell(x, y) == MapCell.Rock && mapToUse.GetCell(x, y - 1) == MapCell.Lambda
+				&& mapToUse.GetCell(x + 1, y) == MapCell.Empty && mapToUse.GetCell(x + 1, y - 1) == MapCell.Empty)
 			{
 				return new Vector(x + 1, y - 1);
 			}
@@ -544,20 +565,18 @@ namespace Logic
 			return new Vector(x, y);
 		}
 
-		private void Update()
+		private void Update(Map newMap)
 		{
 			var robotFailed = false;
 
 			var newActiveRocks = new SortedSet<Vector>(new VectorComparer());
 			var rockMoves = new Dictionary<Vector, Vector>();
-
-			foreach (var activeRockCoords in activeRocks)
+			foreach (var activeRockCoords in activeRocks.Concat(newMap.activeRocks).Distinct())
 			{
-				var newCoords = TryToMoveRock(activeRockCoords);
+				var newCoords = TryToMoveRock(activeRockCoords, newMap);
 				if (!activeRockCoords.Equals(newCoords) && GetCell(activeRockCoords.X, activeRockCoords.Y).IsRock())
 					rockMoves.Add(activeRockCoords, newCoords);
 			}
-
 			bool killedByRock = false;
 			foreach (var rockMove in rockMoves)
 			{
@@ -582,11 +601,10 @@ namespace Logic
 				robotFailed |= killedByRock;
 				CheckNearRocks(newActiveRocks, rockMove.Key.X, rockMove.Key.Y);
 			}
-
-			activeRocks = newActiveRocks;
+			newMap.activeRocks = newActiveRocks;
 
 			if (TotalLambdaCount == LambdasGathered)
-				SetCell(LiftX, LiftY, MapCell.OpenedLift);
+				newMap.SetCell(LiftX, LiftY, MapCell.OpenedLift);
 
 			CheckBeardGrowth();
 
@@ -605,25 +623,25 @@ namespace Logic
 			}
 		}
 
-		private bool IsRobotKilledByFlood()
+		private static bool IsRobotKilledByFlood(Map newMap)
 		{
-			if (Water >= RobotY) WaterproofLeft--;
-			else WaterproofLeft = Waterproof;
-			if (Flooding > 0)
+			if (newMap.Water >= newMap.RobotY) newMap.WaterproofLeft--;
+			else newMap.WaterproofLeft = newMap.Waterproof;
+			if (newMap.Flooding > 0)
 			{
-				StepsToIncreaseWater--;
-				if (StepsToIncreaseWater == 0)
+				newMap.StepsToIncreaseWater--;
+				if (newMap.StepsToIncreaseWater == 0)
 				{
-					Water++;
-					StepsToIncreaseWater = Flooding;
+					newMap.Water++;
+					newMap.StepsToIncreaseWater = newMap.Flooding;
 				}
 			}
-			return WaterproofLeft < 0;
+			return newMap.WaterproofLeft < 0;
 		}
 
-		private bool IsRobotKilledByRock(int x, int y)
+		private static bool IsRobotKilledByRock(int x, int y, Map mapToUse)
 		{
-			return GetCell(x, y - 1) == MapCell.Robot;
+			return mapToUse.GetCell(x, y - 1) == MapCell.Robot;
 		}
 
 		private void CheckBeardGrowth()
@@ -712,33 +730,7 @@ namespace Logic
 		}
 	}
 
-	public class Movement
-	{
-		public int PreviousX;
-		public int PreviousY;
-		public int NextX;
-		public int NextY;
-	}
-
-	public class MoveLog
-	{
-		public Movement RobotMove;
-		public List<Tuple<Vector, MapCell>> RemovedObjects = new List<Tuple<Vector, MapCell>>();
-		public List<Movement> MovingRocks = new List<Movement>();
-		public int PreviousWaterproofLeft;
-	}
-
-	public class NoMoveException : Exception
-	{
-	}
-
 	public class GameFinishedException : Exception
 	{
-
 	}
-
-	public class KilledByRockException : GameFinishedException
-	{
-	}
-
 }

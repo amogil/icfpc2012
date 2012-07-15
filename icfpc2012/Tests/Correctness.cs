@@ -115,7 +115,7 @@ namespace Tests
 		[Test]
 		public void AgainstValidator()
 		{
-			var allTestsPassed = true;
+			var testsFailed = 0;
 			foreach (var t in GetReferenceMaps())
 			{
 				var mapName = t.Item1;
@@ -124,51 +124,10 @@ namespace Tests
 					Console.WriteLine(testItem.Filename);
 					var engine = new Engine(new Map(t.Item2));
 					engine.RunProgram(testItem.Moves);
-					allTestsPassed &= testItem.AssertEngineState(engine);
+					if (!testItem.AssertEngineState(engine)) testsFailed++;
 				}
 			}
-			Assert.IsTrue(allTestsPassed);
-		}
-		[Test]
-		public void AgainstValidatorWithRollbacks()
-		{
-			var allTestsPassed = true;
-			foreach (var t in GetReferenceMaps())
-			{
-				var mapName = t.Item1;
-				foreach (var testItem in GetReferenceTestItems(mapName))
-				{
-					Console.WriteLine(testItem.Filename);
-					var engine = new RollbackEngine(new Map(t.Item2));
-					engine.RunProgram(testItem.Moves);
-					allTestsPassed &= testItem.AssertEngineState(engine);
-				}
-			}
-			Assert.IsTrue(allTestsPassed);
-		}
-	}
-
-	public class RollbackEngine : Engine
-	{
-		public RollbackEngine(Map map) : base(map)
-		{
-		}
-		public override void RunProgram(IEnumerable<RobotMove> moves)
-		{
-			try
-			{
-				RobotMove[] robotMoves = moves.ToArray();
-				foreach (var move in robotMoves.Take(robotMoves.Length-1))
-					DoMove(move);
-				foreach (var move in robotMoves.Take(robotMoves.Length - 1))
-					Map.Rollback();
-				foreach (var move in robotMoves)
-					DoMove(move);
-
-			}
-			catch (GameFinishedException)
-			{
-			}
+			Assert.AreEqual(0, testsFailed);
 		}
 	}
 }

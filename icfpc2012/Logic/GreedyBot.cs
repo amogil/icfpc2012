@@ -187,8 +187,7 @@ namespace Logic
 
 		private static bool CanEscapeFromUnderwater(Tuple<Vector, Stack<RobotMove>> target, Map map)
 		{
-			int moved = 0;
-			try
+			foreach (var move in robotMoves)
 			{
 				foreach (var move in target.Item2)
 				{
@@ -238,8 +237,14 @@ namespace Logic
 						return false;
 					}
 				}
-
-				return true;
+				catch (GameFinishedException)
+				{
+					return false;
+				}
+				if (map.RocksFallAfterMoveTo(map.Robot))
+				{
+					return false;
+				}
 			}
 			finally
 			{
@@ -250,8 +255,7 @@ namespace Logic
 
 		private static bool CanMoveToTargetExactlyByPath(Stack<RobotMove> robotMoves, Map map, Action<Map> analyseMap)
 		{
-			int moved = 0;
-			try
+			foreach (var move in robotMoves)
 			{
 				foreach(var move in robotMoves)
 				{
@@ -265,8 +269,10 @@ namespace Logic
 						return false;
 					}
 				}
-				analyseMap(map);
-				return true;
+				catch (GameFinishedException)
+				{
+					return false;
+				}
 			}
 			finally
 			{

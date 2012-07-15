@@ -16,6 +16,7 @@ namespace Visualizer
 		private int CellSize = 48;
 		private Bitmap bitmap;
 		private Map map;
+		private Stack<Map> mapsHistory = new Stack<Map>();
 		private IOverlay[] overlays;
 		private Tuple<int, string> bestPath = new Tuple<int, string>(0, "A");
 
@@ -57,9 +58,10 @@ namespace Visualizer
 			}
 		}
 
-		private void UpdateMap(Map newMap)
+		private void UpdateMap(Map newMap, bool saveToHistory = false)
 		{
 			if (newMap == null) return;
+			if (saveToHistory) mapsHistory.Push(map);
 			this.map = newMap;
 			if (bitmap == null || map.Width*CellSize != bitmap.Width || map.Height*CellSize != bitmap.Height)
 				bitmap = new Bitmap(map.Width*CellSize, map.Height*CellSize);
@@ -124,8 +126,9 @@ namespace Visualizer
 			moves.Clear();
 			bestPath = new Tuple<int, string>(0, "A");
 			var newMap = new Map(File.ReadAllLines(mapFile));
+			mapsHistory = new Stack<Map>();
 			engine = new Engine(newMap);
-			engine.OnMapUpdate += UpdateMap;
+			engine.OnMapUpdate += m => UpdateMap(m, true);
 			engine.OnMoveAdded += m => moves.Add(m);
 			if (newMap.Width * newMap.Height > 150 * 150 && CellSize > 2) zoomBar.Value = 2;
 			if (newMap.Width * newMap.Height > 50 * 50 && CellSize > 10) zoomBar.Value = 10;
@@ -210,8 +213,9 @@ namespace Visualizer
 
 		private void RollbackMove()
 		{
-			if (map.Rollback())
+			if (mapsHistory.Any())
 			{
+				map = mapsHistory.Pop();
 				moves.RemoveAt(moves.Count - 1);
 				UpdateMap(map);
 			}

@@ -30,27 +30,11 @@ namespace Logic
 		public void DoMove(RobotMove robotMove)
 		{
 			if (Map.State != CheckResult.Nothing) return;
-			Map newMap;
-			try
-			{
-				newMap = Map.Move(robotMove);
-				if (newMap.State != CheckResult.Nothing)
-					throw new GameFinishedException();
-			}
-			catch (GameFinishedException)
-			{
-				AddMove(robotMove);
-				UpdateMap(Map);
-				throw;
-			}
-			catch (NoMoveException)
-			{
-				AddMove(robotMove);
-				UpdateMap(Map);
-				return;
-			}
+			var newMap = Map.Move(robotMove);
 			AddMove(robotMove);
 			UpdateMap(newMap);
+			if (newMap.State != CheckResult.Nothing)
+				throw new GameFinishedException();
 		}
 
 		private void UpdateMap(Map newMap)
