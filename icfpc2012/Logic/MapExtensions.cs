@@ -4,6 +4,11 @@ namespace Logic
 {
 	public static class MapExtensions
 	{
+		public static bool IsMovable(this MapCell cell)
+		{
+			return cell == MapCell.Empty || cell == MapCell.Earth;
+		}
+
 		public static bool IsValidMoveWithoutMovingRocks(this Map map, Vector from, Vector to)
 		{
 			var toCell = map[to];

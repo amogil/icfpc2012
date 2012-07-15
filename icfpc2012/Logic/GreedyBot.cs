@@ -39,6 +39,13 @@ namespace Logic
 
 		private RobotMove FindMovableRock(Map map)
 		{
+			//R* 
+
+			// *R
+			
+			//*
+			//R
+
 			//*
 			//..
 
@@ -52,12 +59,48 @@ namespace Logic
 
 			//.*.
 			//A A
+			
+			var left = new Vector(-1, 0);
+			var right = new Vector(1, 0);
+			var up = new Vector(0, 1);
+
+			var leftRobot = map.Robot.Add(left);
+			var rightRobot = map.Robot.Add(right);
+			var upRobot = map.Robot.Add(up);
+			
+			if (map[leftRobot] == MapCell.Rock && map[leftRobot.Add(left)] == MapCell.Empty)
+				return RobotMove.Left;
+			if (map[rightRobot] == MapCell.Rock && map[rightRobot.Add(right)] == MapCell.Empty)
+				return RobotMove.Right;
+
+			if (map[upRobot] == MapCell.Rock && map[leftRobot].IsMovable())
+				return RobotMove.Left;
+			if (map[upRobot] == MapCell.Rock && map[rightRobot].IsMovable())
+				return RobotMove.Right;
 
 			var waveRun = new WaveRun(map, map.Robot);
-			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets((lmap, position) => true).FirstOrDefault();
+			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets(
+				(lmap, position, used) =>
+					{
+						if (lmap[position.Add(up)] == MapCell.Rock && (lmap[position.Add(left)].IsMovable() || lmap[position.Add(right)].IsMovable()))
+							return true;
+						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock && lmap[position.Add(left).Add(left)] == MapCell.Empty)
+							return true;
+						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock && lmap[position.Add(right).Add(right)] == MapCell.Empty)
+							return true;
+						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock
+								&& lmap[position.Add(right).Add(right)] == MapCell.Earth && used.Contains(position.Add(right).Add(right)))
+							return true;
+						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock
+								&& lmap[position.Add(left).Add(left)] == MapCell.Earth && used.Contains(position.Add(left).Add(left)))
+							return true;
+						return false;
+					}).FirstOrDefault();
 
+			if (target == null)
+				return RobotMove.Abort;
 
-			return RobotMove.Abort;
+			return target.Item2.Any() ? target.Item2.Peek() : RobotMove.Abort;
 		}
 
 		private RobotMove FindSafePlace(Map map)
