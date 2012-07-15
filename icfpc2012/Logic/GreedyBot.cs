@@ -38,18 +38,14 @@ namespace Logic
 			{
 				Tuple<Vector, Stack<RobotMove>> target = FindBestTarget(map);
 				RobotMove newmove = RobotMove.Abort;
-				/*if(target == null && map.TotalLambdaCount > map.LambdasGathered)
+				if(target == null)
 					newmove = FindMovableRock(map);
 				if (target == null && newmove != RobotMove.Abort)
-					return newmove;*/
+					return newmove;
 				if(target == null && newmove == RobotMove.Abort)
 				{
 					if(map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks)
 						return FindSafePlace(map);
-					else
-					{
-						return FindMovableRock(map);
-					}
 					return RobotMove.Abort;
 				}
 				currentTarget = target.Item1;
