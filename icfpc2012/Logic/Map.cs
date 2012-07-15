@@ -576,7 +576,6 @@ namespace Logic
 				State = CheckResult.Win;
 			}
 
-<<<<<<< HEAD
 			CheckBeardGrowth();
 
 			if (robotFailed)
@@ -584,8 +583,7 @@ namespace Logic
 				State = CheckResult.Fail;
 				throw new KilledByRockException();
 			}
-=======
->>>>>>> f55cbbcc70306cbaf0a5f54a55e712003791127a
+
 			robotFailed |= IsRobotKilledByFlood();
 
 			if (robotFailed)
