@@ -67,22 +67,22 @@ namespace Logic
 			var right = new Vector(1, 0);
 			var up = new Vector(0, 1);
 
-			if(map.Flooding == 0 || map.WaterproofLeft > 0)
-			{
-				var leftRobot = map.Robot.Add(left);
-				var rightRobot = map.Robot.Add(right);
-				var upRobot = map.Robot.Add(up);
+			var leftRobot = map.Robot.Add(left);
+			var rightRobot = map.Robot.Add(right);
+			var upRobot = map.Robot.Add(up);
+			
+			var leftCheck = map.IsSafeMove(map.Robot, map.Robot.Add(left), 1, map.WaterproofLeft);
+			var rightCheck = map.IsSafeMove(map.Robot, map.Robot.Add(right), 1, map.WaterproofLeft);
 
-				if (map.GetCell(leftRobot).IsRock() && map.GetCell(leftRobot.Add(left)) == MapCell.Empty)
-					return RobotMove.Left;
-				if (map.GetCell(rightRobot).IsRock() && map.GetCell(rightRobot.Add(right)) == MapCell.Empty)
-					return RobotMove.Right;
+			if (map.GetCell(leftRobot).IsRock() && map.GetCell(leftRobot.Add(left)) == MapCell.Empty && leftCheck)
+				return RobotMove.Left;
+			if (map.GetCell(rightRobot).IsRock() && map.GetCell(rightRobot.Add(right)) == MapCell.Empty && rightCheck)
+				return RobotMove.Right;
 
-				if (map.GetCell(upRobot).IsRock() && map.GetCell(leftRobot).IsMovable())
-					return RobotMove.Left;
-				if (map.GetCell(upRobot).IsRock() && map.GetCell(rightRobot).IsMovable())
-					return RobotMove.Right;
-			}
+			if (map.GetCell(upRobot).IsRock() && map.GetCell(leftRobot).IsMovable() && leftCheck)
+				return RobotMove.Left;
+			if (map.GetCell(upRobot).IsRock() && map.GetCell(rightRobot).IsMovable() && rightCheck)
+				return RobotMove.Right;
 
 			var waveRun = new WaveRun(map, map.Robot);
 			moveRockTarget = waveRun.EnumerateTargets(
