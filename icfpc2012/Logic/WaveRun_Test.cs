@@ -32,6 +32,7 @@ namespace Logic
 		[TestCase("xflood4", "(5, 2) via DDRRRDD")]
 		[TestCase("xflood6", "(3, 2) via RD")]
 		[TestCase("xflood7", "(2, 5) via UUU")]
+		[TestCase("xflood9", "(2, 5) via RDDR")]
 		public void Water(string mapName, string expectedTarget)
 		{
 			Map map = WellKnownMaps.LoadMap(mapName);
