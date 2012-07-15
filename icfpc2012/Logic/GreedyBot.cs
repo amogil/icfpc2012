@@ -29,8 +29,8 @@ namespace Logic
 					if (map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks) 
 						return FindSafePlace(map);
 					else
-//						return FindMovableRock(map); // TODO move rocks
-						return RobotMove.Abort;
+						return FindMovableRock(map); // TODO move rocks
+//						return RobotMove.Abort;
 				}
 				currentTarget = target.Item1;
 				plan = target.Item2;
@@ -66,24 +66,28 @@ namespace Logic
 
 			//.*.
 			//A A
+
 			
 			var left = new Vector(-1, 0);
 			var right = new Vector(1, 0);
 			var up = new Vector(0, 1);
 
-			var leftRobot = map.Robot.Add(left);
-			var rightRobot = map.Robot.Add(right);
-			var upRobot = map.Robot.Add(up);
-			
-			if (map[leftRobot] == MapCell.Rock && map[leftRobot.Add(left)] == MapCell.Empty)
-				return RobotMove.Left;
-			if (map[rightRobot] == MapCell.Rock && map[rightRobot.Add(right)] == MapCell.Empty)
-				return RobotMove.Right;
+			if(map.Flooding == 0 || map.WaterproofLeft > 0)
+			{
+				var leftRobot = map.Robot.Add(left);
+				var rightRobot = map.Robot.Add(right);
+				var upRobot = map.Robot.Add(up);
 
-			if (map[upRobot] == MapCell.Rock && map[leftRobot].IsMovable())
-				return RobotMove.Left;
-			if (map[upRobot] == MapCell.Rock && map[rightRobot].IsMovable())
-				return RobotMove.Right;
+				if (map[leftRobot] == MapCell.Rock && map[leftRobot.Add(left)] == MapCell.Empty)
+					return RobotMove.Left;
+				if (map[rightRobot] == MapCell.Rock && map[rightRobot.Add(right)] == MapCell.Empty)
+					return RobotMove.Right;
+
+				if (map[upRobot] == MapCell.Rock && map[leftRobot].IsMovable())
+					return RobotMove.Left;
+				if (map[upRobot] == MapCell.Rock && map[rightRobot].IsMovable())
+					return RobotMove.Right;
+			}
 
 			var waveRun = new WaveRun(map, map.Robot);
 			moveRockTarget = waveRun.EnumerateTargets(
@@ -91,15 +95,15 @@ namespace Logic
 					{
 						if (lmap[position.Add(up)] == MapCell.Rock && (lmap[position.Add(left)].IsMovable() || lmap[position.Add(right)].IsMovable()))
 							return true;
-						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock && lmap[position.Add(left).Add(left)] == MapCell.Empty)
+						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock && lmap[position.Add(left).Add(left)].IsRockable())
 							return true;
-						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock && lmap[position.Add(right).Add(right)] == MapCell.Empty)
+						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock && lmap[position.Add(right).Add(right)] .IsRockable())
 							return true;
-						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock
-						    && lmap[position.Add(right).Add(right)] == MapCell.Earth && used.Contains(position.Add(right).Add(right)))
+						if (lmap[position] == MapCell.Earth && lmap[position.Add(right)] == MapCell.Rock
+								&& lmap[position.Add(right).Add(right)] != MapCell.Wall && lmap[position.Add(right).Add(right)] != MapCell.Rock)
 							return true;
-						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock
-						    && lmap[position.Add(left).Add(left)] == MapCell.Earth && used.Contains(position.Add(left).Add(left)))
+						if (lmap[position] == MapCell.Earth && lmap[position.Add(left)] == MapCell.Rock
+								&& lmap[position.Add(right).Add(right)] != MapCell.Wall && lmap[position.Add(right).Add(right)] != MapCell.Rock)
 							return true;
 						return false;
 					}).FirstOrDefault();
