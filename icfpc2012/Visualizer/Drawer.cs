@@ -4,7 +4,7 @@ using Logic;
 
 namespace Visualizer
 {
-	public class Drawer
+	public class Drawer : IDrawer
 	{
 		private class StyleSettings
 		{
@@ -37,9 +37,9 @@ namespace Visualizer
 			this.height = height;
 		}
 
-		public void AddStyle(string style, Pen pen)
+		public void AddStyle(string style, string color)
 		{
-			styles.Add(style, new StyleSettings{Pen = pen});
+			styles.Add(style, new StyleSettings{Pen = new Pen(Color.FromName(color))});
 		}
 
 		public void Line(string style, Vector fromCell, Vector toCell)

@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Visualizer;
 
 namespace Logic
 {
-	public class GreedyBot : RobotAI
+	public class GreedyBot : RobotAI, IOverlay
 	{
 		private Vector currentTarget;
 		private Stack<RobotMove> plan;
+		private Tuple<Vector, Stack<RobotMove>> moveRockTarget;
+		private Vector lastRobotPos;
 
 		/*
 		 * 
@@ -16,6 +19,8 @@ namespace Logic
 
 		public override RobotMove NextMove(Map map)
 		{
+			lastRobotPos = map.Robot;
+			moveRockTarget = null;
 			if (currentTarget == null)
 			{
 				Tuple<Vector, Stack<RobotMove>> target = FindBestTarget(map);
@@ -81,7 +86,7 @@ namespace Logic
 				return RobotMove.Right;
 
 			var waveRun = new WaveRun(map, map.Robot);
-			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets(
+			moveRockTarget = waveRun.EnumerateTargets(
 				(lmap, position, used) =>
 					{
 						if (lmap[position.Add(up)] == MapCell.Rock && (lmap[position.Add(left)].IsMovable() || lmap[position.Add(right)].IsMovable()))
@@ -91,18 +96,18 @@ namespace Logic
 						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock && lmap[position.Add(right).Add(right)] == MapCell.Empty)
 							return true;
 						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock
-								&& lmap[position.Add(right).Add(right)] == MapCell.Earth && used.Contains(position.Add(right).Add(right)))
+						    && lmap[position.Add(right).Add(right)] == MapCell.Earth && used.Contains(position.Add(right).Add(right)))
 							return true;
 						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock
-								&& lmap[position.Add(left).Add(left)] == MapCell.Earth && used.Contains(position.Add(left).Add(left)))
+						    && lmap[position.Add(left).Add(left)] == MapCell.Earth && used.Contains(position.Add(left).Add(left)))
 							return true;
 						return false;
 					}).FirstOrDefault();
 
-			if (target == null)
+			if (moveRockTarget == null)
 				return RobotMove.Abort;
 
-			return target.Item2.Any() ? target.Item2.Peek() : RobotMove.Abort;
+			return moveRockTarget.Item2.Any() ? moveRockTarget.Item2.Peek() : RobotMove.Abort;
 		}
 
 		private RobotMove FindSafePlace(Map map)
@@ -211,6 +216,13 @@ namespace Logic
 				for (int i = 0; i < moved; i++)
 					map.Rollback();
 			}
+		}
+
+		public void Draw(Map map, IDrawer drawer)
+		{
+			if (moveRockTarget == null) return;
+			drawer.AddStyle("rock", "Brown");
+			drawer.DrawTarget(map, lastRobotPos, "rock", moveRockTarget);
 		}
 	}
 }

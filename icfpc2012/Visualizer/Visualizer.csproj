@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="CellImages.cs" />
     <Compile Include="Drawer.cs" />
-    <Compile Include="IOverlay.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

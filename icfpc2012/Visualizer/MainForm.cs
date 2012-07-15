@@ -114,6 +114,9 @@ namespace Visualizer
 			{
 				overlay.Draw(map, drawer);
 			}
+			if (robot as IOverlay != null)
+				(robot as IOverlay).Draw(map, drawer);
+
 		}
 
 		private void LoadMap(string mapFile)
