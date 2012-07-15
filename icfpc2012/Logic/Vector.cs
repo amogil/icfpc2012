@@ -1,3 +1,5 @@
+using System;
+
 namespace Logic
 {
 	public class Vector
@@ -39,6 +41,16 @@ namespace Logic
 		public Vector Add(Vector diff)
 		{
 			return new Vector(X + diff.X, Y + diff.Y);
+		}
+
+		public Vector Sub(Vector diff)
+		{
+			return new Vector(X - diff.X, Y - diff.Y);
+		}
+
+		public int Distance(Vector diff)
+		{
+			return Math.Max(Math.Abs(diff.X - X), Math.Abs(diff.Y - Y));
 		}
 	}
 }

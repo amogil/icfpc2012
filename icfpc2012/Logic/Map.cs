@@ -12,7 +12,8 @@ namespace Logic
 		Up,
 		Down,
 		Wait,
-		Abort
+		Abort,
+		CutBeard
 	}
 
 	public enum MapCell
@@ -23,6 +24,8 @@ namespace Logic
 		Lambda = '\\',
 		Wall = '#',
 		Robot = 'R',
+		Beard = 'W',
+		Razor = '!',
 		ClosedLift = 'L',
 		OpenedLift = 'O',
 		Trampoline1 = 'A',
@@ -60,6 +63,11 @@ namespace Logic
 			if (!this[trampolineOrJustCell].IsTrampoline()) return trampolineOrJustCell;
 			else return Targets[TrampToTarget[this[trampolineOrJustCell]]];
 		}
+
+		public int Razors { get; private set; }
+		public int Growth { get; private set; }
+		public int GrowthLeft { get; private set; }
+
 		private Dictionary<MapCell, Vector> Targets = new Dictionary<MapCell, Vector>();
 		private Dictionary<MapCell, Vector> Trampolines = new Dictionary<MapCell, Vector>();
 		private Dictionary<MapCell, MapCell> TrampToTarget = new Dictionary<MapCell, MapCell>();
@@ -85,6 +93,8 @@ namespace Logic
 		public int Waterproof { get; private set; }
 		public int StepsToIncreaseWater { get; private set; }
 		public int WaterproofLeft { get; private set; }
+
+		private List<Vector> Beard = new List<Vector>();
 
 		public Map(string filename)
 			: this(File.ReadAllLines(filename))
@@ -135,6 +145,10 @@ namespace Logic
 						LiftX = col + 1;
 						LiftY = newY + 1;
 					}
+					if (map[col + 1, newY + 1] == MapCell.Beard)
+					{
+						Beard.Add(new Vector(col + 1, newY + 1));
+					}
 					if (TargetsChars.Contains((char)map[col + 1, newY + 1]))
 					{
 						Targets[map[col + 1, newY + 1]] = new Vector(col + 1, newY + 1);
@@ -149,7 +163,7 @@ namespace Logic
 					}
 				}
 			}
-			InitializeFloodingAndTrampolines(lines.Skip(Height + 1).ToArray());
+			InitializeVariables(lines.Skip(Height + 1).ToArray());
 
 			Height += 2;
 			Width += 2;
@@ -157,11 +171,13 @@ namespace Logic
 			InitializeActiveRocks();
 		}
 
-		private void InitializeFloodingAndTrampolines(string[] floodingSpecs)
+		private void InitializeVariables(string[] floodingSpecs)
 		{
 			Water = 0;
 			Flooding = 0;
 			Waterproof = 10;
+			Growth = 25;
+			Razors = 0;
 			foreach (var floodingSpec in floodingSpecs.Where(line => !string.IsNullOrWhiteSpace(line)))
 			{
 				string[] parts = floodingSpec.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -172,6 +188,8 @@ namespace Logic
 				{
 					TrampToTarget[(MapCell) parts[1][0]] = (MapCell) parts[3][0];
 				}
+				if (parts[0] == "Growth") Growth = int.Parse(parts[1]);
+				if (parts[0] == "Razors") Razors = int.Parse(parts[1]);
 			}
 			StepsToIncreaseWater = Flooding;
 			WaterproofLeft = Waterproof;
@@ -267,6 +285,10 @@ namespace Logic
 					return MapCell.OpenedLift;
 				case 'R':
 					return MapCell.Robot;
+				case '!':
+					return MapCell.Razor;
+				case 'W':
+					return MapCell.Beard;
 				default:
 					if (TrampolinesChars.Contains(c))
 						return (MapCell)c;
@@ -292,7 +314,7 @@ namespace Logic
 				throw new GameFinishedException();
 
 			MovesCount++;
-			if (move != RobotMove.Wait)
+			if (move != RobotMove.Wait && move != RobotMove.CutBeard)
 			{
 				Vector newRobot = Robot.Add(move.ToVector());
 				if (CheckValid(newRobot.X, newRobot.Y))
@@ -309,15 +331,30 @@ namespace Logic
 			else
 				log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = RobotX, NextY = RobotY };
 
+			if(move == RobotMove.CutBeard)
+			{
+				if(!CutBeard())
+					throw new Exception();
+			}
+
 			if (State != CheckResult.Win)
 				Update();
 
 			return this;
 		}
 
+		private bool CutBeard()
+		{
+			if (Razors == 0)
+				return false;
+			Beard = Beard.Where(b => Robot.Distance(b) > 1).ToList();
+			return true;
+		}
+
 		private bool CheckValid(int newRobotX, int newRobotY)
 		{
-			if (map[newRobotX, newRobotY] == MapCell.Wall || map[newRobotX, newRobotY].IsTarget() || map[newRobotX, newRobotY] == MapCell.ClosedLift)
+			if (map[newRobotX, newRobotY] == MapCell.Wall || map[newRobotX, newRobotY].IsTarget() || 
+				map[newRobotX, newRobotY] == MapCell.ClosedLift || this[Robot] == MapCell.Beard)
 				return false;
 
 			if (map[newRobotX, newRobotY] != MapCell.Rock)
@@ -359,6 +396,10 @@ namespace Logic
 			}
 			else if (newMapCell == MapCell.Earth)
 			{
+			}
+			else if (newMapCell == MapCell.Razor)
+			{
+				Razors++;
 			}
 			else if (newMapCell == MapCell.OpenedLift)
 			{
@@ -533,6 +574,8 @@ namespace Logic
 				State = CheckResult.Win;
 			}
 
+			CheckBeardGrowth();
+
 			if (robotFailed)
 			{
 				State = CheckResult.Fail;
@@ -566,6 +609,31 @@ namespace Logic
 		private bool IsRobotKilledByRock(int x, int y)
 		{
 			return map[x, y - 1] == MapCell.Robot;
+		}
+
+		private void CheckBeardGrowth()
+		{
+			GrowthLeft--;
+			if(GrowthLeft == 0)
+			{
+				GrowthLeft = Growth;
+
+				foreach (var b in Beard.ToList())
+				{
+					for(int i = -1; i <= 1; i++)
+					{
+						for(int j = -1; j <= 1; j++)
+						{
+							var newVector = b.Add(new Vector(i, j));
+							if(this[newVector] == MapCell.Empty)
+							{
+								this[newVector] = MapCell.Beard;
+								Beard.Add(b);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		public bool Rollback()

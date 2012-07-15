@@ -30,7 +30,7 @@ namespace Logic
 						return FindSafePlace(map);
 					else
 						return FindMovableRock(map); // TODO move rocks
-//						return RobotMove.Abort;
+						//return RobotMove.Abort;
 				}
 				currentTarget = target.Item1;
 				plan = target.Item2;
