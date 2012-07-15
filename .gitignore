@@ -11,3 +11,4 @@ _ReSharper*
 *.dotCover
 maps/*.moves
 maps/tests/*.moves
+*.history

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Logic;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Tests
 {
@@ -67,30 +68,47 @@ namespace Tests
 			}
 		}
 
+		private string[] LoadHistory(string dir, string mapName, string botName)
+		{
+			var filename = GetHistoryFilename(dir, mapName, botName);
+			if (File.Exists(filename)) return File.ReadAllLines(filename);
+			return new string[0];
+		}
+
+		private static string GetHistoryFilename(string dir, string mapName, string botName)
+		{
+			string filename = Path.Combine(dir, mapName + "_" + botName + ".history");
+			return filename;
+		}
+
 		private void TestBrains(Func<RobotAI> botFactory, string dir)
 		{
 			var now = DateTime.Now;
-			long sum = 0;
 			var typeBot = botFactory();
-			using (var writer = new StreamWriter(Path.Combine(TestsDir, typeBot.GetType().Name + "_" + now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt")))
+			string botName = typeBot.GetType().Name;
+			using (var writer = new StreamWriter(Path.Combine(TestsDir, botName + "_" + now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt")))
 			{
-
-				WriteLineAndShow(writer, typeBot.GetType().Name + " " + now.ToString("yyyy-MM-dd HH:mm:ss"));
+				long sum = 0;
+				WriteLineAndShow(writer, botName + " " + now.ToString("yyyy-MM-dd HH:mm:ss"));
+				WriteLineAndShow(writer);
+				WriteLineAndShow(writer, "\t  score: [W|N|A] <SCORE> (W - win, N - nothing, A - Abort)");
 				WriteLineAndShow(writer);
 
-				WriteLineAndShow(writer, "file".PadRight(FilenamePadding) + "score".PadRight(ValuePadding) + "moves".PadRight(ValuePadding) +"state".PadRight(ValuePadding) + "ms".PadRight(ValuePadding));
+				WriteLineAndShow(writer, 
+					"map".PadRight(FilenamePadding)
+					+ "ms".PadRight(ValuePadding)
+					+ "ch?".PadRight(ValuePadding)
+					+ "curScore".PadRight(ValuePadding) 
+					+ "prevScores    ...   moves");
 				foreach (var file in Directory.GetFiles(dir, "*.map.txt"))
 				{
-					
+					string mapName = Path.GetFileNameWithoutExtension(file) ?? "NA";
 					var lines = File.ReadAllLines(file);
-					WriteAndShow(writer, Path.GetFileName(file).PadRight(FilenamePadding));
-
 					var bot = botFactory();
 					var map = new Map(lines);
 
 					var robotMove = RobotMove.Wait;
 
-					var builder = new StringBuilder();
 					var timer = Stopwatch.StartNew();
 					var botWrapper = new BotWithBestMomentsMemory(bot);
 					while(robotMove != RobotMove.Abort && map.State == CheckResult.Nothing)
@@ -100,31 +118,35 @@ namespace Tests
 						map = map.Move(robotMove);
 						botWrapper.UpdateBestSolution(map);
 					}
-
-					builder.Append(botWrapper.GetBestMoves());
+					string[] history = LoadHistory(dir, mapName, botName);
+					string result = botWrapper.BestMovesEndState.ToString()[0] + " " + botWrapper.BestScore.ToString();
+					bool resultChanged = result != history.FirstOrDefault();
+					WriteLineAndShow(writer, 
+						mapName.PadRight(FilenamePadding)
+						+ timer.ElapsedMilliseconds.ToString().PadRight(ValuePadding)
+						+ (resultChanged ? "*" : "").PadRight(ValuePadding)
+						+ result.PadRight(ValuePadding)
+						+ String.Join(" ", history.Take(10)) + "  "
+						+ botWrapper.GetBestMoves());
+					if (resultChanged)
+						history = new[] {result}.Concat(history).ToArray();
+					File.WriteAllLines(GetHistoryFilename(dir, mapName, botName), history);
 					sum += botWrapper.BestScore;
-					WriteAndShow(writer, botWrapper.BestScore.ToString().PadRight(ValuePadding) + botWrapper.BestMovesSequenceLen.ToString().PadRight(ValuePadding) + botWrapper.BestMovesEndState.ToString().PadRight(ValuePadding) + timer.ElapsedMilliseconds.ToString().PadRight(ValuePadding));
-					WriteLineAndShow(writer, builder.ToString());
 				}
+				WriteLineAndShow(writer, sum.ToString());
 			}
-			Console.WriteLine(sum);
 		}
 
 		private void WriteLineAndShow(StreamWriter writer, string text = null)
 		{
-			WriteAndShow(writer, text + "\r\n");
-		}
-
-		private void WriteAndShow(StreamWriter writer, string text = null)
-		{
-			writer.Write(text);
-			Console.Write(text);
+			writer.WriteLine(text);
+			Console.WriteLine(text);
 		}
 
 		private const string TestsDir = "../../../../tests";
 		private const string MapsDir = "../../../../maps/tests";
 		private const string PerformanceMapsDir = "../../../../maps/tests/performance";
-		private const int FilenamePadding = 35;
-		private const int ValuePadding = 8;
+		private const int FilenamePadding = 30;
+		private const int ValuePadding = 10;
 	}
 }
