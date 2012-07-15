@@ -44,7 +44,7 @@ namespace Logic
 					Vector newPos = cell.Pos.Add(move.ToVector());
 					if (!map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos)) continue;
 					newPos = map.GetTrampolineTarget(newPos);
-					if (!used.Contains(newPos) && (map[newPos] == MapCell.OpenedLift || map.IsSafeMove(cell.Pos, newPos, cell.StepNumber + 1, cell.WaterproofLeft)))
+					if (!used.Contains(newPos) && (map.GetCell(newPos) == MapCell.OpenedLift || map.IsSafeMove(cell.Pos, newPos, cell.StepNumber + 1, cell.WaterproofLeft)))
 					{
 						var wp = map.IsInWater(cell.StepNumber, newPos.Y) ? cell.WaterproofLeft - 1 : map.Waterproof;
 						q.Enqueue(new WaveCell(newPos, cell.StepNumber + 1, cell, move, wp));

@@ -10,13 +10,10 @@ namespace Logic
 
 		public virtual Map RunProgram(Map map, IEnumerable<RobotMove> moves)
 		{
-			try
+			foreach (var move in moves)
 			{
-				foreach (var move in moves)
-					map = DoMove(move, map);
-			}
-			catch (GameFinishedException)
-			{
+				map = DoMove(move, map);
+				if (map.State != CheckResult.Nothing) break;
 			}
 			return map;
 		}

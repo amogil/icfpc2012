@@ -25,19 +25,11 @@ namespace Lighting
 				robotMove = (timer.Elapsed.TotalSeconds < 150) ? bot.NextMove(map) : RobotMove.Abort;
 				//Console.Write(robotMove.ToChar());
 				path += robotMove.ToChar();
-				try
-				{
-					map = map.Move(robotMove);
-					map.Move(RobotMove.Abort);
-					if(maxPath.Item1 < map.GetScore())
-						maxPath = new Tuple<long, string>(map.GetScore(), path + "A");
-					//map.Rollback();
-				}
-				catch(GameFinishedException)
-				{
-					Console.WriteLine(maxPath.Item2);
-					return;
-				}
+				map = map.Move(robotMove);
+				map.Move(RobotMove.Abort);
+				if (maxPath.Item1 < map.GetScore())
+					maxPath = new Tuple<long, string>(map.GetScore(), path + "A");
+				
 			}
 		}
 	}
