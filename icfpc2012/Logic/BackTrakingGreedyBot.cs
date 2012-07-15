@@ -44,11 +44,11 @@ namespace Logic
 		private IEnumerable<Tuple<Vector, SpecialTargetType>> GetSpecial(Map map)
 		{
 			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
+				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Favorite);
+			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
 			foreach(var vector in GetBannedElement(map, cell => cell.ToString().StartsWith("Trampoline")))
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
-			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
-				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Favorite);
 		}
 
 		private IEnumerable<Vector> GetBannedElement(Map map, Predicate<MapCell> predicate)
