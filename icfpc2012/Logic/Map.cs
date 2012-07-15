@@ -59,6 +59,8 @@ namespace Logic
 
 	public class Map
 	{
+		public string[] Lines { get; private set; }
+
 		public Vector GetTrampolineTarget(Vector trampolineOrJustCell)
 		{
 			if (!this[trampolineOrJustCell].IsTrampoline()) return trampolineOrJustCell;
@@ -104,6 +106,7 @@ namespace Logic
 
 		public Map(string[] lines)
 		{
+			Lines = lines;
 			State = CheckResult.Nothing;
 
 			int firstBlankLineIndex = Array.IndexOf(lines, "");

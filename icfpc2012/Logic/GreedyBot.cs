@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Visualizer;
 
@@ -8,10 +7,24 @@ namespace Logic
 {
 	public class GreedyBot : RobotAI, IOverlay
 	{
+		private Vector bannedTarget;
 		private Vector currentTarget;
-		private Stack<RobotMove> plan;
-		private Tuple<Vector, Stack<RobotMove>> moveRockTarget;
 		private Vector lastRobotPos;
+		private Tuple<Vector, Stack<RobotMove>> moveRockTarget;
+		private Stack<RobotMove> plan;
+
+		public void Draw(Map map, IDrawer drawer)
+		{
+			if(moveRockTarget == null) return;
+			drawer.AddStyle("rock", "Brown");
+			drawer.DrawTarget(map, lastRobotPos, "rock", moveRockTarget);
+		}
+
+		public RobotMove NextMove(Map map, Vector banned)
+		{
+			bannedTarget = banned;
+			return NextMove(map);
+		}
 
 		/*
 		 * 
@@ -21,22 +34,22 @@ namespace Logic
 		{
 			lastRobotPos = map.Robot;
 			moveRockTarget = null;
-			if (currentTarget == null)
+			if(currentTarget == null)
 			{
 				Tuple<Vector, Stack<RobotMove>> target = FindBestTarget(map);
-				if (target == null) 
+				if(target == null)
 				{
-					if (map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks) 
+					if(map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks)
 						return FindSafePlace(map);
 					else
 						return FindMovableRock(map); // TODO move rocks
-						//return RobotMove.Abort;
+					//return RobotMove.Abort;
 				}
 				currentTarget = target.Item1;
 				plan = target.Item2;
 			}
 			RobotMove move = plan.PeekAndPop();
-			if (!plan.Any() || MoveChangeMapSignificantly(map, move))
+			if(!plan.Any() || MoveChangeMapSignificantly(map, move))
 			{
 				currentTarget = null;
 				plan = null;
@@ -49,7 +62,7 @@ namespace Logic
 			//R* 
 
 			// *R
-			
+
 			//*
 			//R
 
@@ -67,7 +80,7 @@ namespace Logic
 			//.*.
 			//A A
 
-			
+
 			var left = new Vector(-1, 0);
 			var right = new Vector(1, 0);
 			var up = new Vector(0, 1);
@@ -78,14 +91,14 @@ namespace Logic
 				var rightRobot = map.Robot.Add(right);
 				var upRobot = map.Robot.Add(up);
 
-				if (map[leftRobot] == MapCell.Rock && map[leftRobot.Add(left)] == MapCell.Empty)
+				if(map[leftRobot] == MapCell.Rock && map[leftRobot.Add(left)] == MapCell.Empty)
 					return RobotMove.Left;
-				if (map[rightRobot] == MapCell.Rock && map[rightRobot.Add(right)] == MapCell.Empty)
+				if(map[rightRobot] == MapCell.Rock && map[rightRobot.Add(right)] == MapCell.Empty)
 					return RobotMove.Right;
 
-				if (map[upRobot] == MapCell.Rock && map[leftRobot].IsMovable())
+				if(map[upRobot] == MapCell.Rock && map[leftRobot].IsMovable())
 					return RobotMove.Left;
-				if (map[upRobot] == MapCell.Rock && map[rightRobot].IsMovable())
+				if(map[upRobot] == MapCell.Rock && map[rightRobot].IsMovable())
 					return RobotMove.Right;
 			}
 
@@ -93,22 +106,23 @@ namespace Logic
 			moveRockTarget = waveRun.EnumerateTargets(
 				(lmap, position, used) =>
 					{
-						if (lmap[position.Add(up)] == MapCell.Rock && (lmap[position.Add(left)].IsMovable() || lmap[position.Add(right)].IsMovable()))
+						if(lmap[position.Add(up)] == MapCell.Rock &&
+						   (lmap[position.Add(left)].IsMovable() || lmap[position.Add(right)].IsMovable()))
 							return true;
 						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock && lmap[position.Add(left).Add(left)].IsRockMovable())
 							return true;
 						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock && lmap[position.Add(right).Add(right)] .IsRockMovable())
 							return true;
-						if (lmap[position] == MapCell.Earth && lmap[position.Add(right)] == MapCell.Rock
-								&& lmap[position.Add(right).Add(right)] != MapCell.Wall && lmap[position.Add(right).Add(right)] != MapCell.Rock)
+						if(lmap[position] == MapCell.Earth && lmap[position.Add(right)] == MapCell.Rock
+						   && lmap[position.Add(right).Add(right)] != MapCell.Wall && lmap[position.Add(right).Add(right)] != MapCell.Rock)
 							return true;
-						if (lmap[position] == MapCell.Earth && lmap[position.Add(left)] == MapCell.Rock
-								&& lmap[position.Add(right).Add(right)] != MapCell.Wall && lmap[position.Add(right).Add(right)] != MapCell.Rock)
+						if(lmap[position] == MapCell.Earth && lmap[position.Add(left)] == MapCell.Rock
+						   && lmap[position.Add(right).Add(right)] != MapCell.Wall && lmap[position.Add(right).Add(right)] != MapCell.Rock)
 							return true;
 						return false;
 					}).FirstOrDefault();
 
-			if (moveRockTarget == null)
+			if(moveRockTarget == null)
 				return RobotMove.Abort;
 
 			return moveRockTarget.Item2.Any() ? moveRockTarget.Item2.Peek() : RobotMove.Abort;
@@ -117,10 +131,10 @@ namespace Logic
 		private RobotMove FindSafePlace(Map map)
 		{
 //			if (map.IsSafeMove(map.Robot, map.Robot.Add(new Vector(0, 1)), 1, map.WaterproofLeft)) return RobotMove.Up;
-			if (map.IsSafeMove(map.Robot, map.Robot, 0, map.WaterproofLeft)) return RobotMove.Wait;
+			if(map.IsSafeMove(map.Robot, map.Robot, 0, map.WaterproofLeft)) return RobotMove.Wait;
 			var waveRun = new WaveRun(map, map.Robot);
 			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets((lmap, position) => true).FirstOrDefault();
-			if (target == null) 
+			if(target == null)
 				return RobotMove.Abort;
 			return target.Item2.Any() ? target.Item2.Peek() : RobotMove.Wait;
 		}
@@ -131,35 +145,39 @@ namespace Logic
 //			return map.HasActiveRocks || map.RocksFallAfterMoveTo(map.Robot.Add(move.ToVector()));
 		}
 
-		private static Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map, bool checkBestIsNotBad = true)
+		private Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map, bool checkBestIsNotBad = true)
 		{
 			var waveRun = new WaveRun(map, map.Robot);
 			Tuple<Vector, Stack<RobotMove>> result = null;
 
-			if (checkBestIsNotBad)
+			if(checkBestIsNotBad)
 			{
-				var orderedMoves = waveRun.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda).Take(9)
+				var orderedMoves = waveRun
+					.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda)
+					.Where(tuple => bannedTarget == null || (tuple.Item1.X != bannedTarget.X && tuple.Item1.Y != bannedTarget.Y))
+					.Take(9)
 					.OrderBy(t => CalculateTargetBadness(t, map)).ToArray();
 				result = orderedMoves.FirstOrDefault();
 			}
 			else result = waveRun.EnumerateTargets((lmap, pos) => lmap[pos] == MapCell.Lambda).FirstOrDefault();
-			if (result != null) return result;
-			if (waveRun.Lift != null && map[waveRun.Lift.Item1] == MapCell.OpenedLift)
+			if(result != null) return result;
+			if(waveRun.Lift != null && map[waveRun.Lift.Item1] == MapCell.OpenedLift)
 				return waveRun.Lift;
 			return null;
 		}
-		
-		private static double CalculateTargetBadness(Tuple<Vector, Stack<RobotMove>> target, Map map)
+
+		private double CalculateTargetBadness(Tuple<Vector, Stack<RobotMove>> target, Map map)
 		{
 			double badness = 0.0;
 			bool deadend = false;
 			bool moved = CanMoveToTargetExactlyByPath(target.Item2, map,
-				m =>
-				{
-					deadend = FindBestTarget(m, false) == null && m[m.Robot] != MapCell.OpenedLift;
-				});
-			if (moved && deadend) badness += 100;
-			if (!CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
+			                                          m =>
+			                                          	{
+			                                          		deadend = FindBestTarget(m, false) == null &&
+			                                          		          m[m.Robot] != MapCell.OpenedLift;
+			                                          	});
+			if(moved && deadend) badness += 100;
+			if(!CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
 				badness += 500;
 			badness += target.Item2.Count;
 			return badness;
@@ -170,18 +188,18 @@ namespace Logic
 			int moved = 0;
 			try
 			{
-				foreach (var move in robotMoves)
+				foreach(var move in robotMoves)
 				{
 					try
 					{
 						moved++;
 						map = map.Move(move);
 					}
-					catch (GameFinishedException)
+					catch(GameFinishedException)
 					{
 						return false;
 					}
-					if (map.RocksFallAfterMoveTo(map.Robot))
+					if(map.RocksFallAfterMoveTo(map.Robot))
 					{
 						return false;
 					}
@@ -191,24 +209,24 @@ namespace Logic
 			}
 			finally
 			{
-				for (int i = 0; i < moved; i++)
+				for(int i = 0; i < moved; i++)
 					map.Rollback();
 			}
 		}
-		
+
 		private static bool CanMoveToTargetExactlyByPath(Stack<RobotMove> robotMoves, Map map, Action<Map> analyseMap)
 		{
 			int moved = 0;
 			try
 			{
-				foreach (var move in robotMoves)
+				foreach(var move in robotMoves)
 				{
 					try
 					{
 						moved++;
 						map = map.Move(move);
 					}
-					catch (GameFinishedException)
+					catch(GameFinishedException)
 					{
 						return false;
 					}
@@ -218,16 +236,9 @@ namespace Logic
 			}
 			finally
 			{
-				for (int i = 0; i < moved; i++)
+				for(int i = 0; i < moved; i++)
 					map.Rollback();
 			}
-		}
-
-		public void Draw(Map map, IDrawer drawer)
-		{
-			if (moveRockTarget == null) return;
-			drawer.AddStyle("rock", "Brown");
-			drawer.DrawTarget(map, lastRobotPos, "rock", moveRockTarget);
 		}
 	}
 }

@@ -13,31 +13,40 @@ namespace Tests
 		[Test]
 		public void TestGreedyBot()
 		{
-			TestBrains(new GreedyBot(), MapsDir);
+			TestBrains(() => new GreedyBot(), MapsDir);
+		}
+
+		[Test]
+		public void TestBackTrackingGreedyBot()
+		{
+			TestBrains(() => new BackTrakingGreedyBot(), MapsDir);
 		}
 
 		[Test, Explicit]
 		public void TestPerformanceGreedyBot()
 		{
-			TestBrains(new GreedyBot(), PerformanceMapsDir);
+			TestBrains(() => new GreedyBot(), PerformanceMapsDir);
 		}
 
-		private void TestBrains(RobotAI bot, string dir)
+		private void TestBrains(Func<RobotAI> botFactory, string dir)
 		{
 			var now = DateTime.Now;
 			long sum = 0;
-			using (var writer = new StreamWriter(Path.Combine(TestsDir, bot.GetType().Name + "_" + now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt")))
+			var typeBot = botFactory();
+			using (var writer = new StreamWriter(Path.Combine(TestsDir, typeBot.GetType().Name + "_" + now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt")))
 			{
 
-				WriteLineAndShow(writer, bot.GetType().Name + " " + now.ToString("yyyy-MM-dd HH:mm:ss"));
+				WriteLineAndShow(writer, typeBot.GetType().Name + " " + now.ToString("yyyy-MM-dd HH:mm:ss"));
 				WriteLineAndShow(writer);
 
 				WriteLineAndShow(writer, "file".PadRight(FilenamePadding) + "score".PadRight(ValuePadding) + "moves".PadRight(ValuePadding) +"state".PadRight(ValuePadding) + "ms".PadRight(ValuePadding));
 				foreach (var file in Directory.GetFiles(dir, "*.map.txt"))
 				{
+					
 					var lines = File.ReadAllLines(file);
 					WriteAndShow(writer, Path.GetFileName(file).PadRight(FilenamePadding));
 
+					var bot = botFactory();
 					Map map = new Map(lines);
 
 					var robotMove = RobotMove.Wait;

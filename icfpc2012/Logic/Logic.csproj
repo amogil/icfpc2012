@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackTrakingGreedyBot.cs" />
     <Compile Include="BotWithBestMomentsMemory.cs" />
     <Compile Include="CodeAnnotations.cs" />
     <Compile Include="DrawerExtensions.cs" />
