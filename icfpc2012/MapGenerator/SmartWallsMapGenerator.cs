@@ -24,6 +24,9 @@ namespace MapGenerator
 			PutElements(map, Enumerable.Repeat(MapCell.Rock, options.RockCount));
 			PutElements(map, Enumerable.Repeat(MapCell.Earth, options.EarthCount));
 			PutElements(map, Enumerable.Repeat(MapCell.Lambda, options.LambdaCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Beard, options.BeardCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Razor, options.MapRazorCount));
+			PutElements(map, Enumerable.Repeat(MapCell.LambdaRock, options.HighRockCount));
 			var trampToTarget = PutTrampolines(map);
 			PutElements(map, new[] {MapCell.Robot});
 			return Tuple.Create(map, trampToTarget);

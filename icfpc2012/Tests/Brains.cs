@@ -20,7 +20,7 @@ namespace Tests
 		[Test]
 		public void TestTimeAwareBackTrackingGreedyBot()
 		{
-			TestBrains(() => new TimeAwaredBackTrackingGreedyBot(60), MapsDir);
+			TestBrains(() => new TimeAwaredBackTrackingGreedyBot(140), MapsDir);
 		}
 
 		[Test, Explicit]

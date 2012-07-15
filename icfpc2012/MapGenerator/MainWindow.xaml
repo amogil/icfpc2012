@@ -1,14 +1,14 @@
 ﻿<Window x:Class="MapGenerator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Map Generator" Height="520" Width="728" WindowState="Normal">
+        Title="Map Generator" Height="520" Width="859" WindowState="Normal">
     <Grid>
 		<Label Content="Ширина:" Height="28" HorizontalAlignment="Left" Margin="12,9,0,0" Name="label1" VerticalAlignment="Top" />
 		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,11,0,0" Name="tbWidth" VerticalAlignment="Top" Width="120" Text="10" />
 		<Label Content="Высота:" Height="28" HorizontalAlignment="Left" Margin="12,43,0,0" Name="label2" VerticalAlignment="Top" />
 		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,45,0,0" Name="tbHeights" VerticalAlignment="Top" Width="120" Text="10" />
 		<TextBox Height="183" HorizontalAlignment="Stretch" Margin="12,0,12,12" Name="tbResult" VerticalAlignment="Bottom" FontFamily="Courier New" />
-		<Button Content="Go and Copy To Clipboard" Height="23" HorizontalAlignment="Left" Margin="12,244,0,0" Name="button1" VerticalAlignment="Top" Width="682" Click="button1_Click" />
+		<Button Content="Go and Copy To Clipboard" Height="23" HorizontalAlignment="Left" Margin="12,244,0,0" Name="button1" VerticalAlignment="Top" Width="813" Click="button1_Click" />
 		<CheckBox Content="Лифт" Height="16" HorizontalAlignment="Left" Margin="247,14,0,0" Name="cbLift" VerticalAlignment="Top" IsChecked="True" />
 		<Label Content="Камней:" Height="28" HorizontalAlignment="Left" Margin="12,82,0,0" Name="label3" VerticalAlignment="Top" />
 		<TextBox Height="23" HorizontalAlignment="Left" Margin="88,84,0,0" Name="tbRocks" VerticalAlignment="Top" Width="120" Text="5" />
@@ -27,5 +27,15 @@
 		<Label Content="Батутов:" Height="28" HorizontalAlignment="Left" Margin="235,154,0,0" Name="label10" VerticalAlignment="Top" />
 		<TextBox Height="23" HorizontalAlignment="Left" Margin="348,159,0,0" Name="tbTrampolineCount" Text="1" VerticalAlignment="Top" Width="120" />
 		<CheckBox Content="Изолированные сегменты" Height="16" HorizontalAlignment="Left" Margin="348,14,0,0" Name="cbIsolatedSegments" VerticalAlignment="Top" />
+		<Label Content="Бород:" Height="28" HorizontalAlignment="Left" Margin="235,194,0,0" Name="label11" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="348,199,0,0" Name="tbBeards" Text="1" VerticalAlignment="Top" Width="120" />
+		<Label Content="Бритв на карте:" Height="28" HorizontalAlignment="Left" Margin="508,82,0,0" Name="label12" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="621,82,0,0" Name="tbMapRazor" Text="1" VerticalAlignment="Top" Width="120" />
+		<Label Content="Бритв в кармане:" Height="28" HorizontalAlignment="Left" Margin="508,113,0,0" Name="label13" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="621,118,0,0" Name="tbPocketRazor" Text="1" VerticalAlignment="Top" Width="120" />
+		<Label Content="Рост бороды:" Height="28" HorizontalAlignment="Left" Margin="508,43,0,0" Name="label14" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="621,48,0,0" Name="tbBeardGrow" Text="1" VerticalAlignment="Top" Width="120" />
+		<Label Content="Крутых камней:" Height="28" HorizontalAlignment="Left" Margin="508,154,0,0" Name="label15" VerticalAlignment="Top" />
+		<TextBox Height="23" HorizontalAlignment="Left" Margin="621,159,0,0" Name="tbHighRocks" Text="1" VerticalAlignment="Top" Width="120" />
 	</Grid>
 </Window>

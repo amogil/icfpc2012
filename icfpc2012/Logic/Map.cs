@@ -237,7 +237,8 @@ namespace Logic
 
 		public override string ToString()
 		{
-			return new MapSerializer().Serialize(this.SkipBorder(), Water, Flooding, Waterproof, TrampToTarget);
+			return new MapSerializer().Serialize(this.SkipBorder(), Water, Flooding, Waterproof, TrampToTarget,
+				Growth, Razors);
 		}
 
 		private static MapCell Parse(char c)

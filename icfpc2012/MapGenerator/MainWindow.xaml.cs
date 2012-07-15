@@ -25,7 +25,12 @@ namespace MapGenerator
 			                                      waterLevel: Convert.ToInt32(tbWater.Text),
 			                                      flooding: Convert.ToInt32(tbFlooding.Text),
 			                                      waterproof: Convert.ToInt32(tbWaterproof.Text),
-			                                      trampolineCount: Convert.ToInt32(tbTrampolineCount.Text));
+			                                      trampolineCount: Convert.ToInt32(tbTrampolineCount.Text),
+			                                      beardCount: Convert.ToInt32(tbBeards.Text),
+			                                      beardGrowth: Convert.ToInt32(tbBeardGrow.Text),
+			                                      mapRazorCount: Convert.ToInt32(tbMapRazor.Text),
+			                                      pocketRazorCount: Convert.ToInt32(tbPocketRazor.Text),
+			                                      highRockCount: Convert.ToInt32(tbHighRocks.Text));
 			var generator = cbIsolatedSegments.IsChecked.Value
 			                	? new IsolatedMapGenerator(options)
 			                	: new SmartWallsMapGenerator(options);

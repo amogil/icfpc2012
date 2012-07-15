@@ -21,7 +21,8 @@ namespace Logic
 		}
 
 		public string Serialize(MapCell[,] map, int water, int flooding, int waterproof,
-		                        Dictionary<MapCell, MapCell> trampToTarget)
+		                        Dictionary<MapCell, MapCell> trampToTarget, int beardGrowth,
+		                        int pocketRazorCount)
 		{
 			var builder = SerializeMapOnly(map);
 			builder.AppendLine();
@@ -34,6 +35,16 @@ namespace Logic
 			{
 				builder.AppendLine();
 				builder.AppendFormat("Trampoline {0} targets {1}", (Char) trampTargetElem.Key, (Char) trampTargetElem.Value);
+			}
+			if(beardGrowth > 0)
+			{
+				builder.AppendLine();
+				builder.AppendFormat("Growth {0}", beardGrowth);
+			}
+			if(pocketRazorCount > 0)
+			{
+				builder.AppendLine();
+				builder.AppendFormat("Razors {0}", pocketRazorCount);
 			}
 			return builder.ToString();
 		}

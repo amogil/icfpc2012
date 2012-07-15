@@ -49,14 +49,18 @@ Water 0
 Flooding 1
 Waterproof 10
 Trampoline A targets 1
-Trampoline B targets 1"
+Trampoline B targets 1
+Growth 1
+Razors 1"
 					.Trim(),
 				serializer.Serialize(mapCells, water: 0, flooding: 1, waterproof: 10,
 				                     trampToTarget: new Dictionary<MapCell, MapCell>
 				                                    	{
 				                                    		{MapCell.Trampoline1, MapCell.Target1},
 				                                    		{MapCell.Trampoline2, MapCell.Target1}
-				                                    	}));
+				                                    	},
+				                     beardGrowth: 1,
+				                     pocketRazorCount: 1));
 		}
 
 		[Test]
@@ -83,7 +87,8 @@ Trampoline B targets 1"
 Water 1
 Flooding 0
 Waterproof 0".Trim(),
-				serializer.Serialize(map, water: 1, flooding: 0, waterproof: 0, trampToTarget: new Dictionary<MapCell, MapCell>()));
+				serializer.Serialize(map, water: 1, flooding: 0, waterproof: 0, trampToTarget: new Dictionary<MapCell, MapCell>(),
+				                     beardGrowth: 0, pocketRazorCount: 0));
 		}
 
 		[Test]
@@ -102,7 +107,8 @@ Waterproof 0".Trim(),
 Water 1
 Flooding 0
 Waterproof 1".Trim(),
-				serializer.Serialize(map, water: 1, flooding: 0, waterproof: 1, trampToTarget: new Dictionary<MapCell, MapCell>()));
+				serializer.Serialize(map, water: 1, flooding: 0, waterproof: 1, trampToTarget: new Dictionary<MapCell, MapCell>(),
+				                     beardGrowth: 0, pocketRazorCount: 0));
 		}
 	}
 }

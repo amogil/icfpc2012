@@ -21,7 +21,8 @@ namespace MapGenerator
 			PutBordersWalls(initMap);
 			var mapInfo = GenerateMap(initMap);
 			return new MapSerializer().Serialize(mapInfo.Item1, options.WaterLevel, options.Flooding,
-			                                     options.Waterproof, mapInfo.Item2);
+			                                     options.Waterproof, mapInfo.Item2, options.BeardGrowth,
+			                                     options.PocketRazorCount);
 		}
 
 		protected virtual Tuple<MapCell[,], Dictionary<MapCell, MapCell>> GenerateMap(MapCell[,] map)
@@ -31,6 +32,9 @@ namespace MapGenerator
 			PutElements(map, Enumerable.Repeat(MapCell.Earth, options.EarthCount));
 			PutElements(map, Enumerable.Repeat(MapCell.Wall, options.WallCount));
 			PutElements(map, Enumerable.Repeat(MapCell.Lambda, options.LambdaCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Beard, options.BeardCount));
+			PutElements(map, Enumerable.Repeat(MapCell.Razor, options.MapRazorCount));
+			PutElements(map, Enumerable.Repeat(MapCell.LambdaRock, options.HighRockCount));
 			var trampToTarget = PutTrampolines(map);
 			PutElements(map, new[] {MapCell.Robot});
 			return Tuple.Create(map, trampToTarget);
