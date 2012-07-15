@@ -192,6 +192,8 @@ namespace Logic
 
 		public MapCell GetCell(int x, int y)
 		{
+			if (x < 0 || x >= Width || y < 0 || y >= Height)
+				throw new Exception(x + " " + y);
 			return QTree.Get(field, x, y, 0, Width - 1, 0, Height - 1);
 		}
 

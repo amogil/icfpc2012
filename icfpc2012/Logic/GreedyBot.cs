@@ -72,9 +72,9 @@ namespace Logic
 			var leftRobot = map.Robot.Add(left);
 			var rightRobot = map.Robot.Add(right);
 			var upRobot = map.Robot.Add(up);
-			
-			var leftCheck = map.IsSafeMove(map.Robot, map.Robot.Add(left), 1, map.WaterproofLeft);
-			var rightCheck = map.IsSafeMove(map.Robot, map.Robot.Add(right), 1, map.WaterproofLeft);
+
+			var leftCheck = map.GetCell(leftRobot) != MapCell.Wall && map.IsSafeMove(map.Robot, map.Robot.Add(left), 1, map.WaterproofLeft);
+			var rightCheck = map.GetCell(rightRobot) != MapCell.Wall && map.IsSafeMove(map.Robot, map.Robot.Add(right), 1, map.WaterproofLeft);
 
 			if (map.GetCell(leftRobot).IsRock() && map.GetCell(leftRobot.Add(left)) == MapCell.Empty && leftCheck)
 				return RobotMove.Left;
