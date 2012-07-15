@@ -114,8 +114,8 @@ namespace Visualizer
 			{
 				overlay.Draw(map, drawer);
 			}
-			if (robot as IOverlay != null)
-				(robot as IOverlay).Draw(map, drawer);
+			if (robot != null && robot.Bot as IOverlay != null)
+				(robot.Bot as IOverlay).Draw(map, drawer);
 
 		}
 
@@ -147,7 +147,7 @@ namespace Visualizer
 			var fixedProgramItem = new ToolStripMenuItem("Program from clipboard", null, (sender, args) =>
 			{
 				LoadMap(LastOpenedMapFile);
-				robot = new FixedProgramRobot(Clipboard.GetText().Select(c => c.ToRobotMove()).ToArray());
+				robot = new BotWithBestMomentsMemory(new FixedProgramRobot(Clipboard.GetText().Select(c => c.ToRobotMove()).ToArray()));
 			});
 			robotToolStripMenuItem.DropDownItems.Add(fixedProgramItem);
 		}
@@ -155,7 +155,7 @@ namespace Visualizer
 		private void RunRobot(Type robotType)
 		{
 			LoadMap(LastOpenedMapFile);
-			robot = RobotAI.Create(robotType, map);
+			robot = new BotWithBestMomentsMemory(RobotAI.Create(robotType, map));
 		}
 
 		public string LastOpenedMapFile
@@ -192,13 +192,18 @@ namespace Visualizer
 			if (e.KeyCode == Keys.Enter)
 			{
 				if (robot != null)
+				{
 					DoMove(robot.NextMove(map));
+					robot.UpdateBestSolution(map);
+					bestMovesText.Text = robot.BestScore + ": " + robot.GetBestMoves();
+				}
 			}
 			if (e.KeyCode == Keys.Back)
 			{
 				if (robot == null) RollbackMove();
-
 			}
+			if (robot == null)
+				bestMovesText.Text = "<best moves for robot only!>";
 			//Application.DoEvents();
 		}
 
@@ -232,12 +237,6 @@ namespace Visualizer
 				directoryName,
 				Path.GetFileNameWithoutExtension(LastOpenedMapFile) + "_" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-ffff") + ".moves");
 
-			while (engine.Map.MovesCount > bestPath.Item2.Length - 1)
-			{
-				engine.Map.Rollback();
-			}
-			engine.Map.Move(RobotMove.Abort);
-
 			File.WriteAllText(movesFile,
 				GetMovesString()
 				+ Environment.NewLine
@@ -255,7 +254,7 @@ namespace Visualizer
 		}
 
 		private readonly List<RobotMove> moves = new List<RobotMove>();
-		private RobotAI robot;
+		private BotWithBestMomentsMemory robot;
 		private Engine engine;
 	}
 }
