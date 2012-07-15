@@ -111,6 +111,11 @@ namespace Logic
 
 		private HashSet<Vector> Beard = new HashSet<Vector>();
 
+		public int BeardCount
+		{
+			get { return Beard.Count; }
+		}
+
 		private Map()
 		{
 		}

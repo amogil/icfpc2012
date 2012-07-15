@@ -179,6 +179,9 @@ namespace Logic
 		{
 			foreach (var move in target.Item2)
 			{
+				if (map.BeardCount > MaxBeardSize)
+					break;
+
 				map = map.Move(move);
 				if (map.State == CheckResult.Fail)
 					return false;
@@ -196,7 +199,11 @@ namespace Logic
 		{
 			foreach(var move in robotMoves)
 			{
+				if (map.BeardCount > MaxBeardSize)
+					break;
+
 				map = map.Move(move);
+
 				if (map.State == CheckResult.Fail)
 					return false;
 				if (map.RocksFallAfterMoveTo(map.Robot))
@@ -209,6 +216,9 @@ namespace Logic
 		{
 			foreach (var move in robotMoves)
 			{
+				if (map.BeardCount > MaxBeardSize)
+					break;
+
 				map = map.Move(move);
 				if (map.State == CheckResult.Fail)
 					return false;
@@ -216,5 +226,7 @@ namespace Logic
 			analyseMap(map);
 			return true;
 		}
+
+		private const int MaxBeardSize = 100;
 	}
 }
