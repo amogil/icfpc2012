@@ -15,7 +15,7 @@ namespace Logic
 		public event Action<IMap> OnMapUpdate;
 		public event Action<RobotMove> OnMoveAdded;
 
-		public void RunProgram(IEnumerable<RobotMove> moves)
+		public virtual void RunProgram(IEnumerable<RobotMove> moves)
 		{
 			try
 			{

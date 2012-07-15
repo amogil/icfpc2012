@@ -322,6 +322,8 @@ namespace Logic
 					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = RobotX, NextY = RobotY };
 				}
 			}
+			else
+				log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = RobotX, NextY = RobotY };
 
 			if (State != CheckResult.Win)
 				Update();
