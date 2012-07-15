@@ -228,7 +228,7 @@ namespace Logic
 
 		public bool HasActiveObjects
 		{
-			get { return GrowthLeft == 1 || activeRocks.Any(rockPos => TryToMoveRock(rockPos, GetCell(rockPos), this) != null); }
+			get { return (GrowthLeft == 1 && Beard.Any()) || activeRocks.Any(rockPos => TryToMoveRock(rockPos, GetCell(rockPos), this) != null); }
 		}
 
 		public override string ToString()
