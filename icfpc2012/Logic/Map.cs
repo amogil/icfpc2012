@@ -505,6 +505,7 @@ namespace Logic
 					rockMoves.Add(activeRockCoords, newCoords);
 			}
 
+			bool killedByRock = false;
 			foreach (var rockMove in rockMoves)
 			{
 				map[rockMove.Key.X, rockMove.Key.Y] = MapCell.Empty;
@@ -519,7 +520,8 @@ namespace Logic
 							NextX = rockMove.Value.X,
 							NextY = rockMove.Value.Y
 						});
-				robotFailed |= IsRobotKilledByRock(rockMove.Value.X, rockMove.Value.Y);
+				killedByRock = IsRobotKilledByRock(rockMove.Value.X, rockMove.Value.Y);
+				robotFailed |= killedByRock;
 				CheckNearRocks(newActiveRocks, rockMove.Key.X, rockMove.Key.Y);
 			}
 
@@ -533,17 +535,12 @@ namespace Logic
 				State = CheckResult.Win;
 			}
 
-			if (robotFailed)
-			{
-				State = CheckResult.Fail;
-				throw new KilledByRockException();
-			}
 			robotFailed |= IsRobotKilledByFlood();
 
 			if (robotFailed)
 			{
 				State = CheckResult.Fail;
-				throw new GameFinishedException();
+				throw killedByRock ? new KilledByRockException() : new GameFinishedException();
 			}
 		}
 
