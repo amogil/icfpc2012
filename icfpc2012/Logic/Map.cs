@@ -241,8 +241,8 @@ namespace Logic
 				for (var x = 1; x < Width - 1; x++)
 				{
 					var pos = new Vector(x, y);
-					var newRockPos = TryToMoveRock(pos);
-					if (newRockPos != pos)
+					var newRockPos = TryToMoveRock(pos, this);
+					if (!pos.Equals(newRockPos))
 						activeRocks.Add(pos);
 				}
 		}
@@ -422,7 +422,7 @@ namespace Logic
 				{
 					var trampolinePos = Trampolines[pair.Key];
 					newMap.SetCell(trampolinePos, MapCell.Empty);
-					CheckNearRocks(newMap.activeRocks, trampolinePos.X, trampolinePos.Y);
+					CheckNearRocks(newMap.activeRocks, trampolinePos.X, trampolinePos.Y, newMap);
 				}
 			}
 			else if (newMapCell == MapCell.Earth)
@@ -446,20 +446,20 @@ namespace Logic
 			if (newMapCell != MapCell.OpenedLift)
 				newMap.SetCell(newRobotX, newRobotY, MapCell.Robot);
 
-			CheckNearRocks(newMap.activeRocks, RobotX, RobotY);
+			CheckNearRocks(newMap.activeRocks, RobotX, RobotY, newMap);
 
 			newMap.RobotX = newRobotX;
 			newMap.RobotY = newRobotY;
 		}
 
-		private void CheckNearRocks(SortedSet<Vector> updateableRocks, int x, int y)
+		private void CheckNearRocks(SortedSet<Vector> updateableRocks, int x, int y, Map mapToUse)
 		{
 			for (int rockX = x - 1; rockX <= x + 1; rockX++)
 			{
 				for (int rockY = y; rockY <= y + 1; rockY++)
 				{
 					var coords = new Vector(rockX, rockY);
-					if (!coords.Equals(TryToMoveRock(rockX, rockY)))
+					if (!coords.Equals(TryToMoveRock(rockX, rockY, mapToUse)))
 						updateableRocks.Add(coords);
 				}
 			}
@@ -524,19 +524,9 @@ namespace Logic
 			return true;
 		}
 
-		private Vector TryToMoveRock(Vector coords)
-		{
-			return TryToMoveRock(coords, this);
-		}
-
 		private static Vector TryToMoveRock(Vector coords, Map mapToUse)
 		{
 			return TryToMoveRock(coords.X, coords.Y, mapToUse);
-		}
-
-		private Vector TryToMoveRock(int x, int y)
-		{
-			return TryToMoveRock(x, y, this);
 		}
 
 		private static Vector TryToMoveRock(int x, int y, Map mapToUse)
@@ -599,11 +589,11 @@ namespace Logic
 						});
 				killedByRock = IsRobotKilledByRock(rockMove.Value.X, rockMove.Value.Y);
 				robotFailed |= killedByRock;
-				CheckNearRocks(newActiveRocks, rockMove.Key.X, rockMove.Key.Y);
+				CheckNearRocks(newActiveRocks, rockMove.Key.X, rockMove.Key.Y, newMap);
 			}
 			newMap.activeRocks = newActiveRocks;
 
-			if (TotalLambdaCount == LambdasGathered)
+			if (newMap.TotalLambdaCount == newMap.LambdasGathered)
 				newMap.SetCell(LiftX, LiftY, MapCell.OpenedLift);
 
 			CheckBeardGrowth();
