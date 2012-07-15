@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Logic;
 using NUnit.Framework;
 
@@ -37,10 +38,14 @@ namespace Tests
 			try
 			{
 				var actualMap = e.Map;
-				Assert.AreEqual(Result, actualMap.State, this.ToString());
+				CheckResult checkResult = actualMap.State;
+				if (checkResult == CheckResult.Abort) checkResult = CheckResult.Nothing; //Специфика загружалки результатов валидатора
+				Assert.AreEqual(Result, checkResult, this.ToString());
 				Assert.AreEqual(Score, actualMap.GetScore(), this.ToString());
 				var mapStateAsAscii = actualMap.GetMapStateAsAscii();
-				Assert.AreEqual(FinalMapState, mapStateAsAscii, string.Format("{0}\r\nactual map state:\r\n{1}", this.ToString(), mapStateAsAscii));
+				string actualMap1 = Regex.Replace(mapStateAsAscii, "[A-I]", "T"); //Специфика вывода валидатора
+				string actualMap2 = Regex.Replace(actualMap1, "[1-9]", "t"); //Специфика вывода валидатора
+				Assert.AreEqual(FinalMapState, actualMap2, string.Format("{0}\r\nactual map state:\r\n{1}", this.ToString(), actualMap2));
 				return true;
 			}
 			catch (AssertionException ex)
