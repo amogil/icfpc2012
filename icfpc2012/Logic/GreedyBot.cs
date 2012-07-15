@@ -240,7 +240,7 @@ namespace Logic
 				catch (GameFinishedException)
 				{
 					return false;
-				if (map.RocksFallAfterMoveTo(newMap.Robot))
+				if (newMap.RocksFallAfterMoveTo(newMap.Robot))
 					return false;
 				map = newMap;
 			}

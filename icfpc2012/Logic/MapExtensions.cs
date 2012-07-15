@@ -1,4 +1,7 @@
-﻿namespace Logic
+﻿using System;
+using System.Linq;
+
+namespace Logic
 {
 	public static class MapExtensions
 	{
@@ -59,10 +62,10 @@
 			return false;
 		}
 
-		
-		public static Vector TryToMoveRock(this Map map, Vector coords)
+
+		public static Vector TryToMoveRock(this Map map, Vector coords, params Vector[] emptyCells)
 		{
-			return TryToMoveRock(map, coords.X, coords.Y);
+			return TryToMoveRock(map, coords.X, coords.Y, emptyCells);
 		}
 
 		private static bool IsEmptyOrRobot(MapCell cell)
@@ -70,25 +73,28 @@
 			return cell == MapCell.Empty || cell == MapCell.Robot;
 		}
 
-		public static Vector TryToMoveRock(this Map map, int x, int y)
+		public static Vector TryToMoveRock(this Map map, int x, int y, params Vector[] emptyCells)
 		{
-			if (map.GetCell(x, y) == MapCell.Rock && IsEmptyOrRobot(map.GetCell(x, y - 1)))
+			Func<int, int, bool> isEmpty =
+				(xx, yy) => emptyCells.Contains(new Vector(xx, yy)) || IsEmptyOrRobot(map.GetCell(xx, yy));
+
+			if (map.GetCell(x, y) == MapCell.Rock && isEmpty(x, y - 1))
 			{
 				return new Vector(x, y - 1);
 			}
 			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Rock
-				&& IsEmptyOrRobot(map.GetCell(x + 1, y)) && IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
+				&& isEmpty(x + 1, y) && isEmpty(x + 1, y - 1))
 			{
 				return new Vector(x + 1, y - 1);
 			}
 			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Rock
-				&& (!IsEmptyOrRobot(map.GetCell(x + 1, y)) || !IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
-				&& IsEmptyOrRobot(map.GetCell(x - 1, y)) && IsEmptyOrRobot(map.GetCell(x - 1, y - 1)))
+				&& (!isEmpty(x + 1, y) || !isEmpty(x + 1, y - 1))
+				&& isEmpty(x - 1, y) && isEmpty(x - 1, y - 1))
 			{
 				return new Vector(x - 1, y - 1);
 			}
 			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Lambda
-				&& IsEmptyOrRobot(map.GetCell(x + 1, y)) && IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
+				&& isEmpty(x + 1, y) && isEmpty(x + 1, y - 1))
 			{
 				return new Vector(x + 1, y - 1);
 			}
@@ -101,9 +107,7 @@
 			if (waterproofLeft <= 0 && map.WaterLevelAfterUpdate(map.MovesCount + movesDone - 1) >= to.Y)
 				return false;
 
-			//var swap = map[from.X, from.Y];
-			//map[RobotX, RobotY] = MapCell.Empty;
-			//map[from.X, from.Y] = MapCell.Empty;
+			var emptyCells = new[] {from, to};
 
 			bool isSafe = true;
 
@@ -111,7 +115,7 @@
 			{
 				for (int x = to.X - 1; x <= to.X + 1; x++)
 				{
-					var newPosition = map.TryToMoveRock(new Vector(x, to.Y + 2));
+					var newPosition = map.TryToMoveRock(new Vector(x, to.Y + 2), emptyCells);
 					if (newPosition.X == to.X && newPosition.Y == to.Y + 1)
 						isSafe = false;
 				}
@@ -122,15 +126,12 @@
 				int y = to.Y + movesDone + 1;
 				for (int x = to.X - 1; x <= to.X + 1; x++)
 				{
-					var newPosition = map.TryToMoveRock(new Vector(x, y));
+					var newPosition = map.TryToMoveRock(new Vector(x, y), emptyCells);
 
 					if (newPosition.X == to.X && newPosition.Y == y - 1 && map.IsColumnEmpty(to.X, to.Y + 1, y - 2))
 						isSafe = false;
 				}
 			}
-
-			//map[from.X, from.Y] = swap;
-			//map[RobotX, RobotY] = MapCell.Robot;
 
 			return isSafe;
 		}
