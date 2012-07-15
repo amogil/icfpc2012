@@ -26,6 +26,7 @@ namespace Logic
 		}
 
 		public abstract RobotMove NextMove(Map map);
+		public bool StopNow { get; set; }
 	}
 
 	public class FixedProgramRobot : RobotAI

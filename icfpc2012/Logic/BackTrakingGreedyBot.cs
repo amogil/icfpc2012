@@ -1,29 +1,24 @@
 using System;
 using System.Collections.Generic;
-using Visualizer;
 
 namespace Logic
 {
-	public class BackTrakingGreedyBot : RobotAI, IOverlay
+	public class BackTrakingGreedyBot : RobotAI
 	{
 		private readonly Random random = new Random();
 		private RobotMove[] bestMoves;
 		private int currentMove;
-		private GreedyBot greedyBot;
-
-		public void Draw(Map map, IDrawer drawer)
-		{
-			greedyBot.Draw(map, drawer);
-		}
 
 		public override RobotMove NextMove(Map map)
 		{
 			if(bestMoves == null)
+			{
 				CalcSolution(map);
+				if(bestMoves == null) return RobotMove.Abort;
+			}
 
-			var robotMove = bestMoves[currentMove];
-			currentMove += 1;
-			return robotMove;
+			if(currentMove > bestMoves.Length - 1) return RobotMove.Abort;
+			return bestMoves[currentMove++];
 		}
 
 		private void CalcSolution(Map map)
@@ -33,12 +28,13 @@ namespace Logic
 			long bestScores = long.MinValue;
 			do
 			{
+				if(StopNow) return;
 				var moves = GetMoves(map, banned);
-				if(bestScores < moves.Item3)
+				if(moves == null) return;
+				if(bestScores < moves.Item2)
 				{
-					bestScores = moves.Item3;
+					bestScores = moves.Item2;
 					bestMoves = moves.Item1;
-					greedyBot = moves.Item2;
 				}
 				banned = GetBanned(map);
 				count += 1;
@@ -59,21 +55,20 @@ namespace Logic
 			return null;
 		}
 
-		private Tuple<RobotMove[], GreedyBot, long> GetMoves(Map map, Vector banned)
+		private Tuple<RobotMove[], long> GetMoves(Map map, Vector banned)
 		{
 			var moves = new List<RobotMove>();
 			var bot = new GreedyBot();
 			RobotMove robotMove;
+			Map localMap = map;
 			do
 			{
-				robotMove = banned != null ? bot.NextMove(map, banned) : bot.NextMove(map);
-				map = map.Move(robotMove);
-				if (map.State != CheckResult.Nothing)
-					return Tuple.Create(moves.ToArray(), bot, -1L);
+				if(StopNow) return null;
+				robotMove = banned != null ? bot.NextMove(localMap, banned) : bot.NextMove(localMap);
+				localMap = localMap.Move(robotMove);
 				moves.Add(robotMove);
-			} while (robotMove != RobotMove.Abort && map.State == CheckResult.Nothing);
-			var score = map.GetScore();
-			return Tuple.Create(moves.ToArray(), bot, score);
+			} while(robotMove != RobotMove.Abort && localMap.State == CheckResult.Nothing);
+			return Tuple.Create(moves.ToArray(), localMap.State != CheckResult.Fail ? localMap.GetScore() : long.MinValue);
 		}
 	}
 }

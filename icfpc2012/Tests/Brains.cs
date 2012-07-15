@@ -73,10 +73,9 @@ namespace Tests
 					WriteAndShow(writer, Path.GetFileName(file).PadRight(FilenamePadding));
 
 					var bot = botFactory();
-					Map map = new Map(lines);
+					var map = new Map(lines);
 
 					var robotMove = RobotMove.Wait;
-					int movesCount = 0;
 
 					var builder = new StringBuilder();
 					var timer = Stopwatch.StartNew();
@@ -84,7 +83,6 @@ namespace Tests
 					while(robotMove != RobotMove.Abort && map.State == CheckResult.Nothing)
 					{
 						robotMove = (timer.Elapsed.TotalSeconds < 150) ? botWrapper.NextMove(map) : RobotMove.Abort;
-						movesCount++;
 
 						map = map.Move(robotMove);
 						botWrapper.UpdateBestSolution(map);
