@@ -332,7 +332,6 @@ namespace Logic
 		public Map Move(RobotMove move)
 		{
 			var newMap = Clone();
-
 			if (move == RobotMove.Abort)
 			{
 				newMap.State = CheckResult.Abort;
@@ -340,15 +339,13 @@ namespace Logic
 			}
 
 			newMap.MovesCount++;
-			if (move != RobotMove.Wait && move != RobotMove.CutBeard)
+			if (move == RobotMove.CutBeard)
+				CutBeard(newMap);
+			else if (move != RobotMove.Wait)
 			{
 				var newRobot = Robot.Add(move.ToVector());
 				if (CheckValid(newRobot.X, newRobot.Y))
 					DoMove(newRobot.X, newRobot.Y, newMap);
-			}
-			else if(move == RobotMove.CutBeard)
-			{
-				CutBeard(newMap);
 			}
 
 			if (newMap.State != CheckResult.Win)
@@ -404,7 +401,6 @@ namespace Logic
 				var targetCoords = Targets[target];
 				newRobotX = targetCoords.X;
 				newRobotY = targetCoords.Y;
-
 				foreach (var pair in TrampToTarget.Where(a => a.Value == target))
 				{
 					var trampolinePos = Trampolines[pair.Key];
@@ -466,10 +462,10 @@ namespace Logic
 		{
 			int x = p.X;
 			int y = p.Y;
-			MapCell xyCell = mapToUse.GetCell(x, y);
+			var xyCell = mapToUse.GetCell(x, y);
 			if (xyCell.IsRock())
 			{
-				MapCell upCell = mapToUse.GetCell(x, y - 1);
+				var upCell = mapToUse.GetCell(x, y - 1);
 				if (upCell == MapCell.Empty)
 				{
 					return new Vector(x, y - 1);

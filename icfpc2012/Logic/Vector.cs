@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Logic
 {
-	public class Vector
+	public class Vector : IEquatable<Vector>
 	{
 		public readonly int X, Y;
 
@@ -26,9 +26,10 @@ namespace Logic
 
 		public override bool Equals(object obj)
 		{
-			var other = obj as Vector;
-			if (other == null) return false;
-			return other.X == X && other.Y == Y;
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof (Vector)) return false;
+			return Equals((Vector) obj);
 		}
 
 		public override int GetHashCode()
@@ -52,6 +53,23 @@ namespace Logic
 		public int Distance(Vector diff)
 		{
 			return Math.Max(Math.Abs(diff.X - X), Math.Abs(diff.Y - Y));
+		}
+
+		public bool Equals(Vector other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			return other.X == X && other.Y == Y;
+		}
+
+		public static bool operator ==(Vector left, Vector right)
+		{
+			return Equals(left, right);
+		}
+
+		public static bool operator !=(Vector left, Vector right)
+		{
+			return !Equals(left, right);
 		}
 	}
 
