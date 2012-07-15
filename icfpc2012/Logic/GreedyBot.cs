@@ -92,14 +92,14 @@ namespace Logic
 				var rightRobot = map.Robot.Add(right);
 				var upRobot = map.Robot.Add(up);
 
-				if (map.GetCell(leftRobot) == MapCell.Rock && map.GetCell(leftRobot.Add(left)) == MapCell.Empty)
+				if (map.GetCell(leftRobot).IsRock() && map.GetCell(leftRobot.Add(left)) == MapCell.Empty)
 					return RobotMove.Left;
-				if (map.GetCell(rightRobot) == MapCell.Rock && map.GetCell(rightRobot.Add(right)) == MapCell.Empty)
+				if (map.GetCell(rightRobot).IsRock() && map.GetCell(rightRobot.Add(right)) == MapCell.Empty)
 					return RobotMove.Right;
 
-				if (map.GetCell(upRobot) == MapCell.Rock && map.GetCell(leftRobot).IsMovable())
+				if (map.GetCell(upRobot).IsRock() && map.GetCell(leftRobot).IsMovable())
 					return RobotMove.Left;
-				if (map.GetCell(upRobot) == MapCell.Rock && map.GetCell(rightRobot).IsMovable())
+				if (map.GetCell(upRobot).IsRock() && map.GetCell(rightRobot).IsMovable())
 					return RobotMove.Right;
 			}
 
@@ -107,14 +107,14 @@ namespace Logic
 			moveRockTarget = waveRun.EnumerateTargets(
 				(lmap, position, used) =>
 					{
-						if (lmap.GetCell(position.Add(up)) == MapCell.Rock && (lmap.GetCell(position.Add(left)).IsMovable() || lmap.GetCell(position.Add(right)).IsMovable()))
+						if (lmap.GetCell(position.Add(up)).IsRock() && (lmap.GetCell(position.Add(left)).IsMovable() || lmap.GetCell(position.Add(right)).IsMovable()))
 							return true;
-						if (lmap.GetCell(position).IsMovable() && lmap.GetCell(position.Add(left)) == MapCell.Rock && lmap.GetCell(position.Add(left).Add(left)).IsRockMovable())
+						if (lmap.GetCell(position).IsMovable() && lmap.GetCell(position.Add(left)).IsRock() && lmap.GetCell(position.Add(left).Add(left)).IsRockMovable())
 							return true;
-						if (lmap.GetCell(position).IsMovable() && lmap.GetCell(position.Add(right)) == MapCell.Rock && lmap.GetCell(position.Add(right).Add(right)).IsRockMovable())
+						if (lmap.GetCell(position).IsMovable() && lmap.GetCell(position.Add(right)).IsRock() && lmap.GetCell(position.Add(right).Add(right)).IsRockMovable())
 							return true;
-						if (lmap.GetCell(position) == MapCell.Earth && lmap.GetCell(position.Add(right)) == MapCell.Rock
-								&& lmap.GetCell(position.Add(right).Add(right)) != MapCell.Wall && lmap.GetCell(position.Add(right).Add(right)) != MapCell.Rock)
+						if (lmap.GetCell(position) == MapCell.Earth && lmap.GetCell(position.Add(right)).IsRock()
+								&& lmap.GetCell(position.Add(right).Add(right)) != MapCell.Wall && !lmap.GetCell(position.Add(right).Add(right)).IsRock())
 							return true;
 						if (lmap.GetCell(position) == MapCell.Earth && lmap.GetCell(position.Add(left)) == MapCell.Rock
 								&& lmap.GetCell(position.Add(right).Add(right)) != MapCell.Wall && lmap.GetCell(position.Add(right).Add(right)) != MapCell.Rock)
