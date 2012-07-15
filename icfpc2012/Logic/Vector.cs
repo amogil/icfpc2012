@@ -70,4 +70,16 @@ namespace Logic
 			       	  	  	  	: 0;
 		}
 	}
+
+	public class TupleVectorComparer : IComparer<Tuple<Vector, Vector, MapCell>>
+	{
+		static VectorComparer comparer = new VectorComparer();
+
+		public int Compare(Tuple<Vector, Vector, MapCell> x, Tuple<Vector, Vector, MapCell> y)
+		{
+			return comparer.Compare(x.Item1,y.Item1) != 0
+					? comparer.Compare(x.Item1,y.Item1)
+					: comparer.Compare(x.Item2, y.Item2);
+		}
+	}
 }
