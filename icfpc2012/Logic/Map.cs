@@ -219,6 +219,11 @@ namespace Logic
 		public int LiftX { get; private set; }
 		public int LiftY { get; private set; }
 
+		public bool HasActiveRocks
+		{
+			get { return activeRocks.Any(); }
+		}
+
 		public MapCell this[Vector pos]
 		{
 			get { return map[pos.X, pos.Y]; }
@@ -516,6 +521,11 @@ namespace Logic
 				State = CheckResult.Win;
 			}
 
+			if (robotFailed)
+			{
+				State = CheckResult.Fail;
+				throw new KilledByRockException();
+			}
 			robotFailed |= IsRobotKilledByFlood();
 
 			if (robotFailed)
@@ -619,6 +629,7 @@ namespace Logic
 
 	public class GameFinishedException : Exception
 	{
+
 	}
 
 	public class KilledByRockException : GameFinishedException

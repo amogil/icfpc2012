@@ -18,7 +18,13 @@ namespace Logic
 			if (currentTarget == null)
 			{
 				Tuple<Vector, Stack<RobotMove>> target = FindBestTarget(map);
-				if (target == null) return RobotMove.Abort; //TODO
+				if (target == null) 
+				{
+					if (map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks) 
+						return FindSafePlace(map);
+					else 
+						return RobotMove.Abort; // TODO move rocks
+				}
 				currentTarget = target.Item1;
 				plan = target.Item2;
 			}
@@ -29,6 +35,15 @@ namespace Logic
 				plan = null;
 			}
 			return move;
+		}
+
+		private RobotMove FindSafePlace(Map map)
+		{
+			if (map.IsSafeMove(map.Robot, map.Robot, 0)) return RobotMove.Wait;
+			var waveRun = new WaveRun(map, map.Robot);
+			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets(targetIsAnyCellNotOnlyLambda: true).FirstOrDefault();
+			if (target == null) return RobotMove.Abort;
+			return target.Item2.Any() ? target.Item2.Peek() : RobotMove.Wait;
 		}
 
 		private bool MoveChangeMapSignificantly(RobotMove move)

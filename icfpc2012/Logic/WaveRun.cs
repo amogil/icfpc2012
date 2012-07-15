@@ -17,7 +17,7 @@ namespace Logic
 
 		public Tuple<Vector, Stack<RobotMove>> Lift { get; private set; }
 
-		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets()
+		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets(bool targetIsAnyCellNotOnlyLambda = false)
 		{
 			var q = new Queue<WaveCell>();
 			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait));
@@ -28,7 +28,9 @@ namespace Logic
 			{
 				var cell = q.Dequeue();
 				MapCell toCell = map[cell.Pos];
-				if (toCell == MapCell.Lambda) yield return CreateTarget(cell);
+				if (!cell.Pos.Equals(startPosition) 
+					&& (toCell == MapCell.Lambda || targetIsAnyCellNotOnlyLambda)) 
+					yield return CreateTarget(cell);
 				if (toCell == MapCell.OpenedLift || toCell == MapCell.ClosedLift) Lift = CreateTarget(cell);
 				foreach (var move in new[]{RobotMove.Down, RobotMove.Left, RobotMove.Right, RobotMove.Up, })
 				{
