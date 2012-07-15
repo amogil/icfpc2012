@@ -21,7 +21,7 @@ namespace Logic
 			drawer.DrawTarget(map, lastRobotPos, "rock", moveRockTarget);
 		}
 
-		public RobotMove NextMove(Map map, Vector target, SpecialTargetType type)
+		public override RobotMove NextMove(Map map, Vector target, SpecialTargetType type)
 		{
 			specialTarget = target;
 			specialTargetType = type;

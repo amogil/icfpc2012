@@ -5,13 +5,13 @@ namespace Logic
 {
 	public class BotWithBestMomentsMemory // =)
 	{
-		private readonly GreedyBot bot;
+		private readonly RobotAI bot;
 		private readonly List<RobotMove> currentMoves = new List<RobotMove>();
 		private CheckResult bestMovesEndState;
 		private int bestMovesSequenceLen;
 		private long bestScore;
 
-		public BotWithBestMomentsMemory(GreedyBot bot)
+		public BotWithBestMomentsMemory(RobotAI bot)
 		{
 			this.bot = bot;
 			bestScore = 0;

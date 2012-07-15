@@ -28,6 +28,11 @@ namespace Logic
 			return backTrackingGreedyBot.NextMove(map);
 		}
 
+		public override RobotMove NextMove(Map map, Vector target, SpecialTargetType type)
+		{
+			return NextMove(map);
+		}
+
 		private void StartThread()
 		{
 			var thread = new Thread(() =>

@@ -21,6 +21,11 @@ namespace Logic
 			return currentMove <= bestMoves.Length - 1 ? bestMoves[currentMove++] : RobotMove.Abort;
 		}
 
+		public override RobotMove NextMove(Map map, Vector target, SpecialTargetType type)
+		{
+			return NextMove(map);
+		}
+
 		private void CalcSolution(Map map)
 		{
 			if(GetItBaby(map, null)) return;

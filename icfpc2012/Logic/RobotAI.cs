@@ -26,6 +26,7 @@ namespace Logic
 		}
 
 		public abstract RobotMove NextMove(Map map);
+		public abstract RobotMove NextMove(Map map, Vector target, SpecialTargetType type);
 		public bool StopNow { get; set; }
 	}
 
@@ -42,6 +43,11 @@ namespace Logic
 		public override RobotMove NextMove(Map map)
 		{
 			return moves[index++];
+;		}
+
+		public override RobotMove NextMove(Map map, Vector target, SpecialTargetType type)
+		{
+			return NextMove(map);
 		}
 	}
 
@@ -53,6 +59,11 @@ namespace Logic
 		public override RobotMove NextMove(Map map)
 		{
 			return moves[(index++)%moves.Length];
+		}
+
+		public override RobotMove NextMove(Map map, Vector target, SpecialTargetType type)
+		{
+			return NextMove(map);
 		}
 	}
 }
