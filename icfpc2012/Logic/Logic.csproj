@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="BotWithBestMomentsMemory.cs" />
     <Compile Include="BackTrackingGreedyBot.cs" />
+    <Compile Include="TimeAwaredBackTrackingGreedyBot.cs" />
     <Compile Include="CodeAnnotations.cs" />
     <Compile Include="DrawerExtensions.cs" />
     <Compile Include="FloodChecker.cs" />
