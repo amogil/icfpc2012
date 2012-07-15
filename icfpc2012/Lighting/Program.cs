@@ -9,7 +9,7 @@ namespace Lighting
 	{
 		private static void Main(string[] args)
 		{
-			string[] lines = Console.In.ReadToEnd().Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
+			string[] lines = Console.In.ReadToEnd().Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 			var map = new Map(lines);
 			var bot = new TimeAwaredBackTrackingGreedyBot(140);
 			var robotMoves = new List<RobotMove>();
