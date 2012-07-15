@@ -26,7 +26,7 @@ namespace Logic
 		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets(Func<Map, Vector, HashSet<Vector>, int, bool> isTarget)
 		{
 			var q = new Queue<WaveCell>();
-			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait, map.WaterproofLeft));
+			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait, map.WaterproofLeft, map.Razors));
 			var used = new HashSet<Vector>();
 			used.Add(startPosition);
 
@@ -43,11 +43,15 @@ namespace Logic
 				{
 					Vector newPos = cell.Pos.Add(move.ToVector());
 					if (!map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos)) continue;
+
 					newPos = map.GetTrampolineTarget(newPos);
-					if (!used.Contains(newPos) && (map.GetCell(newPos) == MapCell.OpenedLift || map.IsSafeMove(cell.Pos, newPos, cell.StepNumber + 1, cell.WaterproofLeft)))
+					var mapcell = map.GetCell(newPos);
+
+					if ((!used.Contains(newPos) && (map.GetCell(newPos) == MapCell.OpenedLift || map.IsSafeMove(cell.Pos, newPos, cell.StepNumber + 1, cell.WaterproofLeft)))
+						&& (mapcell != MapCell.Beard || cell.RazorsLeft > 0))
 					{
 						var wp = map.IsInWater(cell.StepNumber, newPos.Y) ? cell.WaterproofLeft - 1 : map.Waterproof;
-						q.Enqueue(new WaveCell(newPos, cell.StepNumber + 1, cell, move, wp));
+						q.Enqueue(new WaveCell(newPos, cell.StepNumber + 1, cell, move, wp, mapcell == MapCell.Beard ? map.Razors - 1: map.Razors));
 						used.Add(newPos);
 					}
 				}
@@ -61,6 +65,8 @@ namespace Logic
 			while (cell.PrevCell != null)
 			{
 				moves.Push(cell.Move);
+				if(cell.PrevCell.RazorsLeft != cell.RazorsLeft)
+					moves.Push(RobotMove.CutBeard);
 				cell = cell.PrevCell;
 			}
 			return Tuple.Create(targetCell.Pos, moves);
@@ -68,15 +74,17 @@ namespace Logic
 
 		private class WaveCell
 		{
-			public WaveCell(Vector pos, int stepNumber, WaveCell prevCell, RobotMove move, int waterproofLeft)
+			public WaveCell(Vector pos, int stepNumber, WaveCell prevCell, RobotMove move, int waterproofLeft, int razorsLeft)
 			{
 				Pos = pos;
 				StepNumber = stepNumber;
 				PrevCell = prevCell;
 				Move = move;
 				WaterproofLeft = waterproofLeft;
+				RazorsLeft = razorsLeft;
 			}
 
+			public readonly int RazorsLeft;
 			public readonly Vector Pos;
 			public readonly int StepNumber;
 			public readonly RobotMove Move;

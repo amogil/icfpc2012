@@ -28,7 +28,7 @@ namespace Logic
 		public static bool IsValidMoveWithoutMovingRocks(this Map map, Vector from, Vector to)
 		{
 			var toCell = map.GetCell(to);
-			return toCell.IsTrampoline() || toCell == MapCell.OpenedLift || toCell == MapCell.Lambda || toCell == MapCell.Empty || toCell == MapCell.Earth || toCell == MapCell.Robot;
+			return toCell == MapCell.Beard || toCell.IsTrampoline() || toCell == MapCell.OpenedLift || toCell == MapCell.Lambda || toCell == MapCell.Empty || toCell == MapCell.Earth || toCell == MapCell.Robot || toCell == MapCell.Razor;
 		}
 
 		public static MapCell[,] SkipBorder(this Map map)

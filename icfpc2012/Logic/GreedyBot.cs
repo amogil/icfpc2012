@@ -134,13 +134,15 @@ namespace Logic
 			if(checkBestIsNotBad)
 			{
 				var orderedMoves = waveRun
-					.EnumerateTargets((lmap, pos, stepNumber) => lmap.GetCell(pos) == MapCell.Lambda)
+					.EnumerateTargets((lmap, pos, stepNumber) => lmap.GetCell(pos) == MapCell.Lambda 
+						|| (lmap.LambdasGathered != lmap.TotalLambdaCount && lmap.GetCell(pos) == MapCell.Razor))
 					.Where(tuple => bannedTarget == null || (tuple.Item1.X != bannedTarget.X && tuple.Item1.Y != bannedTarget.Y))
 					.Take(9)
 					.OrderBy(t => CalculateTargetBadness(t, map)).ToArray();
 				result = orderedMoves.FirstOrDefault();
 			}
-			else result = waveRun.EnumerateTargets((lmap, pos, stepNumber) => lmap.GetCell(pos) == MapCell.Lambda).FirstOrDefault();
+			else result = waveRun.EnumerateTargets((lmap, pos, stepNumber) => lmap.GetCell(pos) == MapCell.Lambda 
+				|| (lmap.LambdasGathered != lmap.TotalLambdaCount && lmap.GetCell(pos) == MapCell.Razor)).FirstOrDefault();
 			if(result != null) return result;
 			if(waveRun.Lift != null && map.GetCell(waveRun.Lift.Item1) == MapCell.OpenedLift)
 				return waveRun.Lift;
