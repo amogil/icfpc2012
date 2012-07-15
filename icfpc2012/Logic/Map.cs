@@ -173,7 +173,7 @@ namespace Logic
 				}
 			}
 			StepsToIncreaseWater = Flooding;
-			WaterproofLeft = Waterproof + 1;
+			WaterproofLeft = Waterproof;
 		}
 
 		private void InitializeActiveRocks()
@@ -401,7 +401,7 @@ namespace Logic
 
 		public bool IsSafeMove(Vector from, Vector to, int movesDone)
 		{
-			if(WaterproofLeft == 1 && Water >= to.Y)
+			if(WaterproofLeft == 0 && Water >= to.Y)
 				return false;
 
 			var swap = map[from.X, from.Y];
@@ -538,7 +538,7 @@ namespace Logic
 		private bool IsRobotKilledByFlood()
 		{
 			if (Water >= RobotY) WaterproofLeft--;
-			else WaterproofLeft = Waterproof + 1;
+			else WaterproofLeft = Waterproof;
 			if (Flooding > 0)
 			{
 				StepsToIncreaseWater--;
@@ -548,7 +548,7 @@ namespace Logic
 					StepsToIncreaseWater = Flooding;
 				}
 			}
-			return WaterproofLeft <= 0;
+			return WaterproofLeft < 0;
 		}
 
 		private bool IsRobotKilledByRock(int x, int y)
@@ -561,7 +561,7 @@ namespace Logic
 			if (MovesCount == 0)
 				return false;
 
-			if (WaterproofLeft < Waterproof + 1)
+			if (WaterproofLeft < Waterproof)
 				WaterproofLeft++;
 			if (Flooding > 0)
 			{
