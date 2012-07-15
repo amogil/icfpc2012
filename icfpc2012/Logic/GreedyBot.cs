@@ -95,9 +95,9 @@ namespace Logic
 					{
 						if (lmap[position.Add(up)] == MapCell.Rock && (lmap[position.Add(left)].IsMovable() || lmap[position.Add(right)].IsMovable()))
 							return true;
-						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock && lmap[position.Add(left).Add(left)].IsRockable())
+						if (lmap[position].IsMovable() && lmap[position.Add(left)] == MapCell.Rock && lmap[position.Add(left).Add(left)].IsRockMovable())
 							return true;
-						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock && lmap[position.Add(right).Add(right)] .IsRockable())
+						if (lmap[position].IsMovable() && lmap[position.Add(right)] == MapCell.Rock && lmap[position.Add(right).Add(right)] .IsRockMovable())
 							return true;
 						if (lmap[position] == MapCell.Earth && lmap[position.Add(right)] == MapCell.Rock
 								&& lmap[position.Add(right).Add(right)] != MapCell.Wall && lmap[position.Add(right).Add(right)] != MapCell.Rock)

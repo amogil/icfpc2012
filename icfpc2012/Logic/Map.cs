@@ -26,6 +26,7 @@ namespace Logic
 		Robot = 'R',
 		Beard = 'W',
 		Razor = '!',
+		LambdaRock = '@',
 		ClosedLift = 'L',
 		OpenedLift = 'O',
 		Trampoline1 = 'A',
@@ -204,22 +205,22 @@ namespace Logic
 			{
 				for (int x = 1; x < Width - 1; x++)
 				{
-					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Empty)
+					if (map[x, y].IsRock() && map[x, y - 1].IsRock())
 					{
 						activeRocks.Add(new Vector(x, y));
 					}
-					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
+					if (map[x, y].IsRock() && map[x, y - 1].IsRock()
 						&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
 					{
 						activeRocks.Add(new Vector(x, y));
 					}
-					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
+					if (map[x, y].IsRock() && map[x, y - 1].IsRock()
 						&& (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
 						&& map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
 					{
 						activeRocks.Add(new Vector(x, y));
 					}
-					if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Lambda
+					if (map[x, y].IsRock() && map[x, y - 1] == MapCell.Lambda
 						&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
 					{
 						activeRocks.Add(new Vector(x, y));
@@ -273,6 +274,8 @@ namespace Logic
 			{
 				case '#':
 					return MapCell.Wall;
+				case '@':
+					return MapCell.LambdaRock;
 				case '*':
 					return MapCell.Rock;
 				case '\\':
@@ -371,7 +374,7 @@ namespace Logic
 				map[newRobotX, newRobotY] == MapCell.ClosedLift || map[newRobotX, newRobotY] == MapCell.Beard)
 				return false;
 
-			if (map[newRobotX, newRobotY] != MapCell.Rock)
+			if (!map[newRobotX, newRobotY].IsRock())
 				return true;
 
 			if (newRobotX - RobotX == 0)
@@ -419,10 +422,10 @@ namespace Logic
 			{
 				State = CheckResult.Win;
 			}
-			else if (newMapCell == MapCell.Rock)
+			else if (newMapCell.IsRock())
 			{
 				int rockX = newRobotX * 2 - RobotX;
-				map[rockX, newRobotY] = MapCell.Rock;
+				map[rockX, newRobotY] = map[newRobotX, newRobotY];
 				log.Peek().MovingRocks.Add(
 					new Movement
 					{
@@ -522,22 +525,22 @@ namespace Logic
 
 		private Vector TryToMoveRock(int x, int y)
 		{
-			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Empty)
+			if (map[x, y].IsRock() && map[x, y - 1] == MapCell.Empty)
 			{
 				return new Vector(x, y - 1);
 			}
-			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
+			if (map[x, y].IsRock() && map[x, y - 1].IsRock()
 				&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
 			{
 				return new Vector(x + 1, y - 1);
 			}
-			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
+			if (map[x, y].IsRock() && map[x, y - 1].IsRock()
 				&& (map[x + 1, y] != MapCell.Empty || map[x + 1, y - 1] != MapCell.Empty)
 				&& map[x - 1, y] == MapCell.Empty && map[x - 1, y - 1] == MapCell.Empty)
 			{
 				return new Vector(x - 1, y - 1);
 			}
-			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Lambda
+			if (map[x, y].IsRock() && map[x, y - 1] == MapCell.Lambda
 				&& map[x + 1, y] == MapCell.Empty && map[x + 1, y - 1] == MapCell.Empty)
 			{
 				return new Vector(x + 1, y - 1);
@@ -556,17 +559,22 @@ namespace Logic
 			foreach (var activeRockCoords in activeRocks)
 			{
 				var newCoords = TryToMoveRock(activeRockCoords);
-				if (!activeRockCoords.Equals(newCoords) && map[activeRockCoords.X, activeRockCoords.Y] == MapCell.Rock)
+				if (!activeRockCoords.Equals(newCoords) && map[activeRockCoords.X, activeRockCoords.Y].IsRock())
 					rockMoves.Add(activeRockCoords, newCoords);
 			}
 
 			bool killedByRock = false;
 			foreach (var rockMove in rockMoves)
 			{
-				map[rockMove.Key.X, rockMove.Key.Y] = MapCell.Empty;
-				if (map[rockMove.Value.X, rockMove.Value.Y] != MapCell.Rock)
+				if (!map[rockMove.Value.X, rockMove.Value.Y].IsRock())
 					newActiveRocks.Add(rockMove.Value);
-				map[rockMove.Value.X, rockMove.Value.Y] = MapCell.Rock;
+
+				if (this[rockMove.Key] == MapCell.LambdaRock && this[rockMove.Value.Sub(new Vector(0, 1))] != MapCell.Empty)
+					this[rockMove.Value] = MapCell.Lambda;
+				else
+					this[rockMove.Value] = this[rockMove.Key];
+				map[rockMove.Key.X, rockMove.Key.Y] = MapCell.Empty;
+
 				log.Peek().MovingRocks.Add(
 					new Movement
 						{

@@ -4,12 +4,22 @@ namespace Logic
 {
 	public static class MapExtensions
 	{
+		public static bool IsFlat(this MapCell cell)
+		{
+			return cell == MapCell.Wall || cell == MapCell.Earth;
+		}
+
+		public static bool IsRock(this MapCell cell)
+		{
+			return cell == MapCell.Rock || cell == MapCell.LambdaRock;
+		}
+
 		public static bool IsMovable(this MapCell cell)
 		{
 			return cell == MapCell.Empty || cell == MapCell.Earth || cell == MapCell.Robot;
 		}
 
-		public static bool IsRockable(this MapCell cell)
+		public static bool IsRockMovable(this MapCell cell)
 		{
 			return cell == MapCell.Empty || cell == MapCell.Robot;
 		}
