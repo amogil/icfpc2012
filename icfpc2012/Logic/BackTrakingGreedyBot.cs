@@ -51,7 +51,7 @@ namespace Logic
 			var current = 0;
 			for(int i = 0; i < map.Width; i++)
 				for(int j = 0; j < map.Height; j++)
-					if(map[i, j] == MapCell.Lambda)
+					if(map.GetCell(i, j) == MapCell.Lambda)
 						if(current == toBanIndex)
 							return new Vector(i, j);
 						else
@@ -63,32 +63,17 @@ namespace Logic
 		{
 			var moves = new List<RobotMove>();
 			var bot = new GreedyBot();
-			try
+			RobotMove robotMove;
+			do
 			{
-				RobotMove robotMove;
-				do
-				{
-					robotMove = banned != null ? bot.NextMove(map, banned) : bot.NextMove(map);
-					map.Move(robotMove);
-					moves.Add(robotMove);
-				} while(robotMove != RobotMove.Abort && map.State == CheckResult.Nothing);
-				var score = map.GetScore();
-				return Tuple.Create(moves.ToArray(), bot, score);
-			}
-			catch(GameFinishedException)
-			{
-				return Tuple.Create(moves.ToArray(), bot, -1L);
-			}
-			finally
-			{
-				RollbackMap(map, moves.Count);
-			}
-		}
-
-		private static void RollbackMap(Map map, int count)
-		{
-			for(int i = 0; i < count; i++)
-				map.Rollback();
+				robotMove = banned != null ? bot.NextMove(map, banned) : bot.NextMove(map);
+				map = map.Move(robotMove);
+				if (map.State != CheckResult.Nothing)
+					return Tuple.Create(moves.ToArray(), bot, -1L);
+				moves.Add(robotMove);
+			} while (robotMove != RobotMove.Abort && map.State == CheckResult.Nothing);
+			var score = map.GetScore();
+			return Tuple.Create(moves.ToArray(), bot, score);
 		}
 	}
 }

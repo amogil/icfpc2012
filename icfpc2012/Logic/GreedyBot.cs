@@ -153,15 +153,15 @@ namespace Logic
 			if(checkBestIsNotBad)
 			{
 				var orderedMoves = waveRun
-					.EnumerateTargets((lmap, pos, stepNumber) => lmap[pos] == MapCell.Lambda)
+					.EnumerateTargets((lmap, pos, stepNumber) => lmap.GetCell(pos) == MapCell.Lambda)
 					.Where(tuple => bannedTarget == null || (tuple.Item1.X != bannedTarget.X && tuple.Item1.Y != bannedTarget.Y))
 					.Take(9)
 					.OrderBy(t => CalculateTargetBadness(t, map)).ToArray();
 				result = orderedMoves.FirstOrDefault();
 			}
-			else result = waveRun.EnumerateTargets((lmap, pos, stepNumber) => lmap[pos] == MapCell.Lambda).FirstOrDefault();
+			else result = waveRun.EnumerateTargets((lmap, pos, stepNumber) => lmap.GetCell(pos) == MapCell.Lambda).FirstOrDefault();
 			if(result != null) return result;
-			if(waveRun.Lift != null && map[waveRun.Lift.Item1] == MapCell.OpenedLift)
+			if(waveRun.Lift != null && map.GetCell(waveRun.Lift.Item1) == MapCell.OpenedLift)
 				return waveRun.Lift;
 			return null;
 		}
@@ -174,7 +174,7 @@ namespace Logic
 			                                          m =>
 			                                          	{
 			                                          		deadend = FindBestTarget(m, false) == null &&
-			                                          		          m[m.Robot] != MapCell.OpenedLift;
+			                                          		          m.GetCell(m.Robot) != MapCell.OpenedLift;
 			                                          	});
 			if(moved && deadend) badness += 100;
 			if(!CanMoveToTargetExactlyByPathWithNoRocksMoved(target.Item2, map))
@@ -187,95 +187,43 @@ namespace Logic
 
 		private static bool CanEscapeFromUnderwater(Tuple<Vector, Stack<RobotMove>> target, Map map)
 		{
-			foreach (var move in robotMoves)
+			foreach (var move in target.Item2)
 			{
-				foreach (var move in target.Item2)
-				{
-					try
-					{
-						moved++;
-						map = map.Move(move);
-					}
-					catch (GameFinishedException)
-					{
-						return false;
-					}
-				}
-				return 
-					new WaveRun(map, map.Robot)
-						.EnumerateTargets(
-							(lmap, pos, moves, stepNumber) =>
-								lmap[pos] == MapCell.OpenedLift ||
-								!lmap.IsInWater(stepNumber, pos.Y) && lmap[pos].CanStepUp())
-						.FirstOrDefault() != null;
+				map = map.Move(move);
+				if (map.State == CheckResult.Fail)
+					return false;
 			}
-			finally
-			{
-				for (int i = 0; i < moved; i++)
-					map.Rollback();
-			}
+			return 
+				new WaveRun(map, map.Robot)
+					.EnumerateTargets(
+						(lmap, pos, moves, stepNumber) =>
+							lmap.GetCell(pos) == MapCell.OpenedLift ||
+							!lmap.IsInWater(stepNumber, pos.Y) && lmap.GetCell(pos).CanStepUp())
+					.FirstOrDefault() != null;
 		}
 
 		private static bool CanMoveToTargetExactlyByPathWithNoRocksMoved(Stack<RobotMove> robotMoves, Map map)
 		{
-			int moved = 0;
-			try
+			foreach(var move in robotMoves)
 			{
-				foreach(var move in robotMoves)
-				{
-					try
-					{
-						moved++;
-						map = map.Move(move);
-					}
-					catch(GameFinishedException)
-					{
-						return false;
-					}
-					if(map.RocksFallAfterMoveTo(map.Robot))
-					{
-						return false;
-					}
-				}
-				catch (GameFinishedException)
-				{
+				map = map.Move(move);
+				if (map.State == CheckResult.Fail)
 					return false;
-				if (newMap.RocksFallAfterMoveTo(newMap.Robot))
+				if (map.RocksFallAfterMoveTo(map.Robot))
 					return false;
-				map = newMap;
 			}
-			finally
-			{
-				for(int i = 0; i < moved; i++)
-					map.Rollback();
-			}
+			return true;
 		}
 
 		private static bool CanMoveToTargetExactlyByPath(Stack<RobotMove> robotMoves, Map map, Action<Map> analyseMap)
 		{
 			foreach (var move in robotMoves)
 			{
-				foreach(var move in robotMoves)
-				{
-					try
-					{
-						moved++;
-						map = map.Move(move);
-					}
-					catch(GameFinishedException)
-					{
-						return false;
-					}
-				}
-				catch (GameFinishedException)
-				{
+				map = map.Move(move);
+				if (map.State == CheckResult.Fail)
 					return false;
 			}
-			finally
-			{
-				for(int i = 0; i < moved; i++)
-					map.Rollback();
-			}
+			return true;
 		}
 	}
 }
