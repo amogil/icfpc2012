@@ -6,7 +6,7 @@ namespace Logic
 	{
 		public static bool IsMovable(this MapCell cell)
 		{
-			return cell == MapCell.Empty || cell == MapCell.Earth || cell == MapCell.Robot || cell.IsTrampoline();
+			return cell == MapCell.Empty || cell == MapCell.Earth || cell == MapCell.Robot;
 		}
 
 		public static bool IsRockable(this MapCell cell)
