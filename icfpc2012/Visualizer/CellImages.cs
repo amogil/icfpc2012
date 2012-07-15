@@ -8,10 +8,10 @@ using NUnit.Framework;
 
 namespace Visualizer
 {
-	[NUnit.Framework.TestFixture]
+	[TestFixture]
 	public class CellImages_Test
 	{
-		[NUnit.Framework.Test]
+		[Test]
 		[Explicit]
 		public void GenerateImages()
 		{
@@ -22,7 +22,7 @@ namespace Visualizer
 				var bitmap = new Bitmap(48, 48, PixelFormat.Format24bppRgb);
 				Graphics g = Graphics.FromImage(bitmap);
 				g.FillRectangle(Brushes.Black, 0, 0, 48, 48);
-				string s = "" + (char)c;
+				string s = "" + (char) c;
 				g.DrawString(s, font, Brushes.White, 5, 5);
 				bitmap.Save(@"..\..\images\trampoline" + i + ".bmp");
 				i++;
@@ -33,7 +33,7 @@ namespace Visualizer
 				var bitmap = new Bitmap(48, 48, PixelFormat.Format24bppRgb);
 				Graphics g = Graphics.FromImage(bitmap);
 				g.FillRectangle(Brushes.Black, 0, 0, 48, 48);
-				string s = "" + (char)c;
+				string s = "" + (char) c;
 				g.DrawString(s, font, Brushes.White, 5, 5);
 				bitmap.Save(@"..\..\images\target" + i + ".bmp");
 				i++;
@@ -45,12 +45,29 @@ namespace Visualizer
 	{
 		public static readonly IDictionary<MapCell, Bitmap> Bitmaps;
 
+		public static readonly IDictionary<MapCell, Brush> CellBrushes =
+			new Dictionary<MapCell, Brush>
+				{
+					{MapCell.ClosedLift, Brushes.Gray},
+					{MapCell.OpenedLift, Brushes.Gold},
+					{MapCell.Lambda, Brushes.GreenYellow},
+					{MapCell.Robot, Brushes.Magenta},
+					{MapCell.Earth, Brushes.Brown},
+					{MapCell.Empty, Brushes.Black},
+					{MapCell.Rock, Brushes.BlueViolet},
+					{MapCell.Wall, Brushes.White},
+				};
+
 		static CellImages()
 		{
 			Bitmaps = Enum.GetNames(typeof (MapCell)).Select(name => new {bmp = LoadImage(name), name})
 				.ToDictionary(
 					namedBmp => (MapCell) Enum.Parse(typeof (MapCell), namedBmp.name),
 					namedBmp => namedBmp.bmp);
+			for (MapCell c = MapCell.Trampoline1; c <= MapCell.Trampoline9; c++)
+				CellBrushes.Add(c, Brushes.Orange);
+			for (MapCell c = MapCell.Target1; c <= MapCell.Target9; c++)
+				CellBrushes.Add(c, Brushes.DeepSkyBlue);
 		}
 
 		private static Bitmap LoadImage(string name)
@@ -58,7 +75,8 @@ namespace Visualizer
 			try
 			{
 				return new Bitmap("images\\" + name + ".bmp");
-			}catch(Exception e)
+			}
+			catch (Exception e)
 			{
 				throw new Exception(name, e);
 			}

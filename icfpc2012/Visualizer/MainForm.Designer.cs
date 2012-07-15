@@ -31,6 +31,8 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.infoPanel = new System.Windows.Forms.Panel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.movesLabel = new System.Windows.Forms.Label();
+			this.label4 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.waterproofLabel = new System.Windows.Forms.Label();
@@ -46,8 +48,6 @@
 			this.robotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.overlaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.movesBox = new System.Windows.Forms.TextBox();
-			this.label4 = new System.Windows.Forms.Label();
-			this.movesLabel = new System.Windows.Forms.Label();
 			this.infoPanel.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
@@ -94,6 +94,26 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(289, 443);
 			this.tableLayoutPanel1.TabIndex = 7;
+			// 
+			// movesLabel
+			// 
+			this.movesLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.movesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.movesLabel.Location = new System.Drawing.Point(147, 91);
+			this.movesLabel.Name = "movesLabel";
+			this.movesLabel.Size = new System.Drawing.Size(134, 48);
+			this.movesLabel.TabIndex = 12;
+			this.movesLabel.Text = "42";
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.label4.Location = new System.Drawing.Point(8, 91);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(55, 20);
+			this.label4.TabIndex = 11;
+			this.label4.Text = "Moves";
 			// 
 			// label2
 			// 
@@ -152,7 +172,7 @@
 			this.zoomBar.LargeChange = 8;
 			this.zoomBar.Location = new System.Drawing.Point(0, 443);
 			this.zoomBar.Maximum = 76;
-			this.zoomBar.Minimum = 4;
+			this.zoomBar.Minimum = 2;
 			this.zoomBar.Name = "zoomBar";
 			this.zoomBar.Size = new System.Drawing.Size(289, 45);
 			this.zoomBar.TabIndex = 4;
@@ -236,26 +256,6 @@
 			this.movesBox.Size = new System.Drawing.Size(507, 20);
 			this.movesBox.TabIndex = 4;
 			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.label4.Location = new System.Drawing.Point(8, 91);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(55, 20);
-			this.label4.TabIndex = 11;
-			this.label4.Text = "Moves";
-			// 
-			// movesLabel
-			// 
-			this.movesLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.movesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.movesLabel.Location = new System.Drawing.Point(147, 91);
-			this.movesLabel.Name = "movesLabel";
-			this.movesLabel.Size = new System.Drawing.Size(134, 48);
-			this.movesLabel.TabIndex = 12;
-			this.movesLabel.Text = "42";
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -270,6 +270,7 @@
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "MainForm";
 			this.Text = "MainForm";
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
 			this.infoPanel.ResumeLayout(false);

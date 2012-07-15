@@ -60,7 +60,8 @@ namespace Visualizer
 		{
 			if (newMap == null) return;
 			this.map = newMap;
-			bitmap = new Bitmap(map.Width*CellSize, map.Height*CellSize);
+			if (bitmap == null || map.Width*CellSize != bitmap.Width || map.Height*CellSize != bitmap.Height)
+				bitmap = new Bitmap(map.Width*CellSize, map.Height*CellSize);
 			Graphics g = Graphics.FromImage(bitmap);
 			for (int x = 1; x < map.Width - 1; x++)
 				for (int y = 1; y < map.Height-1; y++)
@@ -91,7 +92,10 @@ namespace Visualizer
 		private void UpdateCell(Graphics g, int x, int y)
 		{
 			var rect = new Rectangle((x-1)*CellSize, (map.Height - y-1-1)*CellSize, CellSize, CellSize);
-			g.DrawImage(CellImages.Bitmaps[map[x, y]], rect);
+			if (CellSize > 6)
+				g.DrawImage(CellImages.Bitmaps[map[x, y]], rect);
+			else
+				g.FillRectangle(CellImages.CellBrushes[map[x,y]], rect);
 			if (map.Water >= y)
 				g.FillRectangle(new SolidBrush(Color.FromArgb(150, 0, 0, 255)), rect);
 			if (map.Flooding > 0 && map.StepsToIncreaseWater == 1 && y == map.Water+1)
@@ -111,8 +115,6 @@ namespace Visualizer
 			}
 		}
 
-
-
 		private void LoadMap(string mapFile)
 		{
 			moves.Clear();
@@ -120,6 +122,8 @@ namespace Visualizer
 			engine = new Engine(newMap);
 			engine.OnMapUpdate += UpdateMap;
 			engine.OnMoveAdded += m => moves.Add(m);
+			if (newMap.Width * newMap.Height > 150 * 150 && CellSize > 2) zoomBar.Value = 2;
+			if (newMap.Width * newMap.Height > 50 * 50 && CellSize > 10) zoomBar.Value = 10;
 			UpdateMap(newMap);
 			Text = mapFile;
 			robot = null;
@@ -190,6 +194,7 @@ namespace Visualizer
 				if (robot == null) RollbackMove();
 
 			}
+			//Application.DoEvents();
 		}
 
 		private void RollbackMove()
