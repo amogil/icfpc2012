@@ -11,7 +11,7 @@ namespace Logic
 		public static Func<Map> Contest4 = () => LoadMap("contest4");
 		// ...
 
-		private static Map LoadMap(string wellKnownName)
+		public static Map LoadMap(string wellKnownName)
 		{
 			return new Map(@"..\..\..\..\maps\" + wellKnownName + ".map.txt");
 		}

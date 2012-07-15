@@ -79,6 +79,7 @@ namespace Logic
 		private HashSet<Vector> activeRocks = new HashSet<Vector>();
 
 		public int TotalLambdaCount { get; private set; }
+		public int InitialWater { get; private set; }
 		public int Water { get; private set; }
 		public int Flooding { get; private set; }
 		public int Waterproof { get; private set; }
@@ -174,6 +175,7 @@ namespace Logic
 			}
 			StepsToIncreaseWater = Flooding;
 			WaterproofLeft = Waterproof;
+			InitialWater = Water;
 		}
 
 		private void InitializeActiveRocks()
@@ -278,7 +280,7 @@ namespace Logic
 
 		public Map Move(RobotMove move)
 		{
-			log.Push(new MoveLog());
+			log.Push(new MoveLog{PreviousWaterproofLeft = WaterproofLeft});
 
 			if (move == RobotMove.Abort)
 			{
@@ -399,9 +401,19 @@ namespace Logic
 			}
 		}
 
-		public bool IsSafeMove(Vector from, Vector to, int movesDone)
+		public bool IsInWater(int movesDone, int y)
 		{
-			if(WaterproofLeft == 0 && Water >= to.Y)
+			return y <= WaterLevelAfterUpdate(MovesCount + movesDone);
+		}
+
+		public int WaterLevelAfterUpdate(int updateNumber)
+		{
+			return Flooding == 0 ? Water : updateNumber / Flooding + InitialWater;
+		}
+
+		public bool IsSafeMove(Vector from, Vector to, int movesDone, int waterproofLeft)
+		{
+			if (waterproofLeft <= 0 && WaterLevelAfterUpdate(MovesCount + movesDone-1) >= to.Y)
 				return false;
 
 			var swap = map[from.X, from.Y];
@@ -569,9 +581,6 @@ namespace Logic
 				State = CheckResult.Nothing;
 				return true;
 			}
-
-			if (WaterproofLeft < Waterproof)
-				WaterproofLeft++;
 			if (Flooding > 0)
 			{
 				StepsToIncreaseWater++;
@@ -584,6 +593,8 @@ namespace Logic
 
 			MovesCount--;
 
+			WaterproofLeft = stateLog.PreviousWaterproofLeft;
+	
 			stateLog.MovingRocks.Reverse();
 
 			foreach (var rock in stateLog.MovingRocks)
@@ -631,6 +642,7 @@ namespace Logic
 		public Movement RobotMove;
 		public List<Tuple<Vector, MapCell>> RemovedObjects = new List<Tuple<Vector, MapCell>>();
 		public List<Movement> MovingRocks = new List<Movement>();
+		public int PreviousWaterproofLeft;
 	}
 
 	public class NoMoveException : Exception

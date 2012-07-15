@@ -4,6 +4,12 @@ namespace Logic
 	{
 		public readonly int X, Y;
 
+		public static implicit operator Vector(string s)
+		{
+			var parts = s.Split(' ');
+			return new Vector(int.Parse(parts[0]), int.Parse(parts[1]));
+		}
+
 		public Vector(int x, int y)
 		{
 			X = x;

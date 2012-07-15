@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Logic
@@ -23,7 +24,8 @@ namespace Logic
 					if (map.TotalLambdaCount > map.LambdasGathered && map.HasActiveRocks) 
 						return FindSafePlace(map);
 					else
-						return FindMovableRock(map); // TODO move rocks
+//						return FindMovableRock(map); // TODO move rocks
+						return RobotMove.Abort;
 				}
 				currentTarget = target.Item1;
 				plan = target.Item2;
@@ -105,8 +107,8 @@ namespace Logic
 
 		private RobotMove FindSafePlace(Map map)
 		{
-			if (map.IsSafeMove(map.Robot, map.Robot.Add(new Vector(0, 1)), 1)) return RobotMove.Up;
-			if (map.IsSafeMove(map.Robot, map.Robot, 1)) return RobotMove.Wait;
+//			if (map.IsSafeMove(map.Robot, map.Robot.Add(new Vector(0, 1)), 1, map.WaterproofLeft)) return RobotMove.Up;
+			if (map.IsSafeMove(map.Robot, map.Robot, 0, map.WaterproofLeft)) return RobotMove.Wait;
 			var waveRun = new WaveRun(map, map.Robot);
 			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets((lmap, position) => true).FirstOrDefault();
 			if (target == null) 

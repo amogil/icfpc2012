@@ -8,4 +8,4 @@
 
 Water 3
 Flooding 0
-Waterproof 4
+Waterproof 3

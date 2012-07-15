@@ -27,6 +27,21 @@ namespace Logic
 			Assert.That(formattedTargets, Contains.Item("(6, 2) via RR"));
 		}
 
+		[TestCase("xflood1", "(2, 2) via DDD")]
+		[TestCase("xflood2", null)]
+		[TestCase("xflood4", "(5, 2) via DDRRRDD")]
+		[TestCase("xflood6", "(3, 2) via RD")]
+		[TestCase("xflood7", "(2, 5) via UUU")]
+		public void Water(string mapName, string expectedTarget)
+		{
+			Map map = WellKnownMaps.LoadMap(mapName);
+			var formattedTargets = GetTargets(map.Robot, map);
+			if (expectedTarget == null)
+				Assert.That(formattedTargets, Is.Empty);
+			else
+				Assert.That(formattedTargets, Contains.Item(expectedTarget));
+		}
+
 		private static string[] GetTargets(Vector from, Map map)
 		{
 			Console.WriteLine(map.ToString());

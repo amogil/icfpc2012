@@ -1,0 +1,9 @@
+###
+# O
+# #
+#R#
+###
+
+Water 2
+Flooding 1
+Waterproof 2

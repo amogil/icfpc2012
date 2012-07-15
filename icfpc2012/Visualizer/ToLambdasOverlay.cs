@@ -21,6 +21,10 @@ namespace Visualizer
 				first = false;
 				DrawTarget(map, drawer, style, target);
 			}
+			if (waveRun.Lift != null)
+			{
+				DrawTarget(map, drawer, "target", waveRun.Lift);
+			}
 			if (firstTarget != null)
 				DrawTarget(map, drawer, "firstTarget", firstTarget);
 		}

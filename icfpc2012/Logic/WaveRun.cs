@@ -26,7 +26,7 @@ namespace Logic
 		public IEnumerable<Tuple<Vector, Stack<RobotMove>>> EnumerateTargets(Func<Map, Vector, HashSet<Vector>, bool> isTarget)
 		{
 			var q = new Queue<WaveCell>();
-			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait));
+			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait, map.WaterproofLeft));
 			var used = new HashSet<Vector>();
 			used.Add(startPosition);
 
@@ -37,15 +37,17 @@ namespace Logic
 				if (!cell.Pos.Equals(startPosition)
 					&& (isTarget(map, cell.Pos, used)))
 					yield return CreateTarget(cell);
-				if (toCell == MapCell.OpenedLift || toCell == MapCell.ClosedLift) Lift = CreateTarget(cell);
+				if (toCell == MapCell.OpenedLift || toCell == MapCell.ClosedLift) 
+					Lift = CreateTarget(cell);
 				foreach (var move in new[]{RobotMove.Down, RobotMove.Left, RobotMove.Right, RobotMove.Up, })
 				{
 					Vector newPos = cell.Pos.Add(move.ToVector());
 					if (!map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos)) continue;
 					newPos = map.GetTrampolineTarget(newPos);
-					if (!used.Contains(newPos) && map.IsSafeMove(cell.Pos, newPos, 1 + cell.StepNumber))
+					if (!used.Contains(newPos) && map.IsSafeMove(cell.Pos, newPos, cell.StepNumber+1, cell.WaterproofLeft))
 					{
-						q.Enqueue(new WaveCell(newPos, cell.StepNumber + 1, cell, move));
+						var wp = map.IsInWater(cell.StepNumber, newPos.Y) ? cell.WaterproofLeft - 1 : map.Waterproof;
+						q.Enqueue(new WaveCell(newPos, cell.StepNumber + 1, cell, move, wp));
 						used.Add(newPos);
 					}
 				}
@@ -66,18 +68,20 @@ namespace Logic
 
 		private class WaveCell
 		{
-			public WaveCell(Vector pos, int stepNumber, WaveCell prevCell, RobotMove move)
+			public WaveCell(Vector pos, int stepNumber, WaveCell prevCell, RobotMove move, int waterproofLeft)
 			{
 				Pos = pos;
 				StepNumber = stepNumber;
 				PrevCell = prevCell;
 				Move = move;
+				WaterproofLeft = waterproofLeft;
 			}
 
 			public readonly Vector Pos;
 			public readonly int StepNumber;
 			public readonly RobotMove Move;
 			public readonly WaveCell PrevCell;
+			public readonly int WaterproofLeft;
 		}
 	}
 }
