@@ -91,6 +91,7 @@ namespace Logic
 				if(StopNow) return null;
 				robotMove = special != null ? bot.NextMove(localMap, special.Item1, special.Item2) : bot.NextMove(localMap);
 				localMap = localMap.Move(robotMove);
+				bot.UpdateBestSolution(localMap);
 				moves.Add(robotMove);
 			} while(robotMove != RobotMove.Abort && localMap.State == CheckResult.Nothing);
 			return Tuple.Create(moves.ToArray(), localMap.State != CheckResult.Fail ? localMap.GetScore() : long.MinValue);
