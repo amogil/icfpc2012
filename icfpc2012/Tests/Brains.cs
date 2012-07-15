@@ -22,7 +22,7 @@ namespace Tests
 			TestBrains(() => new TimeAwaredBackTrackingGreedyBot(60), MapsDir);
 		}
 		
-		[Test]
+		[Test, Explicit]
 		public void Profiling()
 		{
 			var greedyBot = new GreedyBot();
