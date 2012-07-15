@@ -17,6 +17,7 @@ namespace Visualizer
 		private Bitmap bitmap;
 		private Map map;
 		private IOverlay[] overlays;
+		private Tuple<int, string> bestPath = new Tuple<int, string>(0, "A");
 
 		public MainForm()
 		{
@@ -118,15 +119,33 @@ namespace Visualizer
 		private void LoadMap(string mapFile)
 		{
 			moves.Clear();
+			bestPath = new Tuple<int, string>(0, "A");
 			var newMap = new Map(File.ReadAllLines(mapFile));
 			engine = new Engine(newMap);
 			engine.OnMapUpdate += UpdateMap;
-			engine.OnMoveAdded += m => moves.Add(m);
+			engine.OnMoveAdded += m =>
+			                      	{
+			                      		moves.Add(m);
+										if (engine.Map.State != CheckResult.Nothing)
+											CheckState();
+			                      		else
+										{
+											engine.Map.Move(RobotMove.Abort);
+											CheckState();
+											engine.Map.Rollback();
+										}
+			                      	};
 			if (newMap.Width * newMap.Height > 150 * 150 && CellSize > 2) zoomBar.Value = 2;
 			if (newMap.Width * newMap.Height > 50 * 50 && CellSize > 10) zoomBar.Value = 10;
 			UpdateMap(newMap);
 			Text = mapFile;
 			robot = null;
+		}
+
+		private void CheckState()
+		{
+			if (engine.Map.GetScore() > bestPath.Item1)
+				bestPath = new Tuple<int, string>(bestPath.Item1, GetMovesString() + "A");
 		}
 
 		private void InitRobots()
@@ -226,6 +245,13 @@ namespace Visualizer
 				Path.Combine(
 				directoryName,
 				Path.GetFileNameWithoutExtension(LastOpenedMapFile) + "_" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-ffff") + ".moves");
+
+			while (engine.Map.MovesCount > bestPath.Item2.Length - 1)
+			{
+				engine.Map.Rollback();
+			}
+			engine.Map.Move(RobotMove.Abort);
+
 			File.WriteAllText(movesFile,
 				GetMovesString()
 				+ Environment.NewLine

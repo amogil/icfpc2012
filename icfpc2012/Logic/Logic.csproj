@@ -47,6 +47,7 @@
     <Compile Include="CodeAnnotations.cs" />
     <Compile Include="FloodChecker.cs" />
     <Compile Include="MapIsSafeMove_Test.cs" />
+    <Compile Include="RockDangerRating.cs" />
     <Compile Include="StackExtensions.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="GreedyBot.cs" />

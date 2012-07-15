@@ -221,7 +221,7 @@ namespace Logic
 
 		public bool HasActiveRocks
 		{
-			get { return activeRocks.Any(); }
+			get { return activeRocks.Any(a => a != TryToMoveRock(a)); }
 		}
 
 		public MapCell this[Vector pos]
@@ -561,6 +561,15 @@ namespace Logic
 			if (MovesCount == 0)
 				return false;
 
+			if (log.Count == 0) return false;
+			var stateLog = log.Pop();
+
+			if (State == CheckResult.Abort)
+			{
+				State = CheckResult.Nothing;
+				return true;
+			}
+
 			if (WaterproofLeft < Waterproof + 1)
 				WaterproofLeft++;
 			if (Flooding > 0)
@@ -573,10 +582,8 @@ namespace Logic
 				}
 			}
 
-			if (log.Count == 0) return false;
 			MovesCount--;
 
-			var stateLog = log.Pop();
 			stateLog.MovingRocks.Reverse();
 
 			foreach (var rock in stateLog.MovingRocks)
@@ -585,8 +592,11 @@ namespace Logic
 				map[rock.NextX, rock.NextY] = MapCell.Empty;
 			}
 
-			RobotX = stateLog.RobotMove.PreviousX;
-			RobotY = stateLog.RobotMove.PreviousY;
+			if(stateLog.RobotMove != null)
+			{
+				RobotX = stateLog.RobotMove.PreviousX;
+				RobotY = stateLog.RobotMove.PreviousY;
+			}
 			map[RobotX, RobotY] = MapCell.Robot;
 
 			foreach (Tuple<Vector, MapCell> removedObj in stateLog.RemovedObjects)

@@ -39,10 +39,12 @@ namespace Logic
 
 		private RobotMove FindSafePlace(Map map)
 		{
-			if (map.IsSafeMove(map.Robot, map.Robot, 0)) return RobotMove.Wait;
+			if (map.IsSafeMove(map.Robot, map.Robot.Add(new Vector(0, 1)), 1)) return RobotMove.Up;
+			if (map.IsSafeMove(map.Robot, map.Robot, 1)) return RobotMove.Wait;
 			var waveRun = new WaveRun(map, map.Robot);
 			Tuple<Vector, Stack<RobotMove>> target = waveRun.EnumerateTargets(targetIsAnyCellNotOnlyLambda: true).FirstOrDefault();
-			if (target == null) return RobotMove.Abort;
+			if (target == null) 
+				return RobotMove.Abort;
 			return target.Item2.Any() ? target.Item2.Peek() : RobotMove.Wait;
 		}
 
