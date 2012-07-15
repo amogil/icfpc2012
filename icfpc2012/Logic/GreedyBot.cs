@@ -124,13 +124,13 @@ namespace Logic
 
 		private bool MoveChangeMapSignificantly(Map map, RobotMove move)
 		{
-			return true;
-//			return map.HasActiveRocks || map.RocksFallAfterMoveTo(map.Robot.Add(move.ToVector()));
+//			return true;
+			return map.HasActiveRocks || map.RocksFallAfterMoveTo(map.Robot.Add(move.ToVector()));
 		}
 
 		private Tuple<Vector, Stack<RobotMove>> FindBestTarget(Map map, bool checkBestIsNotBad = true)
 		{
-			var waveRun = new WaveRun(map, map.Robot);
+			var waveRun = new WaveRun(map, map.Robot, checkBestIsNotBad ? 400000 : 1000);
 			Tuple<Vector, Stack<RobotMove>> result = null;
 
 			if(checkBestIsNotBad)

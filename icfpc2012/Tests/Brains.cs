@@ -21,16 +21,29 @@ namespace Tests
 		{
 			TestBrains(() => new TimeAwaredBackTrackingGreedyBot(60), MapsDir);
 		}
-		
+
 		[Test, Explicit]
 		public void Profiling()
 		{
 			var greedyBot = new GreedyBot();
-			Map map = WellKnownMaps.LoadMap("tests\\random2_nf_500");
-			while(map.State == CheckResult.Nothing)
+			Map map = WellKnownMaps.LoadMap("tests\\performance\\random42_1000");
+			while (map.State == CheckResult.Nothing)
 			{
 				map = map.Move(greedyBot.NextMove(map));
 			}
+			Console.WriteLine(map.GetScore());
+		}
+
+		[Test]
+		public void Profiling2()
+		{
+			var greedyBot = new GreedyBot();
+			Map map = WellKnownMaps.LoadMap("tests\\performance\\random19_nf_2000");
+			while (map.State == CheckResult.Nothing)
+			{
+				map = map.Move(greedyBot.NextMove(map));
+			}
+			Console.WriteLine(map.GetScore());
 		}
 
 		[Test, Explicit]

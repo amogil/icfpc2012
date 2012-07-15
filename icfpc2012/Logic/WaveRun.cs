@@ -8,11 +8,13 @@ namespace Logic
 	{
 		private readonly Map map;
 		private readonly Vector startPosition;
+		private readonly int maxStepsCount;
 
-		public WaveRun(Map map, Vector startPosition)
+		public WaveRun(Map map, Vector startPosition, int maxStepsCount = 1000)
 		{
 			this.map = map;
 			this.startPosition = startPosition;
+			this.maxStepsCount = maxStepsCount;
 		}
 
 		public Tuple<Vector, Stack<RobotMove>> Lift { get; private set; }
@@ -29,9 +31,10 @@ namespace Logic
 			q.Enqueue(new WaveCell(startPosition, 0, null, RobotMove.Wait, map.WaterproofLeft, map.Razors));
 			var used = new HashSet<Vector>();
 			used.Add(startPosition);
-
-			while (q.Any())
+			int stepsDone = 0;
+			while (q.Any() && stepsDone < maxStepsCount)
 			{
+				stepsDone++;
 				var cell = q.Dequeue();
 				MapCell toCell = map.GetCell(cell.Pos);
 				if (!cell.Pos.Equals(startPosition)
