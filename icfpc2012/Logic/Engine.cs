@@ -5,42 +5,34 @@ namespace Logic
 {
 	public class Engine
 	{
-		public Engine(Map map)
-		{
-			Map = map;
-		}
-
-		public Map Map { get; private set; }
-
 		public event Action<Map> OnMapUpdate;
 		public event Action<RobotMove> OnMoveAdded;
 
-		public virtual void RunProgram(IEnumerable<RobotMove> moves)
+		public virtual Map RunProgram(Map map, IEnumerable<RobotMove> moves)
 		{
 			try
 			{
 				foreach (var move in moves)
-					DoMove(move);
+					map = DoMove(move, map);
 			}
 			catch (GameFinishedException)
 			{
 			}
+			return map;
 		}
 
-		public void DoMove(RobotMove robotMove)
+		public Map DoMove(RobotMove robotMove, Map map)
 		{
-			if (Map.State != CheckResult.Nothing) return;
-			var newMap = Map.Move(robotMove);
+			if (map.State != CheckResult.Nothing) return map;
+			var resMap = map.Move(robotMove);
 			AddMove(robotMove);
-			UpdateMap(newMap);
-			if (newMap.State != CheckResult.Nothing)
-				throw new GameFinishedException();
+			UpdateMap(resMap);
+			return resMap;
 		}
 
 		private void UpdateMap(Map newMap)
 		{
 			if (OnMapUpdate != null) OnMapUpdate(newMap);
-			Map = newMap;
 		}
 
 		private void AddMove(RobotMove move)

@@ -33,11 +33,10 @@ namespace Tests
 			return string.Format("test case: {4}\r\n{0}\r\n{1}\r\n{2}\r\n{3}\r\n", Moves.Aggregate(string.Empty, (s, m) => s + m.ToChar()), Result, Score, FinalMapState, MapName);
 		}
 
-		public bool AssertEngineState(Engine e)
+		public bool AssertEngineState(Map actualMap)
 		{
 			try
 			{
-				var actualMap = e.Map;
 				CheckResult checkResult = actualMap.State;
 				if (checkResult == CheckResult.Abort) checkResult = CheckResult.Nothing; //Специфика загружалки результатов валидатора
 				Assert.AreEqual(Result, checkResult, this.ToString());
@@ -122,9 +121,9 @@ namespace Tests
 				foreach (var testItem in GetReferenceTestItems(mapName))
 				{
 					Console.WriteLine(testItem.Filename);
-					var engine = new Engine(new Map(t.Item2));
-					engine.RunProgram(testItem.Moves);
-					if (!testItem.AssertEngineState(engine)) testsFailed++;
+					var engine = new Engine();
+					var map = engine.RunProgram(new Map(t.Item2), testItem.Moves);
+					if (!testItem.AssertEngineState(map)) testsFailed++;
 				}
 			}
 			Assert.AreEqual(0, testsFailed);

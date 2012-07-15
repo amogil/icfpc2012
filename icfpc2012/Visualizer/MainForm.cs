@@ -127,7 +127,7 @@ namespace Visualizer
 			bestPath = new Tuple<int, string>(0, "A");
 			var newMap = new Map(File.ReadAllLines(mapFile));
 			mapsHistory = new Stack<Map>();
-			engine = new Engine(newMap);
+			engine = new Engine();
 			engine.OnMapUpdate += m => UpdateMap(m, true);
 			engine.OnMoveAdded += m => moves.Add(m);
 			if (newMap.Width * newMap.Height > 150 * 150 && CellSize > 2) zoomBar.Value = 2;
@@ -223,14 +223,9 @@ namespace Visualizer
 
 		private void DoMove(RobotMove robotMove)
 		{
-			try
-			{
-				engine.DoMove(robotMove);
-			}
-			catch (GameFinishedException)
-			{
+			var newMap = engine.DoMove(robotMove, map);
+			if (newMap.State != CheckResult.Nothing)
 				SaveMoves();
-			}
 		}
 
 		private void SaveMoves()
