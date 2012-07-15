@@ -33,7 +33,7 @@ namespace Logic
 			while (q.Any())
 			{
 				var cell = q.Dequeue();
-				MapCell toCell = map[cell.Pos];
+				MapCell toCell = map.GetCell(cell.Pos);
 				if (!cell.Pos.Equals(startPosition)
 					&& (isTarget(map, cell.Pos, used, cell.StepNumber)))
 					yield return CreateTarget(cell);

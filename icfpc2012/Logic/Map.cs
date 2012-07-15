@@ -222,6 +222,29 @@ namespace Logic
 			InitialWater = Water;
 		}
 
+		public MapCell GetCell(int x, int y)
+		{
+			return map[x, y];
+		}
+
+		public MapCell GetCell(Vector pos)
+		{
+			return GetCell(pos.X, pos.Y);
+		}
+
+		public MapCell SetCell(Vector pos, MapCell newValue)
+		{
+			return SetCell(pos.X, pos.Y, newValue);
+		}
+
+		public MapCell SetCell(int x, int y, MapCell newValue)
+		{
+			var oldValue = map[x, y];
+			map[x, y] = newValue;
+			return oldValue;
+		}
+
+
 		private void InitializeActiveRocks()
 		{
 			for (int y = 1; y < Height - 1; y++)
@@ -268,17 +291,6 @@ namespace Logic
 		public bool HasActiveRocks
 		{
 			get { return activeRocks.Any(a => a != TryToMoveRock(a)); }
-		}
-
-		public MapCell this[Vector pos]
-		{
-			get { return map[pos.X, pos.Y]; }
-			set { map[pos.X, pos.Y] = value; }
-		}
-
-		public MapCell this[int x, int y]
-		{
-			get { return map[x, y]; }
 		}
 
 		public override string ToString()
@@ -348,7 +360,7 @@ namespace Logic
 				if (CheckValid(newRobot.X, newRobot.Y))
 				{
 					log.Peek().RobotMove = new Movement { PreviousX = RobotX, PreviousY = RobotY, NextX = newRobot.X, NextY = newRobot.Y };
-					log.Peek().RemovedObjects.Add(Tuple.Create(newRobot, this[newRobot]));
+					log.Peek().RemovedObjects.Add(Tuple.Create(newRobot, GetCell(newRobot)));
 					DoMove(newRobot.X, newRobot.Y);
 				}
 				else
@@ -429,7 +441,7 @@ namespace Logic
 				foreach (KeyValuePair<MapCell, MapCell> pair in TrampToTarget.Where(a => a.Value == target))
 				{
 					Vector trampolinePos = Trampolines[pair.Key];
-					this[trampolinePos] = MapCell.Empty;
+					SetCell(trampolinePos, MapCell.Empty);
 					log.Peek().RemovedObjects.Add(new Tuple<Vector, MapCell>(trampolinePos, pair.Key));
 					CheckNearRocks(activeRocks, trampolinePos.X, trampolinePos.Y);
 				}
@@ -728,7 +740,7 @@ namespace Logic
 
 			foreach (Tuple<Vector, MapCell> removedObj in stateLog.RemovedObjects)
 			{
-				this[removedObj.Item1] = removedObj.Item2;
+				SetCell(removedObj.Item1, removedObj.Item2);
 
 				if (removedObj.Item2 == MapCell.Lambda)
 				{

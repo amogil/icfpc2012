@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Logic
+﻿namespace Logic
 {
 	public static class MapExtensions
 	{
@@ -26,7 +24,7 @@ namespace Logic
 
 		public static bool IsValidMoveWithoutMovingRocks(this Map map, Vector from, Vector to)
 		{
-			var toCell = map[to];
+			var toCell = map.GetCell(to);
 			return toCell.IsTrampoline() || toCell == MapCell.OpenedLift || toCell == MapCell.Lambda || toCell == MapCell.Empty || toCell == MapCell.Earth || toCell == MapCell.Robot;
 		}
 
@@ -74,23 +72,23 @@ namespace Logic
 
 		public static Vector TryToMoveRock(this Map map, int x, int y)
 		{
-			if (map[x, y] == MapCell.Rock && IsEmptyOrRobot(map[x, y - 1]))
+			if (map.GetCell(x, y) == MapCell.Rock && IsEmptyOrRobot(map.GetCell(x, y - 1)))
 			{
 				return new Vector(x, y - 1);
 			}
-			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
-				&& IsEmptyOrRobot(map[x + 1, y]) && IsEmptyOrRobot(map[x + 1, y - 1]))
+			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Rock
+				&& IsEmptyOrRobot(map.GetCell(x + 1, y)) && IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
 			{
 				return new Vector(x + 1, y - 1);
 			}
-			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Rock
-				&& (!IsEmptyOrRobot(map[x + 1, y]) || !IsEmptyOrRobot(map[x + 1, y - 1]))
-				&& IsEmptyOrRobot(map[x - 1, y]) && IsEmptyOrRobot(map[x - 1, y - 1]))
+			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Rock
+				&& (!IsEmptyOrRobot(map.GetCell(x + 1, y)) || !IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
+				&& IsEmptyOrRobot(map.GetCell(x - 1, y)) && IsEmptyOrRobot(map.GetCell(x - 1, y - 1)))
 			{
 				return new Vector(x - 1, y - 1);
 			}
-			if (map[x, y] == MapCell.Rock && map[x, y - 1] == MapCell.Lambda
-				&& IsEmptyOrRobot(map[x + 1, y]) && IsEmptyOrRobot(map[x + 1, y - 1]))
+			if (map.GetCell(x, y) == MapCell.Rock && map.GetCell(x, y - 1) == MapCell.Lambda
+				&& IsEmptyOrRobot(map.GetCell(x + 1, y)) && IsEmptyOrRobot(map.GetCell(x + 1, y - 1)))
 			{
 				return new Vector(x + 1, y - 1);
 			}
@@ -134,10 +132,16 @@ namespace Logic
 		{
 			for (int y = bottomY; y <= topY; y++)
 			{
-				if (map[x, y] != MapCell.Empty)
+				if (map.GetCell(x, y) != MapCell.Empty)
 					return false;
 			}
 			return true;
+		}
+
+		public static Vector GetTrampolineTarget(this Map map, Vector trampolineOrJustCell)
+		{
+			if (!map.GetCell(trampolineOrJustCell).IsTrampoline()) return trampolineOrJustCell;
+			return map.Targets[map.TrampToTarget[map.GetCell(trampolineOrJustCell)]];
 		}
 	}
 }

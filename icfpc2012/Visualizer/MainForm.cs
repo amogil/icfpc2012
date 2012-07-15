@@ -94,9 +94,9 @@ namespace Visualizer
 		{
 			var rect = new Rectangle((x-1)*CellSize, (map.Height - y-1-1)*CellSize, CellSize, CellSize);
 			if (CellSize > 6)
-				g.DrawImage(CellImages.Bitmaps[map[x, y]], rect);
+				g.DrawImage(CellImages.Bitmaps[map.GetCell(x, y)], rect);
 			else
-				g.FillRectangle(CellImages.CellBrushes[map[x,y]], rect);
+				g.FillRectangle(CellImages.CellBrushes[map.GetCell(x,y)], rect);
 			if (map.Water >= y)
 				g.FillRectangle(new SolidBrush(Color.FromArgb(150, 0, 0, 255)), rect);
 			if (map.Flooding > 0 && map.StepsToIncreaseWater == 1 && y == map.Water+1)
