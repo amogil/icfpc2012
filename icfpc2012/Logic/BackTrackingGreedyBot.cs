@@ -50,7 +50,7 @@ namespace Logic
 		{
 			// Favorite lambdas
 			var lambdas = new List<Vector>(map.TotalLambdaCount);
-			foreach(var vector in GetBannedElement(map, cell => cell == MapCell.Lambda))
+			foreach(var vector in GetElements(map, cell => cell == MapCell.Lambda))
 			{
 				lambdas.Add(vector);
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Favorite);
@@ -59,7 +59,7 @@ namespace Logic
 			yield return new Tuple<Vector, SpecialTargetType>(new Vector(1, 1), SpecialTargetType.Kamikadze);
 			// Favorite trampolines
 			var trampolines = new List<Vector>();
-			foreach(var vector in GetBannedElement(map, cell => cell.ToString().StartsWith("Trampoline")))
+			foreach(var vector in GetElements(map, cell => cell.ToString().StartsWith("Trampoline")))
 			{
 				trampolines.Add(vector);
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Favorite);
@@ -72,7 +72,7 @@ namespace Logic
 				yield return new Tuple<Vector, SpecialTargetType>(vector, SpecialTargetType.Banned);
 		}
 
-		private IEnumerable<Vector> GetBannedElement(Map map, Predicate<MapCell> predicate)
+		private static IEnumerable<Vector> GetElements(Map map, Predicate<MapCell> predicate)
 		{
 			for(int i = 0; i < map.Width; i++)
 				for(int j = 0; j < map.Height; j++)
