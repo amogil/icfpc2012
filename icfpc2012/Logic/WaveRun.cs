@@ -10,6 +10,9 @@ namespace Logic
 		private readonly Vector startPosition;
 		private readonly int maxStepsCount;
 
+		private readonly RobotMove[] RobotMoves = new[] { RobotMove.Left, RobotMove.Right, RobotMove.Down, RobotMove.Up };
+		private readonly RobotMove[] RobotMovesInWater = new[] { RobotMove.Up, RobotMove.Left, RobotMove.Right, RobotMove.Down };
+
 		public WaveRun(Map map, Vector startPosition, int maxStepsCount = 1000)
 		{
 			this.map = map;
@@ -42,7 +45,7 @@ namespace Logic
 					yield return CreateTarget(cell);
 				if (toCell == MapCell.OpenedLift || toCell == MapCell.ClosedLift) 
 					Lift = CreateTarget(cell);
-				foreach (var move in new[] { RobotMove.Left, RobotMove.Right, RobotMove.Down, RobotMove.Up, })
+				foreach (var move in map.IsInWater(cell.StepNumber, cell.Pos.Y) ? RobotMovesInWater : RobotMoves)
 				{
 					Vector newPos = cell.Pos.Add(move.ToVector());
 					if (!map.IsValidMoveWithoutMovingRocks(cell.Pos, newPos)) continue;
