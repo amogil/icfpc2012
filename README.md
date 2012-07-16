@@ -12,9 +12,6 @@ Team
 
 Russia, Ekaterinburg city.
 
-Code: https://github.com/amogil/icfpcontest2012 
-(will open after contest finished)
-
 We had used Immutable persistent Quad-tree as a Game Field.
 All operations O(log size)
 
