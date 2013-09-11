@@ -1,7 +1,7 @@
 icfpcontest2012
 ===============
 
-Team
+Hack The Loop Team (13th place)
 ====
 * Pavel Egorov (www.skbkontur.ru)
 * Alexey Mogilnikov (www.skbkontur.ru)
